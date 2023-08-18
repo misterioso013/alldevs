@@ -6,6 +6,8 @@ Somos um grupo de desenvolvedores que estão espalhados pelo Brasil, e que se ju
 
 Inicialmente, tinhamos sonhos de criar coisas que ajudassem pessoas e que fossem úteis para a sociedade, mas como a maioria dos sonhos, eles foram quebrados e agora só queremos fazer coisas que nos dêem dinheiro. (brincadeira, ainda queremos ajudar as pessoas)
 
+Nosso grupo é formado por: [Caio Guerras](https://t.me/oCaioGuerras), [Cezar Pauxis](https://github.com/usernein) e [Rosiel Victor](https://github.com/misterioso013) ❤️
+
 Beleza, mas o que vocês fazem?
 - Sites
 - Aplicativos
