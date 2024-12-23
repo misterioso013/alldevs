@@ -1,0 +1,24 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Linhas horizontais -->
+  <line x1="0" y1="25" x2="100" y2="25" stroke="white" stroke-width="0.5" stroke-opacity="0.1"/>
+  <line x1="0" y1="50" x2="100" y2="50" stroke="white" stroke-width="0.5" stroke-opacity="0.1"/>
+  <line x1="0" y1="75" x2="100" y2="75" stroke="white" stroke-width="0.5" stroke-opacity="0.1"/>
+  
+  <!-- Linhas verticais -->
+  <line x1="25" y1="0" x2="25" y2="100" stroke="white" stroke-width="0.5" stroke-opacity="0.1"/>
+  <line x1="50" y1="0" x2="50" y2="100" stroke="white" stroke-width="0.5" stroke-opacity="0.1"/>
+  <line x1="75" y1="0" x2="75" y2="100" stroke="white" stroke-width="0.5" stroke-opacity="0.1"/>
+  
+  <!-- Pontos nas interseções -->
+  <circle cx="25" cy="25" r="1" fill="white" fill-opacity="0.2"/>
+  <circle cx="25" cy="50" r="1" fill="white" fill-opacity="0.2"/>
+  <circle cx="25" cy="75" r="1" fill="white" fill-opacity="0.2"/>
+  
+  <circle cx="50" cy="25" r="1" fill="white" fill-opacity="0.2"/>
+  <circle cx="50" cy="50" r="1" fill="white" fill-opacity="0.2"/>
+  <circle cx="50" cy="75" r="1" fill="white" fill-opacity="0.2"/>
+  
+  <circle cx="75" cy="25" r="1" fill="white" fill-opacity="0.2"/>
+  <circle cx="75" cy="50" r="1" fill="white" fill-opacity="0.2"/>
+  <circle cx="75" cy="75" r="1" fill="white" fill-opacity="0.2"/>
+</svg> 
