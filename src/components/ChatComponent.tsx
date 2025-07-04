@@ -56,7 +56,14 @@ export default function ChatComponent() {
         code: ({ className, children, inline, ...props }: ComponentPropsWithoutRef<'code'> & { inline?: boolean }) => {
           const code = String(children).replace(/\n$/, '');
           
-          return !inline ? (
+          // Verificar se é código inline ou bloco
+          const isInline = inline || !className?.includes('language-');
+          
+          return isInline ? (
+            <code className="bg-white/10 rounded px-1 py-0.5 text-purple-300 font-mono text-sm" {...props}>
+              {children}
+            </code>
+          ) : (
             <div className="relative group">
               <pre className="rounded-lg p-4 bg-black/50 border border-white/10 overflow-x-auto">
                 <motion.button
@@ -77,10 +84,6 @@ export default function ChatComponent() {
                 </code>
               </pre>
             </div>
-          ) : (
-            <code className="bg-white/10 rounded px-1 py-0.5" {...props}>
-              {children}
-            </code>
           );
         },
         ul: ({ children }) => <ul className="list-disc list-inside space-y-1 text-white/90">{children}</ul>,
