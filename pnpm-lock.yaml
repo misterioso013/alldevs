@@ -24,8 +24,8 @@ importers:
         specifier: ^4.3.16
         version: 4.3.16(react@18.2.0)(zod@3.25.71)
       autoprefixer:
-        specifier: 10.4.16
-        version: 10.4.16(postcss@8.4.29)
+        specifier: 10.4.21
+        version: 10.4.21(postcss@8.4.29)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -551,8 +551,8 @@ packages:
     resolution: {integrity: sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==}
     engines: {node: '>= 0.4'}
 
-  autoprefixer@10.4.16:
-    resolution: {integrity: sha512-7vd3UC6xKp0HLfua5IjZlcXvGAGy7cBAXTg2lyQ/8WpNhd6SiZ8Be+xm3FyBSYJx5GKcpRCzBh7RH4/0dnY+uQ==}
+  autoprefixer@10.4.21:
+    resolution: {integrity: sha512-O+A6LWV5LDHSJD3LjHYoNi4VLsj/Whi7k6zG12xTYaU4cQ8oxQGckXNX8cRHK5yOZ/ppVHe0ZBXGzSV9jXdVbQ==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
@@ -2622,7 +2622,7 @@ snapshots:
 
   async-function@1.0.0: {}
 
-  autoprefixer@10.4.16(postcss@8.4.29):
+  autoprefixer@10.4.21(postcss@8.4.29):
     dependencies:
       browserslist: 4.25.1
       caniuse-lite: 1.0.30001726
@@ -2949,7 +2949,7 @@ snapshots:
       eslint: 8.47.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(eslint@8.47.0))(eslint@8.47.0)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.47.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.47.0))(eslint@8.47.0))(eslint@8.47.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.47.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.10.1)(eslint@8.47.0)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.47.0)
       eslint-plugin-react: 7.37.5(eslint@8.47.0)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.47.0)
@@ -2979,7 +2979,7 @@ snapshots:
       tinyglobby: 0.2.14
       unrs-resolver: 1.10.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.47.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.47.0))(eslint@8.47.0))(eslint@8.47.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.47.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.10.1)(eslint@8.47.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -2994,7 +2994,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.47.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.47.0))(eslint@8.47.0))(eslint@8.47.0):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.47.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.10.1)(eslint@8.47.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9

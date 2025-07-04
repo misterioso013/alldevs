@@ -14,7 +14,7 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "ai": "^4.3.16",
-    "autoprefixer": "10.4.16",
+    "autoprefixer": "10.4.21",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "eslint": "8.47.0",
