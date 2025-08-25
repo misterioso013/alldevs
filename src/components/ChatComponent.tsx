@@ -57,7 +57,11 @@ export default function ChatComponent() {
           const code = String(children).replace(/\n$/, '');
           
           // Verificar se é código inline ou bloco
-          const isInline = inline || !className?.includes('language-');
+          // Se inline está explicitamente definido, usar ele
+          // Se não, verificar se tem className com language- (indica bloco de código)
+          // Também verificar se tem quebras de linha (indica bloco)
+          const isInline = inline === true || 
+                          (inline !== false && !className?.includes('language-') && !code.includes('\n'));
           
           return isInline ? (
             <code className="bg-white/10 rounded px-1 py-0.5 text-purple-300 font-mono text-sm" {...props}>

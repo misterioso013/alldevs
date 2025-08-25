@@ -73,9 +73,14 @@ export default function Home() {
               <Link href="#equipe" className="nav-link">Equipe</Link>
               <Link href="#contato" className="nav-link">Contato</Link>
             </div>
-            <Link href="#contato" className="glass-button">
-              Iniciar Projeto
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/budget" className="glass-button">
+                Orçamento
+              </Link>
+              <Link href="#contato" className="glass-button-primary">
+                Iniciar Projeto
+              </Link>
+            </div>
           </div>
         </div>
       </motion.nav>
