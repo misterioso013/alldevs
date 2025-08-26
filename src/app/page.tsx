@@ -156,6 +156,7 @@ export default function Home() {
               { name: "TensorFlow", icon: "/tech/TensorFlow.svg", category: "Machine Learning" },
               { name: "PostgreSQL", icon: "/tech/PostgresSQL.svg", category: "Database" },
               { name: "MongoDB", icon: "/tech/MongoDB.svg", category: "Database" },
+              { name: "Firebase", icon: "/tech/Firebase.svg", category: "Database" },
               { name: "Docker", icon: "/tech/Docker.svg", category: "DevOps" },
               { name: "AWS", icon: "/tech/AWS.svg", category: "Cloud" },
               { name: "Tailwind CSS", icon: "/tech/Tailwind CSS.svg", category: "Styling" }
@@ -265,16 +266,16 @@ export default function Home() {
           >
             {[
               {
-                title: "Sistema de IA Conversacional",
-                description: "Plataforma avançada de atendimento com processamento de linguagem natural",
-                tech: ["Python", "TensorFlow", "React"],
-                image: "/projects/ai-chat.jpg"
+                title: "SendAny",
+                description: "Plataforma que une Gist, Pastebin e Drive em uma única interface",
+                tech: ["Next.js", "Serverless", "React", "PostgreSQL"],
+                image: "/images/sendany.png"
               },
               {
-                title: "Plataforma de Analytics",
-                description: "Dashboard inteligente com previsões e insights automatizados",
-                tech: ["TypeScript", "TensorFlow", "PostgreSQL"],
-                image: "/projects/analytics.jpg"
+                title: "pair.codes",
+                description: "IDE + Terminal + IA: A revolução no desenvolvimento de software",
+                tech: ["TypeScript", "TensorFlow", "PostgreSQL", "Electron", "Rust"],
+                image: "/images/pair-codes.png"
               }
             ].map((project, index) => (
               <motion.div
@@ -285,10 +286,13 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
               >
                 <div className="relative h-48 sm:h-64 mb-6 overflow-hidden rounded-xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-blue-500/20" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-4xl">{index === 0 ? '🤖' : '📊'}</span>
-                  </div>
+                  <motion.img
+                    src={project.image}
+                    alt={project.title}
+                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500"
+                    whileHover={{ scale: 1.1 }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3">{project.title}</h3>
                 <p className="text-white/60 mb-4 text-sm sm:text-base">{project.description}</p>
@@ -470,7 +474,7 @@ export default function Home() {
       <footer className="py-8 border-t border-white/5">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-white/60">© 2024 AllDevs. Todos os direitos reservados.</p>
+            <p className="text-white/60">&copy; {new Date().getFullYear()} AllDevs. Todos os direitos reservados.</p>
             <div className="flex gap-6">
               <Link href="https://github.com/alldevs" 
                 target="_blank"
