@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A História — AllDevs | Rosiel Victor</title>
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<meta name="description" content="Como um adolescente que programava no celular virou engenheiro sênior em uma consultoria global de tecnologia e fundador do ForjaDev.">
+<link rel="canonical" href="https://all.dev.br/historia.html">
+<meta property="og:title" content="A História — AllDevs | Rosiel Victor">
+<meta property="og:description" content="Como um adolescente que programava no celular virou engenheiro sênior em consultoria global e fundador do ForjaDev.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://all.dev.br/historia.html">
+<meta property="og:image" content="https://all.dev.br/assets/images/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A História — AllDevs | Rosiel Victor">
+<meta name="twitter:description" content="Como um adolescente que programava no celular virou engenheiro sênior em consultoria global e fundador do ForjaDev.">
+<meta name="twitter:image" content="https://all.dev.br/assets/images/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/SplitText.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0e0e16;
+    --surface: rgba(255,255,255,0.04);
+    --surface2: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --purple: #7c3aed;
+    --purple-light: #9d6bf0;
+    --purple-glow: rgba(124,58,237,0.25);
+    --orange: #f97316;
+    --orange-light: #fb923c;
+    --text: #eeeef5;
+    --text2: #b0b0c0;
+    --muted: #505065;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 2px; }
+  ::selection { background: var(--purple); color: #fff; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 20px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--font-display); font-weight: 800; font-size: 1.1rem;
+    letter-spacing: -0.02em; text-decoration: none; color: var(--text);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-logo span { color: var(--purple); }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--text2); font-size: 0.85rem; font-weight: 500;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--text); }
+
+  /* ── HERO ── */
+  #hist-hero {
+    min-height: 70vh;
+    display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 120px 80px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hist-hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 80% 20%, rgba(124,58,237,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(249,115,22,0.08) 0%, transparent 60%);
+  }
+  .hist-hero-lines {
+    position: absolute; inset: 0; overflow: hidden;
+  }
+  .hist-hero-lines::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--purple), transparent);
+    left: 80px;
+  }
+  .hist-kicker {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--orange-light);
+    margin-bottom: 16px; position: relative; z-index: 1;
+  }
+  .hist-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 800; letter-spacing: -0.04em;
+    line-height: 0.95; position: relative; z-index: 1;
+    margin-bottom: 24px;
+  }
+  .hist-title em {
+    font-style: normal;
+    -webkit-text-stroke: 1px var(--purple-light);
+    -webkit-text-fill-color: transparent;
+  }
+  .hist-sub {
+    font-size: 1.1rem; color: var(--text2); max-width: 500px;
+    font-weight: 300; line-height: 1.65; position: relative; z-index: 1;
+  }
+  .hist-sub strong { color: var(--text); font-weight: 500; }
+
+  /* ── HORIZONTAL MANIFESTO ── */
+  .horizontal-story {
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(ellipse 46% 70% at 50% 50%, rgba(124,58,237,0.14), transparent 64%),
+      linear-gradient(180deg, var(--bg), var(--bg2));
+  }
+  .horizontal-story::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle 1px at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(ellipse 82% 70% at 50% 50%, black 20%, transparent 100%);
+    pointer-events: none;
+  }
+  .horizontal-story__kicker {
+    position: absolute;
+    left: 80px;
+    top: 80px;
+    color: var(--orange-light);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+  .horizontal-story__text {
+    display: block;
+    width: max-content;
+    max-width: none;
+    white-space: nowrap;
+    padding-left: 0;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 10vw, 10rem);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--text);
+    font-kerning: none;
+    text-rendering: optimizeSpeed;
+    position: relative;
+    z-index: 1;
+    will-change: transform;
+  }
+  .horizontal-story__text em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--purple-light), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .story-word,
+  .story-char {
+    display: inline-block;
+  }
+  .story-word {
+    margin-right: 0.25em;
+  }
+  .horizontal-story__text em .story-word,
+  .horizontal-story__text em .story-char {
+    background: inherit;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  @media (max-width: 768px), (prefers-reduced-motion: reduce) {
+    .horizontal-story {
+      min-height: auto;
+      padding: 80px 24px;
+      width: 100vw;
+      max-width: 100vw;
+    }
+    .horizontal-story__kicker {
+      position: relative;
+      left: auto;
+      top: auto;
+      margin-bottom: 24px;
+    }
+    .horizontal-story {
+      display: block;
+    }
+    .horizontal-story__text {
+      display: block;
+      width: calc(100vw - 48px) !important;
+      max-width: calc(100vw - 48px) !important;
+      white-space: normal;
+      padding-left: 0;
+      font-size: clamp(1.65rem, 6.5vw, 2.05rem);
+      line-height: 1;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      hyphens: auto;
+      transform: none !important;
+    }
+    .horizontal-story__text .story-word,
+    .horizontal-story__text .story-char {
+      display: inline !important;
+      margin-right: 0 !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+
+  /* ── TIMELINE ── */
+  #timeline {
+    padding: 100px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+  }
+  @media (max-width: 768px) {
+    #hist-hero { padding: 100px 24px 60px; }
+    #timeline { padding: 60px 24px; }
+  }
+
+  /* vertical line */
+  .tl-line {
+    position: absolute;
+    left: 140px; top: 0; bottom: 0; width: 1px;
+    background: linear-gradient(to bottom, var(--border2), var(--purple), var(--orange), transparent);
+    opacity: 0.4;
+  }
+  @media (max-width: 768px) { .tl-line { left: 20px; } }
+
+  .tl-item {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 48px;
+    margin-bottom: 80px;
+    position: relative;
+    align-items: start;
+  }
+  @media (max-width: 768px) {
+    .tl-item { grid-template-columns: 1fr; gap: 16px; padding-left: 44px; }
+  }
+
+  .tl-year-col {
+    text-align: right;
+    padding-top: 4px;
+    position: relative;
+  }
+  .tl-year {
+    font-family: var(--font-display);
+    font-size: 0.85rem; font-weight: 700; color: var(--muted);
+    letter-spacing: 0.06em;
+    display: block;
+  }
+  /* dot on the line */
+  .tl-dot {
+    position: absolute;
+    right: -56px; top: 8px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--muted);
+    transition: border-color 0.3s;
+    z-index: 2;
+  }
+  .tl-item.active .tl-dot {
+    border-color: var(--purple);
+    box-shadow: 0 0 12px var(--purple-glow);
+    background: var(--purple);
+  }
+  .tl-item.highlight .tl-dot {
+    border-color: var(--orange);
+    box-shadow: 0 0 12px var(--orange-glow, rgba(249,115,22,0.3));
+    background: var(--orange);
+  }
+  @media (max-width: 768px) {
+    .tl-year-col { text-align: left; }
+    .tl-dot { right: auto; left: -32px; top: 6px; }
+  }
+
+  .tl-content {
+    padding-bottom: 8px;
+  }
+  .tl-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--purple-light);
+    margin-bottom: 8px;
+  }
+  .tl-item.highlight .tl-label { color: var(--orange-light); }
+
+  .tl-heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1.1; margin-bottom: 16px;
+  }
+  .tl-body {
+    font-size: 0.95rem; color: var(--text2);
+    line-height: 1.8; font-weight: 300;
+    max-width: 520px;
+  }
+  .tl-body strong { color: var(--text); font-weight: 500; }
+  .tl-body em { color: var(--orange-light); font-style: normal; }
+
+  .tl-quote {
+    margin-top: 20px;
+    border-left: 2px solid var(--purple);
+    padding: 12px 20px;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.9rem; color: var(--text2); font-style: italic; line-height: 1.65;
+  }
+  .tl-item.highlight .tl-quote {
+    border-color: var(--orange);
+  }
+
+  .tl-card {
+    margin-top: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 0.85rem; color: var(--text2);
+  }
+  .tl-card-icon { font-size: 1.2rem; }
+  .tl-card strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 2px; font-size: 0.9rem; }
+
+  /* ── CLOSING ── */
+  #hist-closing {
+    padding: 80px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  @media (max-width: 768px) { #hist-closing { padding: 60px 24px; } }
+  .closing-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 50% 80% at 50% 100%, rgba(124,58,237,0.15), transparent);
+    pointer-events: none;
+  }
+  .closing-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+  .closing-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800; letter-spacing: -0.04em;
+    line-height: 1.05; margin-bottom: 20px;
+  }
+  .closing-sub {
+    font-size: 1rem; color: var(--text2); font-weight: 300;
+    line-height: 1.7; margin-bottom: 36px;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--purple); color: #fff;
+    font-weight: 600; font-size: 0.95rem; font-family: var(--font-body);
+    padding: 14px 28px; border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  }
+  .btn-primary:hover {
+    background: var(--purple-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px var(--purple-glow);
+  }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    color: var(--text); font-weight: 500; font-size: 0.95rem;
+    font-family: var(--font-body);
+    padding: 14px 28px; border-radius: 10px;
+    text-decoration: none; border: 1px solid var(--border2);
+    transition: background 0.2s, transform 0.15s;
+    margin-left: 12px;
+  }
+  .btn-ghost:hover { background: var(--surface2); transform: translateY(-2px); }
+
+  /* ── WA FLOAT ── */
+  .wa-float {
+    position: fixed; bottom: 28px; right: 28px; z-index: 200;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: #25d366;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    text-decoration: none;
+    transition: transform 0.2s;
+    animation: wa-pulse 3s ease-in-out infinite;
+  }
+  .wa-float:hover { transform: scale(1.1); }
+  @keyframes wa-pulse {
+    0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4); }
+    50% { box-shadow: 0 4px 30px rgba(37,211,102,0.6), 0 0 0 8px rgba(37,211,102,0.1); }
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  .cursor-aura,
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    will-change: transform, opacity;
+  }
+  .cursor-aura {
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(157,107,240,0.65);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, rgba(124,58,237,0.16) 0%, rgba(124,58,237,0.04) 45%, transparent 72%);
+    box-shadow: 0 0 24px rgba(124,58,237,0.18);
+    mix-blend-mode: screen;
+  }
+  .cursor-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple-light), var(--orange));
+    box-shadow: 0 0 18px rgba(249,115,22,0.35);
+  }
+  .cursor-aura.is-active,
+  .cursor-dot.is-active {
+    opacity: 1;
+  }
+  .cursor-aura.is-hovering {
+    border-color: rgba(249,115,22,0.85);
+    background:
+      radial-gradient(circle, rgba(249,115,22,0.18) 0%, rgba(124,58,237,0.08) 50%, transparent 74%);
+  }
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .cursor-aura,
+    .cursor-dot {
+      display: none;
+    }
+  }
+
+  /* ── ANIMATIONS ── */
+  .reveal { opacity: 0; transform: translateY(30px); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">all<span>.</span>dev</a>
+  <a href="index.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Voltar ao site
+  </a>
+</nav>
+
+<!-- HERO -->
+<section id="hist-hero">
+  <div class="hist-hero-bg"></div>
+  <div class="hist-hero-lines"></div>
+  <div class="hist-kicker" id="hk">A origem</div>
+  <h1 class="hist-title" id="ht">
+    Uma história<br><em>fora do roteiro</em>
+  </h1>
+  <p class="hist-sub" id="hs">
+    Como um adolescente que programava <strong>num celular sem internet fixa</strong> virou engenheiro sênior em uma consultoria global de tecnologia e fundador do ForjaDev.
+  </p>
+</section>
+
+<!-- HORIZONTAL MANIFESTO -->
+<section class="horizontal-story" aria-labelledby="horizontal-story-title">
+  <div class="horizontal-story__kicker">Manifesto</div>
+  <h2 class="horizontal-story__text" id="horizontal-story-title">
+    Do celular ao produto no ar. <em>Software que vende.</em> Automações que economizam horas. IA aplicada ao que importa.
+  </h2>
+</section>
+
+<!-- TIMELINE -->
+<div id="timeline">
+  <div class="tl-line"></div>
+
+  <!-- 2016 -->
+  <div class="tl-item" data-index="0">
+    <div class="tl-year-col">
+      <span class="tl-year">2016</span>
+      <div class="tl-dot"></div>
+    </div>
+    <div class="tl-content reveal">
+      <div class="tl-label">O começo</div>
+      <h2 class="tl-heading">Um celular, o Termux<br>e muita curiosidade</h2>
+      <p class="tl-body">
+        Sem computador, sem curso, sem manual. Aos 16 anos, Rosiel descobriu o Termux — um emulador de terminal para Android — e começou a escrever código com os polegares numa tela de 5 polegadas.
+        <br><br>
+        Enquanto colegas usavam o celular para jogar, ele aprendia a fazer o celular trabalhar para ele. <strong>Não havia romanticismo nisso. Era curiosidade pura, e insistência.</strong>
+      </p>
+      <div class="tl-quote">
+        "Eu não tinha os recursos certos. Mas eu tinha o problema certo. E quando você tem o problema certo, o resto é detalhe."
+      </div>
+    </div>
+  </div>
+
+  <!-- CAIO -->
+  <div class="tl-item highlight" data-index="1">
+    <div class="tl-year-col">
+      <span class="tl-year">2017</span>
+      <div class="tl-dot"></div>
+    </div>
+    <div class="tl-content reveal">
+      <div class="tl-label">O parceiro</div>
+      <h2 class="tl-heading">Caio Guerras entra<br>na história</h2>
+      <p class="tl-body">
+        Todo projeto começa com uma pessoa que acredita antes de todo mundo. Para Rosiel, essa pessoa foi <strong>Caio Guerras</strong>.
+        <br><br>
+        Caio pagou a <em>primeira VPS</em> — aquele servidor de $5/mês que parecia um investimento absurdo na época. Mas mais do que o dinheiro, ele trouxe algo mais raro: a crença de que valia a pena seguir.
+        <br><br>
+        Com projetos aparecendo e Rosiel ainda menor de idade, Caio cuidava do lado financeiro. Sem ele, vários contratos não teriam acontecido.
+      </p>
+      <div class="tl-card">
+        <span class="tl-card-icon">🤝</span>
+        <div>
+          <strong>Caio Guerras</strong>
+          Co-fundador, primeiro investidor e parceiro desde o início
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREELAS -->
+  <div class="tl-item" data-index="2">
+    <div class="tl-year-col">
+      <span class="tl-year">2018</span>
+      <div class="tl-dot"></div>
+    </div>
+    <div class="tl-content reveal">
+      <div class="tl-label">Primeiros clientes</div>
+      <h2 class="tl-heading">Freelas como<br>menor de idade</h2>
+      <p class="tl-body">
+        Os primeiros freelas chegaram cedo — e com eles, a primeira lição do mercado: ter habilidade técnica não é suficiente. Você precisa de confiança, de prazo, de entrega.
+        <br><br>
+        Rosiel entregava. Caio assinava. <strong>A dupla funcionava.</strong> Cada projeto era uma nova escola — cliente real, problema real, pressão real.
+        <br><br>
+        Não era um hobby. Era o começo de uma carreira construída pela necessidade de fazer acontecer.
+      </p>
+    </div>
+  </div>
+
+  <!-- ALLDEVS -->
+  <div class="tl-item highlight" data-index="3">
+    <div class="tl-year-col">
+      <span class="tl-year">2021</span>
+      <div class="tl-dot"></div>
+    </div>
+    <div class="tl-content reveal">
+      <div class="tl-label">A empresa</div>
+      <h2 class="tl-heading">Fundação<br>da AllDevs</h2>
+      <p class="tl-body">
+        O que era uma dupla virou uma empresa. A AllDevs nasceu da ideia simples de que <em>desenvolvimento de software bom não precisa ser caro nem lento</em>.
+        <br><br>
+        Projetos com IA generativa e o AI SDK da Vercel vieram a seguir — na época em que poucos falavam sobre isso no Brasil, Rosiel já estava construindo.
+        <br><br>
+        <strong>Esses projetos abriram portas que nenhum currículo tradicional abriria.</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- ACCENTURE -->
+  <div class="tl-item" data-index="4">
+    <div class="tl-year-col">
+      <span class="tl-year">2023</span>
+      <div class="tl-dot"></div>
+    </div>
+    <div class="tl-content reveal">
+      <div class="tl-label">O reconhecimento</div>
+      <h2 class="tl-heading">Aprovado como<br>engenheiro sênior</h2>
+      <p class="tl-body">
+        A empresa que começou num celular Android levou seu fundador a uma das maiores consultorias de tecnologia do mundo.
+        <br><br>
+        Rosiel foi aprovado como <strong>engenheiro de software sênior</strong> em uma consultoria global de tecnologia — não como júnior, não como pleno. Sênior. Com a bagagem de quem construiu produto de verdade antes de qualquer título.
+        <br><br>
+        O Termux era muito, muito atrás. Mas estava em cada linha de código que chegou até aqui.
+      </p>
+      <div class="tl-card">
+        <span class="tl-card-icon">🏢</span>
+        <div>
+          <strong>Consultoria global de tecnologia</strong>
+          Engenharia de software sênior — ativo até hoje
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORJADEV -->
+  <div class="tl-item highlight" data-index="5">
+    <div class="tl-year-col">
+      <span class="tl-year">2024</span>
+      <div class="tl-dot"></div>
+    </div>
+    <div class="tl-content reveal">
+      <div class="tl-label">O legado</div>
+      <h2 class="tl-heading">Fundação<br>do ForjaDev</h2>
+      <p class="tl-body">
+        Depois de chegar onde chegou, a próxima pergunta natural era: <em>como ajudar outros a chegarem também?</em>
+        <br><br>
+        O ForjaDev nasceu como escola de programação 1-on-1 — sem turmas grandes, sem curso gravado que ninguém termina. Ensino direto, personalizado, para quem quer aprender de verdade.
+        <br><br>
+        Com plataforma própria, gamificação, Discord bot e sistema de assinaturas, <strong>o ForjaDev é, em si, um produto construído pela AllDevs.</strong>
+      </p>
+      <div class="tl-card">
+        <span class="tl-card-icon">⚒</span>
+        <div>
+          <strong>ForjaDev</strong>
+          Escola de programação 1-on-1 — em operação
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOJE -->
+  <div class="tl-item" data-index="6">
+    <div class="tl-year-col">
+      <span class="tl-year">Hoje</span>
+      <div class="tl-dot"></div>
+    </div>
+    <div class="tl-content reveal">
+      <div class="tl-label">O presente</div>
+      <h2 class="tl-heading">Construindo o futuro,<br>um projeto de cada vez</h2>
+      <p class="tl-body">
+        Engenheiro sênior durante o dia. Freelancer disponível nas horas certas. Fundador do ForjaDev. Tudo ao mesmo tempo — não por heroísmo, mas porque <strong>é o que faz sentido.</strong>
+        <br><br>
+        Se você tem um projeto que precisa sair do papel, <em>essa é a hora</em>. Não amanhã, não depois que o cenário estiver perfeito.
+        <br><br>
+        Agora.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- CLOSING CTA -->
+<section id="hist-closing">
+  <div class="closing-glow"></div>
+  <div class="closing-inner reveal">
+    <div class="closing-title">Seu projeto<br>também pode ser assim.</div>
+    <p class="closing-sub">
+      De uma ideia no celular a produto no ar. Rápido, profissional, sem enrolação.
+    </p>
+    <a href="https://wa.me/55SEUNUMERO?text=Ol%C3%A1+Rosiel!+Vi+sua+hist%C3%B3ria+e+quero+conversar+sobre+um+projeto."
+       target="_blank" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Vamos conversar
+    </a>
+    <a href="index.html#contato" class="btn-ghost">Solicitar orçamento</a>
+  </div>
+</section>
+
+<!-- WA FLOAT -->
+<a href="https://wa.me/55SEUNUMERO?text=Ol%C3%A1+Rosiel!" target="_blank" class="wa-float" aria-label="WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+if (typeof SplitText !== 'undefined') {
+  gsap.registerPlugin(SplitText);
+}
+
+// Hero entrance
+gsap.timeline({ defaults: { ease: 'power3.out' } })
+  .from('#hk', { y: 20, opacity: 0, duration: 0.6, delay: 0.3 })
+  .from('#ht', { y: 50, opacity: 0, duration: 1 }, '-=0.3')
+  .from('#hs', { y: 30, opacity: 0, duration: 0.7 }, '-=0.5');
+
+// Reveal on scroll
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.fromTo(el,
+    { y: 40, opacity: 0 },
+    {
+      y: 0, opacity: 1, duration: 0.85, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+    }
+  );
+});
+
+// Activate timeline items (glow dots) as they enter
+document.querySelectorAll('.tl-item').forEach(item => {
+  ScrollTrigger.create({
+    trigger: item,
+    start: 'top 70%',
+    onEnter: () => item.classList.add('active'),
+  });
+});
+
+// Subtle parallax on hero glows
+window.addEventListener('mousemove', e => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 20;
+  const y = (e.clientY / window.innerHeight - 0.5) * 15;
+  gsap.to('.hist-hero-bg', { x: x * 0.3, y: y * 0.3, duration: 2, ease: 'power1.out' });
+});
+
+// Horizontal SplitText manifesto
+(function() {
+  const wrapper = document.querySelector('.horizontal-story');
+  const text = document.querySelector('.horizontal-story__text');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  if (!wrapper || !text || reduceMotion || isMobile) return;
+
+  function splitCharsFallback(el) {
+    const rawText = el.textContent.trim();
+    const words = rawText.split(/\s+/);
+    const chars = [];
+    el.setAttribute('aria-label', rawText);
+    el.textContent = '';
+
+    words.forEach((word, wordIndex) => {
+      const wordEl = document.createElement('span');
+      wordEl.className = 'story-word';
+      wordEl.setAttribute('aria-hidden', 'true');
+
+      Array.from(word).forEach(char => {
+        const charEl = document.createElement('span');
+        charEl.className = 'story-char';
+        charEl.textContent = char;
+        wordEl.appendChild(charEl);
+        chars.push(charEl);
+      });
+
+      el.appendChild(wordEl);
+      if (wordIndex < words.length - 1) el.append(' ');
+    });
+
+    return chars;
+  }
+
+  function initHorizontalStory() {
+    const split = typeof SplitText !== 'undefined'
+      ? SplitText.create(text, {
+          type: 'words, chars',
+          wordsClass: 'story-word',
+          charsClass: 'story-char',
+          tag: 'span',
+          aria: 'auto'
+        })
+      : { chars: splitCharsFallback(text) };
+
+    const startX = () => window.innerWidth * 0.12;
+    const endX = () => {
+      const travel = text.scrollWidth - window.innerWidth + window.innerWidth * 0.12;
+      return -Math.max(travel, window.innerWidth * 0.7);
+    };
+
+    const scrollTween = gsap.fromTo(text, {
+      x: startX
+    }, {
+      x: endX,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: wrapper,
+        pin: true,
+        scrub: true,
+        end: () => '+=' + Math.max(2400, text.scrollWidth * 0.85),
+        invalidateOnRefresh: true
+      }
+    });
+
+    split.chars.forEach(char => {
+      gsap.from(char, {
+        yPercent: 'random(-180, 180)',
+        rotation: 'random(-18, 18)',
+        opacity: 0.35,
+        ease: 'back.out(1.2)',
+        scrollTrigger: {
+          trigger: char,
+          containerAnimation: scrollTween,
+          start: 'left 100%',
+          end: 'left 35%',
+          scrub: 1
+        }
+      });
+    });
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(initHorizontalStory);
+  } else {
+    initHorizontalStory();
+  }
+})();
+
+// Custom cursor aura
+(function() {
+  const canUseCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const allowsMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  if (!canUseCursor || !allowsMotion) return;
+
+  const aura = document.createElement('div');
+  const dot = document.createElement('div');
+  aura.className = 'cursor-aura';
+  dot.className = 'cursor-dot';
+  document.body.append(aura, dot);
+  gsap.set([aura, dot], { xPercent: -50, yPercent: -50 });
+
+  const auraX = gsap.quickTo(aura, 'x', { duration: 0.45, ease: 'power3.out' });
+  const auraY = gsap.quickTo(aura, 'y', { duration: 0.45, ease: 'power3.out' });
+  const dotX = gsap.quickTo(dot, 'x', { duration: 0.12, ease: 'power2.out' });
+  const dotY = gsap.quickTo(dot, 'y', { duration: 0.12, ease: 'power2.out' });
+
+  window.addEventListener('pointermove', e => {
+    auraX(e.clientX);
+    auraY(e.clientY);
+    dotX(e.clientX);
+    dotY(e.clientY);
+    aura.classList.add('is-active');
+    dot.classList.add('is-active');
+  });
+
+  document.addEventListener('pointerleave', () => {
+    aura.classList.remove('is-active');
+    dot.classList.remove('is-active');
+  });
+
+  document.querySelectorAll('a, button, .tl-card, .tl-item').forEach(el => {
+    el.addEventListener('pointerenter', () => {
+      aura.classList.add('is-hovering');
+      gsap.to(aura, { scale: 1.85, duration: 0.22, ease: 'power2.out' });
+      gsap.to(dot, { scale: 0.6, duration: 0.18, ease: 'power2.out' });
+    });
+    el.addEventListener('pointerleave', () => {
+      aura.classList.remove('is-hovering');
+      gsap.to(aura, { scale: 1, duration: 0.28, ease: 'power2.out' });
+      gsap.to(dot, { scale: 1, duration: 0.18, ease: 'power2.out' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

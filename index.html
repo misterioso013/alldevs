@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AllDevs — Desenvolvimento Web, Mobile e Automações | Rosiel Victor</title>
+<meta name="description" content="Desenvolvedor full stack sênior disponível para freelas. Sites, apps, bots e MVPs entregues rápido. Engenheiro de software, fundador do ForjaDev.">
+<meta property="og:title" content="AllDevs — Desenvolvimento Web, Mobile e Automações | Rosiel Victor">
+<meta property="og:description" content="Desenvolvedor full stack sênior disponível para freelas. Sites, apps, bots e MVPs entregues rápido.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://all.dev.br/">
+<meta property="og:image" content="https://all.dev.br/assets/images/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AllDevs — Desenvolvimento Web, Mobile e Automações | Rosiel Victor">
+<meta name="twitter:description" content="Desenvolvedor full stack sênior disponível para freelas. Sites, apps, bots e MVPs entregues rápido.">
+<meta name="twitter:image" content="https://all.dev.br/assets/images/og-image.png">
+<link rel="canonical" href="https://all.dev.br/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["Person", "LocalBusiness"],
+  "name": "Rosiel Victor",
+  "alternateName": "AllDevs",
+  "url": "https://all.dev.br",
+  "email": "contato@all.dev.br",
+  "jobTitle": "Desenvolvedor Full Stack Freelancer",
+  "worksFor": {"@type": "Organization", "name": "Consultoria global de tecnologia"},
+  "description": "Desenvolvedor full stack sênior, fundador do ForjaDev. Especialista em React, Next.js, Node.js, React Native.",
+  "address": {"@type": "PostalAddress", "addressCountry": "BR"},
+  "sameAs": [
+    "https://linkedin.com/in/rosielvictor",
+    "https://github.com/misterioso013"
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Serviços de Desenvolvimento",
+    "itemListElement": [
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Criação de Site Institucional", "url": "https://all.dev.br/servicos/criacao-de-sites-institucionais/"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Landing Page de Alta Conversão", "url": "https://all.dev.br/servicos/landing-page-conversao/"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Bot para WhatsApp, Discord e Telegram", "url": "https://all.dev.br/servicos/bots-whatsapp-automacao/"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Aplicativo Mobile iOS e Android", "url": "https://all.dev.br/servicos/aplicativo-mobile-react-native/"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Desenvolvimento de MVP para Startups", "url": "https://all.dev.br/servicos/desenvolvimento-mvp-startups/"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Automações e Integrações de API", "url": "https://all.dev.br/servicos/automacoes-integracoes-api/"}}
+    ]
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#" class="nav-logo">all<span>.</span>dev</a>
+  <ul class="nav-links">
+    <li><a href="#services">Serviços</a></li>
+    <li><a href="#cases">Projetos</a></li>
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#contato" class="nav-cta">Solicitar orçamento</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow-purple"></div>
+  <div class="hero-glow-orange"></div>
+
+  <div class="hero-badge" id="hero-badge">
+    <span class="dot"></span>
+    Engenheiro sênior em consultoria global &nbsp;·&nbsp; Disponível para freelas
+  </div>
+
+  <h1 class="hero-headline" id="hero-headline">
+    Transformo ideias<br>em produto. <em>Rápido.</em>
+  </h1>
+
+  <p class="hero-sub" id="hero-sub">
+    Desenvolvimento web, mobile e automações para quem não tem tempo a perder.
+  </p>
+
+  <div class="hero-ctas" id="hero-ctas">
+    <a href="https://wa.me/55SEUNUMERO?text=Ol%C3%A1%2C+vim+pelo+site+all.dev.br+e+gostaria+de+solicitar+um+or%C3%A7amento."
+       target="_blank" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Solicitar orçamento
+    </a>
+    <a href="#cases" class="btn-ghost">
+      Ver projetos
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- COUNTERS -->
+<div id="counters">
+  <div class="counter-item reveal">
+    <span class="counter-num"><span class="count" data-target="30">0</span><span class="accent">+</span></span>
+    <span class="counter-label">Projetos entregues</span>
+  </div>
+  <div class="counter-item reveal">
+    <span class="counter-num"><span class="count" data-target="8">0</span><span class="accent">+</span></span>
+    <span class="counter-label">Anos de experiência</span>
+  </div>
+  <div class="counter-item reveal">
+    <span class="counter-num"><span class="count" data-target="15">0</span><span class="accent">+</span></span>
+    <span class="counter-label">Tecnologias dominadas</span>
+  </div>
+  <div class="counter-item reveal">
+    <span class="counter-num"><span class="count" data-target="100">0</span><span class="accent">%</span></span>
+    <span class="counter-label">Projetos entregues no prazo</span>
+  </div>
+</div>
+
+<!-- MARQUEE 1: entre counters e services -->
+<div class="marquee-strip">
+  <div class="marquee-track dir-left">
+    <div class="marquee-inner">
+      <div class="marquee-item">DESENVOLVIMENTO WEB <span></span></div><div class="marquee-item">REACT NATIVE <span></span></div><div class="marquee-item">BOTS <span></span></div><div class="marquee-item">MVP <span></span></div><div class="marquee-item">AUTOMAÇÕES <span></span></div><div class="marquee-item">FULL STACK <span></span></div>
+    </div>
+    <div class="marquee-inner" aria-hidden="true">
+      <div class="marquee-item">DESENVOLVIMENTO WEB <span></span></div><div class="marquee-item">REACT NATIVE <span></span></div><div class="marquee-item">BOTS <span></span></div><div class="marquee-item">MVP <span></span></div><div class="marquee-item">AUTOMAÇÕES <span></span></div><div class="marquee-item">FULL STACK <span></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-header reveal">
+    <div class="section-tag">Serviços</div>
+    <h2 class="section-title">O que eu construo</h2>
+    <p class="section-sub">Preços visíveis porque respeito o seu tempo.</p>
+  </div>
+  <div class="services-grid">
+    <a href="/servicos/criacao-de-sites-institucionais/" class="service-card reveal" style="transition-delay: 0.05s; text-decoration:none; display:block">
+      <div class="service-icon">🖥</div>
+      <div class="service-title">Site Institucional</div>
+      <div class="service-price">a partir de R$ 800</div>
+      <div class="service-desc">Entrega em 7 dias. Design moderno, responsivo, SEO otimizado. Hospedagem inclusa no plano mensal.</div>
+      <div class="service-link">Saiba mais →</div>
+    </a>
+    <a href="/servicos/landing-page-conversao/" class="service-card reveal" style="transition-delay: 0.10s; text-decoration:none; display:block">
+      <div class="service-badge">Popular</div>
+      <div class="service-icon">⚡</div>
+      <div class="service-title">Landing Page</div>
+      <div class="service-price">a partir de R$ 600</div>
+      <div class="service-desc">Entrega em 3 dias. Focada em conversão, integração com WhatsApp e formulários.</div>
+      <div class="service-link">Saiba mais →</div>
+    </a>
+    <a href="/servicos/bots-whatsapp-automacao/" class="service-card reveal" style="transition-delay: 0.15s; text-decoration:none; display:block">
+      <div class="service-icon">🤖</div>
+      <div class="service-title">Bot para WhatsApp, Discord ou Telegram</div>
+      <div class="service-price">a partir de R$ 500</div>
+      <div class="service-desc">Automações, atendimento, tickets e comandos customizados para o seu negócio.</div>
+      <div class="service-link">Saiba mais →</div>
+    </a>
+    <a href="/servicos/aplicativo-mobile-react-native/" class="service-card reveal" style="transition-delay: 0.20s; text-decoration:none; display:block">
+      <div class="service-icon">📱</div>
+      <div class="service-title">App Mobile (React Native)</div>
+      <div class="service-price">a partir de R$ 2.500</div>
+      <div class="service-desc">iOS e Android. MVP funcional com autenticação e backend. Do zero ao app store.</div>
+      <div class="service-link">Saiba mais →</div>
+    </a>
+    <a href="/servicos/desenvolvimento-mvp-startups/" class="service-card featured reveal" style="transition-delay: 0.25s; text-decoration:none; display:block">
+      <div class="service-badge">Sob consulta</div>
+      <div class="service-icon">🚀</div>
+      <div class="service-title">MVP Web</div>
+      <div class="service-price">orçamento sob consulta</div>
+      <div class="service-desc">Next.js + backend robusto. Do zero ao ar em semanas. Para startups e produtos sérios.</div>
+      <div class="service-link">Saiba mais →</div>
+    </a>
+    <a href="/servicos/automacoes-integracoes-api/" class="service-card reveal" style="transition-delay: 0.30s; text-decoration:none; display:block">
+      <div class="service-icon">🔗</div>
+      <div class="service-title">Automações e Integrações</div>
+      <div class="service-price">a partir de R$ 400</div>
+      <div class="service-desc">APIs, webhooks, scripts, bots e RPA. Conecte seus sistemas e economize horas.</div>
+      <div class="service-link">Saiba mais →</div>
+    </a>
+  </div>
+</section>
+
+<!-- MARQUEE 1: entre counters e services (já está antes de services, veja abaixo) -->
+
+<!-- CASES (pinned scroll + distortion) -->
+<section id="cases">
+  <div id="cases-header" class="reveal">
+    <div class="section-tag">Projetos</div>
+    <h2 class="section-title">O que já construí</h2>
+    <p class="section-sub">Produtos reais, com impacto real.</p>
+  </div>
+  <div id="cases-pin-wrapper">
+    <div id="cases-pin">
+
+      <!-- slide 0: ForjaDev -->
+      <div class="case-slide" data-slide="0">
+        <div class="case-slide-visual">
+          <div class="case-slide-bg" style="background:linear-gradient(135deg,#1a0a35,#0d0d1a)">
+            ⚒
+            <div class="case-slide-bg-label">escola de programação</div>
+          </div>
+        </div>
+        <div class="case-slide-info">
+          <div class="case-slide-num">01 / 04</div>
+          <div class="case-slide-tags">
+            <span class="case-tag tag-purple">Next.js</span>
+            <span class="case-tag tag-orange">Discord Bot</span>
+            <span class="case-tag tag-blue">Gamificação</span>
+          </div>
+          <div class="case-slide-name">ForjaDev</div>
+          <div class="case-slide-desc">Escola de programação 1-on-1 com plataforma própria, gamificação, Discord bot integrado e sistema de assinaturas.</div>
+        </div>
+      </div>
+
+      <!-- slide 1: AllDevs -->
+      <div class="case-slide" data-slide="1">
+        <div class="case-slide-visual">
+          <div class="case-slide-bg" style="background:linear-gradient(135deg,#0a1a35,#0d0d1a)">
+            ✦
+            <div class="case-slide-bg-label">plataforma de desenvolvimento</div>
+          </div>
+        </div>
+        <div class="case-slide-info">
+          <div class="case-slide-num">02 / 04</div>
+          <div class="case-slide-tags">
+            <span class="case-tag tag-purple">IA Generativa</span>
+            <span class="case-tag tag-orange">AI SDK</span>
+            <span class="case-tag tag-blue">Full Stack</span>
+          </div>
+          <div class="case-slide-name">AllDevs Platform</div>
+          <div class="case-slide-desc">Plataforma com projetos de IA generativa. O trabalho que abriu portas em uma consultoria global de tecnologia.</div>
+        </div>
+      </div>
+
+      <!-- slide 2: Calibração -->
+      <div class="case-slide" data-slide="2">
+        <div class="case-slide-visual">
+          <div class="case-slide-bg" style="background:linear-gradient(135deg,#1a1a0a,#0d0d1a)">
+            ⏱
+            <div class="case-slide-bg-label">site institucional</div>
+          </div>
+        </div>
+        <div class="case-slide-info">
+          <div class="case-slide-num">03 / 04</div>
+          <div class="case-slide-tags">
+            <span class="case-tag tag-orange">Vite</span>
+            <span class="case-tag tag-blue">Tailwind</span>
+            <span class="case-tag tag-purple">IA-assisted</span>
+          </div>
+          <div class="case-slide-name">Site Institucional</div>
+          <div class="case-slide-desc">Entregue em 2 horas usando IA + Vite + Tailwind. Prova de que velocidade e qualidade não são opostos.</div>
+        </div>
+      </div>
+
+      <!-- slide 3: SendAny + Fakly -->
+      <div class="case-slide" data-slide="3">
+        <div class="case-slide-visual">
+          <div class="case-slide-bg" style="background:linear-gradient(135deg,#0a1a1a,#0d0d1a)">
+            📤
+            <div class="case-slide-bg-label">plataforma de compartilhamento</div>
+          </div>
+        </div>
+        <div class="case-slide-info">
+          <div class="case-slide-num">04 / 04</div>
+          <div class="case-slide-tags">
+            <span class="case-tag tag-blue">SaaS</span>
+            <span class="case-tag tag-purple">Node.js</span>
+            <span class="case-tag tag-orange">React</span>
+          </div>
+          <div class="case-slide-name">SendAny + Fakly</div>
+          <div class="case-slide-desc">SendAny une Gist, Pastebin e Drive em um só lugar. Fakly gera FAQs elegantes — ferramentas para devs.</div>
+        </div>
+      </div>
+
+      <!-- progress dots -->
+      <div class="cases-progress" id="cases-progress">
+        <div class="cases-progress-dot active"></div>
+        <div class="cases-progress-dot"></div>
+        <div class="cases-progress-dot"></div>
+        <div class="cases-progress-dot"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2: entre projetos e stack -->
+<div class="marquee-strip">
+  <div class="marquee-track dir-right">
+    <div class="marquee-inner">
+      <div class="marquee-item">REACT <span></span></div><div class="marquee-item">NEXT.JS <span></span></div><div class="marquee-item">TYPESCRIPT <span></span></div><div class="marquee-item">NODE.JS <span></span></div><div class="marquee-item">FASTIFY <span></span></div><div class="marquee-item">PYTHON <span></span></div><div class="marquee-item">AWS LAMBDA <span></span></div><div class="marquee-item">GSAP <span></span></div>
+    </div>
+    <div class="marquee-inner" aria-hidden="true">
+      <div class="marquee-item">REACT <span></span></div><div class="marquee-item">NEXT.JS <span></span></div><div class="marquee-item">TYPESCRIPT <span></span></div><div class="marquee-item">NODE.JS <span></span></div><div class="marquee-item">FASTIFY <span></span></div><div class="marquee-item">PYTHON <span></span></div><div class="marquee-item">AWS LAMBDA <span></span></div><div class="marquee-item">GSAP <span></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- STACK -->
+<section id="stack">
+  <div class="section-header reveal">
+    <div class="section-tag">Stack</div>
+    <h2 class="section-title">Tecnologias</h2>
+    <p class="section-sub">As ferramentas do ofício — dominadas de verdade.</p>
+  </div>
+  <div class="stack-grid">
+    <div class="stack-pill reveal"><span class="dot" style="background:#61dafb"></span>React</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#000;border:1px solid #444"></span>Next.js</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#61dafb"></span>React Native</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#3178c6"></span>TypeScript</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#68a063"></span>Node.js</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#e8d44d"></span>Python</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#336791"></span>PostgreSQL</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#ff9900"></span>AWS Lambda</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#38bdf8"></span>Tailwind CSS</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#fff"></span>Shadcn/ui</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#88ce02"></span>GSAP</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#000;border:1px solid #444"></span>AI SDK Vercel</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#7c3aed"></span>Better Auth</div>
+    <div class="stack-pill reveal"><span class="dot" style="background:#f97316"></span>Fastify</div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="sobre-inner">
+    <div class="reveal-left">
+      <div class="sobre-label">Origem</div>
+      <h2 class="sobre-title">Uma história fora do roteiro</h2>
+      <p class="sobre-text">
+        "Comecei a programar aos 16 anos num celular Android, no Termux, sem computador. Hoje sou engenheiro de software sênior em uma consultoria global de tecnologia e fundador do ForjaDev."
+      </p>
+      <a href="historia.html" class="btn-ghost" style="display:inline-flex">
+        Conhecer a história completa
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="sobre-visual reveal-right">
+      <div class="sobre-card">
+        <div class="sobre-timeline">
+          <div class="sobre-tl-item">
+            <span class="sobre-tl-year">2016</span>
+            <span class="sobre-tl-text">Primeiro código num celular Android com Termux</span>
+          </div>
+          <div class="sobre-tl-item">
+            <span class="sobre-tl-year">2018</span>
+            <span class="sobre-tl-text">Primeiros freelas como menor de idade — Caio Guerras cuidava do financeiro</span>
+          </div>
+          <div class="sobre-tl-item">
+            <span class="sobre-tl-year">2021</span>
+            <span class="sobre-tl-text">Fundação da AllDevs com projetos de IA generativa</span>
+          </div>
+          <div class="sobre-tl-item">
+            <span class="sobre-tl-year">2023</span>
+            <span class="sobre-tl-text">Aprovado como engenheiro de software sênior em uma consultoria global de tecnologia</span>
+          </div>
+          <div class="sobre-tl-item">
+            <span class="sobre-tl-year">2024</span>
+            <span class="sobre-tl-text">Fundação do ForjaDev — escola de programação 1-on-1</span>
+          </div>
+          <div class="sobre-tl-item">
+            <span class="sobre-tl-year">Hoje</span>
+            <span class="sobre-tl-text">Construindo o futuro, um projeto de cada vez</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section id="depoimentos">
+  <div class="section-header reveal">
+    <div class="section-tag">Depoimentos</div>
+    <h2 class="section-title">O que dizem</h2>
+  </div>
+  <div class="depo-grid">
+    <div class="depo-card reveal">
+      <div class="depo-icon">💬</div>
+      <div class="depo-soon">Em breve</div>
+    </div>
+    <div class="depo-card reveal">
+      <div class="depo-icon">💬</div>
+      <div class="depo-soon">Em breve</div>
+    </div>
+    <div class="depo-card reveal">
+      <div class="depo-icon">💬</div>
+      <div class="depo-soon">Em breve</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="contact-inner">
+    <div class="reveal-left">
+      <div class="section-tag" style="margin-bottom:12px">Contato</div>
+      <h2 class="contact-info" style="font-family:var(--font-display);font-size:2.2rem;font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:16px">Vamos construir<br>algo juntos?</h2>
+      <p style="font-size:0.95rem;color:var(--text2);line-height:1.65;margin-bottom:32px;font-weight:300">Resposta em até 24h úteis. Sem enrolação — se o projeto faz sentido, a gente começa rápido.</p>
+      <div class="contact-meta">
+        <div class="contact-meta-item">
+          <span class="icon">✉</span>
+          <a href="mailto:contato@all.dev.br" style="color:var(--text2);text-decoration:none">contato@all.dev.br</a>
+        </div>
+        <div class="contact-meta-item">
+          <span class="icon">💬</span>
+          <span>WhatsApp — resposta rápida</span>
+        </div>
+        <div class="contact-meta-item">
+          <span class="icon">🕐</span>
+          <span>Resposta em até 24h úteis</span>
+        </div>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <form class="contact-form" id="contact-form">
+        <div class="form-row">
+          <div>
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" placeholder="Seu nome" required="">
+          </div>
+          <div>
+            <label for="empresa">Empresa</label>
+            <input type="text" id="empresa" placeholder="Nome da empresa (opcional)">
+          </div>
+        </div>
+        <div>
+          <label for="tipo">Tipo de projeto</label>
+          <select id="tipo">
+            <option value="">Selecione...</option>
+            <option>Site Institucional</option>
+            <option>Landing Page</option>
+            <option>Bot para WhatsApp / Discord / Telegram</option>
+            <option>App Mobile</option>
+            <option>MVP Web</option>
+            <option>Automações e Integrações</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div>
+          <label for="orcamento">Faixa de orçamento</label>
+          <select id="orcamento">
+            <option value="">Selecione...</option>
+            <option>Até R$ 1.000</option>
+            <option>R$ 1.000 – R$ 3.000</option>
+            <option>R$ 3.000 – R$ 8.000</option>
+            <option>Acima de R$ 8.000</option>
+            <option>A definir</option>
+          </select>
+        </div>
+        <div>
+          <label for="mensagem">Mensagem</label>
+          <textarea id="mensagem" placeholder="Conte um pouco sobre o projeto..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Enviar pelo WhatsApp
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand-block">
+      <div class="footer-logo">all<span>.</span>dev — Rosiel Victor</div>
+      <p class="footer-brand-desc">Desenvolvimento web, mobile e automações para quem não tem tempo a perder.</p>
+    </div>
+    <div class="footer-nav-block">
+      <h4>Serviços</h4>
+      <ul>
+        <li><a href="/servicos/criacao-de-sites-institucionais/">Site Institucional</a></li>
+        <li><a href="/servicos/landing-page-conversao/">Landing Page</a></li>
+        <li><a href="/servicos/bots-whatsapp-automacao/">Bots WhatsApp / Discord</a></li>
+        <li><a href="/servicos/aplicativo-mobile-react-native/">App Mobile</a></li>
+        <li><a href="/servicos/desenvolvimento-mvp-startups/">MVP para Startups</a></li>
+        <li><a href="/servicos/automacoes-integracoes-api/">Automações e APIs</a></li>
+      </ul>
+    </div>
+    <div class="footer-nav-block">
+      <h4>Site</h4>
+      <ul>
+        <li><a href="/#sobre">Sobre</a></li>
+        <li><a href="/#cases">Projetos</a></li>
+        <li><a href="/#stack">Stack</a></li>
+        <li><a href="/historia.html">História</a></li>
+        <li><a href="/#contato">Contato</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-copy">© 2026 AllDevs. Todos os direitos reservados.</div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/55SEUNUMERO?text=Ol%C3%A1%2C+vim+pelo+site+all.dev.br+e+gostaria+de+solicitar+um+or%C3%A7amento."
+   target="_blank" class="wa-float" aria-label="WhatsApp">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  <span class="wa-tooltip">Solicitar orçamento</span>
+</a>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ── NAV SCROLL ──
+window.addEventListener('scroll', () => {
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ── HERO ENTRANCE ──
+gsap.timeline({ defaults: { ease: 'power3.out' } })
+  .from('#hero-badge', { y: 20, opacity: 0, duration: 0.7, delay: 0.3 })
+  .from('#hero-headline', { y: 40, opacity: 0, duration: 0.9 }, '-=0.4')
+  .from('#hero-sub', { y: 30, opacity: 0, duration: 0.7 }, '-=0.5')
+  .from('#hero-ctas', { y: 20, opacity: 0, duration: 0.6 }, '-=0.4');
+
+// ── REVEAL ON SCROLL ──
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.fromTo(el,
+    { y: 40, opacity: 0 },
+    {
+      y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+    }
+  );
+});
+
+gsap.utils.toArray('.reveal-left').forEach(el => {
+  gsap.fromTo(el,
+    { x: -40, opacity: 0 },
+    {
+      x: 0, opacity: 1, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+    }
+  );
+});
+
+gsap.utils.toArray('.reveal-right').forEach(el => {
+  gsap.fromTo(el,
+    { x: 40, opacity: 0 },
+    {
+      x: 0, opacity: 1, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+    }
+  );
+});
+
+// ── ANIMATED COUNTERS ──
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target);
+  const dur = 1800;
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 4);
+    el.textContent = Math.round(ease * target);
+    if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(tick);
+}
+
+ScrollTrigger.create({
+  trigger: '#counters',
+  start: 'top 80%',
+  once: true,
+  onEnter: () => {
+    document.querySelectorAll('.count').forEach(animateCounter);
+  }
+});
+
+// ── STACK STAGGER ──
+gsap.utils.toArray('.stack-pill').forEach((pill, i) => {
+  gsap.fromTo(pill,
+    { scale: 0.85, opacity: 0 },
+    {
+      scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.5)',
+      delay: i * 0.04,
+      scrollTrigger: { trigger: '#stack', start: 'top 80%', toggleActions: 'play none none none' }
+    }
+  );
+});
+
+// ── PARALLAX HERO GLOWS ──
+window.addEventListener('mousemove', e => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 30;
+  const y = (e.clientY / window.innerHeight - 0.5) * 20;
+  gsap.to('.hero-glow-purple', { x: x * -0.5, y: y * -0.5, duration: 1.5, ease: 'power1.out' });
+  gsap.to('.hero-glow-orange', { x: x * 0.8, y: y * 0.8, duration: 1.5, ease: 'power1.out' });
+});
+
+// ── CUSTOM CURSOR AURA ──
+(function() {
+  const canUseCursor = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const allowsMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  if (!canUseCursor || !allowsMotion) return;
+
+  const aura = document.createElement('div');
+  const dot = document.createElement('div');
+  aura.className = 'cursor-aura';
+  dot.className = 'cursor-dot';
+  document.body.append(aura, dot);
+  gsap.set([aura, dot], { xPercent: -50, yPercent: -50 });
+
+  const auraX = gsap.quickTo(aura, 'x', { duration: 0.45, ease: 'power3.out' });
+  const auraY = gsap.quickTo(aura, 'y', { duration: 0.45, ease: 'power3.out' });
+  const dotX = gsap.quickTo(dot, 'x', { duration: 0.12, ease: 'power2.out' });
+  const dotY = gsap.quickTo(dot, 'y', { duration: 0.12, ease: 'power2.out' });
+
+  window.addEventListener('pointermove', e => {
+    auraX(e.clientX);
+    auraY(e.clientY);
+    dotX(e.clientX);
+    dotY(e.clientY);
+    aura.classList.add('is-active');
+    dot.classList.add('is-active');
+  });
+
+  document.addEventListener('pointerleave', () => {
+    aura.classList.remove('is-active');
+    dot.classList.remove('is-active');
+  });
+
+  document.querySelectorAll('a, button, input, textarea, select, .service-card, .stack-pill, .case-slide').forEach(el => {
+    el.addEventListener('pointerenter', () => {
+      aura.classList.add('is-hovering');
+      gsap.to(aura, { scale: 1.85, duration: 0.22, ease: 'power2.out' });
+      gsap.to(dot, { scale: 0.6, duration: 0.18, ease: 'power2.out' });
+    });
+    el.addEventListener('pointerleave', () => {
+      aura.classList.remove('is-hovering');
+      gsap.to(aura, { scale: 1, duration: 0.28, ease: 'power2.out' });
+      gsap.to(dot, { scale: 1, duration: 0.18, ease: 'power2.out' });
+    });
+  });
+})();
+
+// ── FORM SUBMIT ──
+document.getElementById('contact-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const nome = document.getElementById('nome').value;
+  const empresa = document.getElementById('empresa').value;
+  const tipo = document.getElementById('tipo').value;
+  const orcamento = document.getElementById('orcamento').value;
+  const mensagem = document.getElementById('mensagem').value;
+  const text = `Olá Rosiel! Vim pelo site all.dev.br.\n\n*Nome:* ${nome}\n*Empresa:* ${empresa || 'Não informado'}\n*Projeto:* ${tipo}\n*Orçamento:* ${orcamento}\n\n*Mensagem:*\n${mensagem}`;
+  const url = `https://wa.me/55SEUNUMERO?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+});
+
+// ── PINNED CASES WITH DISTORTION ──
+(function() {
+  const slides = document.querySelectorAll('.case-slide');
+  const dots   = document.querySelectorAll('.cases-progress-dot');
+  const N      = slides.length;
+  const wrapper = document.getElementById('cases-pin-wrapper');
+
+  // Each slide needs ~120vh of scroll travel; set wrapper height accordingly
+  const PER_SLIDE = window.innerHeight * 1.2;
+  wrapper.style.height = (N * PER_SLIDE) + 'px';
+
+  // Initially hide all slides except first
+  slides.forEach((s, i) => {
+    if (i === 0) {
+      gsap.set(s, { clipPath: 'inset(0% 0% 0% 0%)', skewY: 0, scale: 1, autoAlpha: 1, zIndex: i });
+    } else {
+      gsap.set(s, { clipPath: 'inset(100% 0% 0% 0%)', skewY: 0, scale: 1, autoAlpha: 1, zIndex: i });
+    }
+  });
+
+  let currentSlide = 0;
+
+  function setActive(idx) {
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    currentSlide = idx;
+  }
+
+  // Create one ScrollTrigger per transition between slides
+  for (let i = 0; i < N - 1; i++) {
+    const outgoing = slides[i];
+    const incoming = slides[i + 1];
+    const startOffset = i * PER_SLIDE;
+    const endOffset   = startOffset + PER_SLIDE;
+
+    ScrollTrigger.create({
+      trigger: wrapper,
+      start: () => `top+=${startOffset} top`,
+      end:   () => `top+=${endOffset} top`,
+      scrub: 1.2,
+      onUpdate(self) {
+        const p = self.progress; // 0 → 1
+
+        // Outgoing: clip from bottom, slight skew + scale
+        const skewOut  = p * 6;        // 0 → 6deg
+        const clipOut  = p * 100;      // clip bottom 0→100%
+        const scaleOut = 1 - p * 0.06; // scale 1 → 0.94
+        gsap.set(outgoing, {
+          clipPath: `inset(0% 0% ${clipOut}% 0%)`,
+          skewY: skewOut,
+          scale: scaleOut,
+          transformOrigin: 'center bottom',
+          zIndex: N - i
+        });
+
+        // Incoming: reveal from bottom, reverse skew
+        const clipIn  = (1 - p) * 100; // 100 → 0%
+        const skewIn  = (1 - p) * 4;   // 4 → 0deg
+        gsap.set(incoming, {
+          clipPath: `inset(${clipIn}% 0% 0% 0%)`,
+          skewY: -skewIn,
+          scale: 1,
+          transformOrigin: 'center top',
+          zIndex: N - i + 1
+        });
+
+        // Update dot indicator
+        if (p < 0.5 && currentSlide !== i)     setActive(i);
+        if (p >= 0.5 && currentSlide !== i + 1) setActive(i + 1);
+      },
+      onLeaveBack() { setActive(i); },
+      onEnter()     { setActive(i); }
+    });
+  }
+})();
+
+// ── HERO PARTICLE DOTS (canvas) ──
+(function() {
+  const hero = document.getElementById('hero');
+  const canvas = document.createElement('canvas');
+  canvas.className = 'hero-particles';
+  hero.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  const dots = [];
+  let W = 0, H = 0, dpr = 1;
+  function resize() {
+    const rect = hero.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.max(1, Math.round(rect.width));
+    H = Math.max(1, Math.round(rect.height));
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 60; i++) {
+    dots.push({
+      x: Math.random() * 1920, y: Math.random() * 1080,
+      r: Math.random() * 1.5 + 0.5,
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: (Math.random() - 0.5) * 0.2,
+      a: Math.random() * 0.5 + 0.1
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    dots.forEach(d => {
+      d.x += d.vx; d.y += d.vy;
+      if (d.x < 0) d.x = W;
+      if (d.x > W) d.x = 0;
+      if (d.y < 0) d.y = H;
+      if (d.y > H) d.y = 0;
+      ctx.beginPath();
+      ctx.arc(d.x * W / 1920, d.y * H / 1080, d.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(124,58,237,${d.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
