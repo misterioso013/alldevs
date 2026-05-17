@@ -22,7 +22,7 @@
     --font-body: 'DM Sans', sans-serif;
   }
 
-  html { scroll-behavior: smooth; font-size: 16px; overflow-x: clip; }
+  html { scroll-behavior: smooth; font-size: 16px; }
 
   body {
     background: var(--bg);
