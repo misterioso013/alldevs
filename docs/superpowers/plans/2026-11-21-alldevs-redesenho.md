@@ -80,7 +80,7 @@ abaixo é a da spec.
 
 ---
 
-### Tarefa 1: dados (carregar e validar)
+### Task 1: dados (carregar e validar)
 
 **Arquivos:** criar `fonte/alldevs/__init__.py`, `fonte/alldevs/dados.py`, `fonte/testes/__init__.py`,
 `fonte/testes/test_dados.py` e `fonte/testes/fixtures/minima/dados/*.json` (2 pessoas, 2 projetos, sendo 1 com
@@ -115,7 +115,7 @@ abaixo é a da spec.
 - [ ] **Passo 4:** rodar o mesmo comando. Esperado: `OK`.
 - [ ] **Passo 5:** commit `alldevs: dados e validação do gerador`.
 
-### Tarefa 2: moldes e migração do conteúdo atual
+### Task 2: moldes e migração do conteúdo atual
 
 **Arquivos:** criar `fonte/alldevs/modelos.py`, `fonte/testes/test_modelos.py`, `fonte/modelos/base.html`,
 `fonte/modelos/servico.html`, `fonte/modelos/historia.html` e `fonte/conteudo/servicos/<slug>.html` (6). Criar também
@@ -140,7 +140,7 @@ abaixo é a da spec.
 - [ ] **Passo 4:** rodar. Esperado: `OK`.
 - [ ] **Passo 5:** commit `alldevs: moldes e conteúdo atual migrado`.
 
-### Tarefa 3: contato com origem
+### Task 3: contato com origem
 
 **Arquivos:** criar `fonte/alldevs/contato.py` e `fonte/testes/test_contato.py`.
 
@@ -169,7 +169,7 @@ abaixo é a da spec.
 - [ ] **Passo 2:** rodar. Esperado: FAIL. **Passo 3:** implementar. **Passo 4:** rodar. Esperado: `OK`.
 - [ ] **Passo 5:** commit `alldevs: contato com código de origem`.
 
-### Tarefa 4: páginas e `gerar.py` (site regenerado com o visual atual)
+### Task 4: páginas e `gerar.py` (site regenerado com o visual atual)
 
 **Arquivos:** criar `fonte/alldevs/paginas.py`, `fonte/gerar.py` e `fonte/testes/test_paginas.py`. Regenerar
 `servicos/*/index.html` e `historia.html`. Nesta tarefa `index.html` ainda sai do molde atual: home migrada com o
@@ -207,7 +207,7 @@ contato novo.
   bloco de contato. Abrir no navegador com `python3 -m http.server -d .` e ver que o visual é o mesmo.
 - [ ] **Passo 6:** commit `alldevs: gerador escreve o site atual a partir dos dados`.
 
-### Tarefa 5: SEO e prévia
+### Task 5: SEO e prévia
 
 **Arquivos:** criar `fonte/alldevs/seo.py` e `fonte/testes/test_seo.py`; alterar `paginas.py` e `gerar.py`; regenerar
 `sitemap.xml`.
@@ -233,7 +233,7 @@ contato novo.
 - [ ] **Passo 2:** FAIL. **Passo 3:** implementar. **Passo 4:** `OK`.
 - [ ] **Passo 5:** commit `alldevs: JSON-LD, sitemap e prévia com noindex`.
 
-### Tarefa 6: determinismo, checagens e CI
+### Task 6: determinismo, checagens e CI
 
 **Arquivos:** criar `fonte/alldevs/checagens.py`, `fonte/checar.py`, `fonte/dados/proibidos.json`,
 `fonte/testes/test_checagens.py`, `fonte/testes/test_determinismo.py` e `.github/workflows/checar.yml`.
@@ -263,7 +263,7 @@ contato novo.
 - [ ] **Passo 2:** FAIL. **Passo 3:** implementar. **Passo 4:** `OK`, e `python3 fonte/checar.py` dá rc 0 no repo.
 - [ ] **Passo 5:** commit `alldevs: checagens e CI`.
 
-### Tarefa 7: conteúdo novo (pessoas, projetos, perfis e home)
+### Task 7: conteúdo novo (pessoas, projetos, perfis e home)
 
 **Arquivos:** criar `fonte/dados/pessoas.json` e `fonte/dados/projetos.json` (ProsUp, Fakly e SendAny do Rosiel; Heisuca do
 Caio; a Amott fica fora). Criar os moldes `fonte/modelos/{home,perfil,projetos,case,contato}.html` e o
@@ -302,7 +302,7 @@ Caio; a Amott fica fora). Criar os moldes `fonte/modelos/{home,perfil,projetos,c
 - [ ] **Passo 4:** `OK`; `python3 fonte/gerar.py && python3 fonte/checar.py` dá rc 0.
 - [ ] **Passo 5:** commit `alldevs: perfis, portfólio e home com os dois sócios`.
 
-### Tarefa 8: bancada
+### Task 8: bancada
 
 **Arquivos:** criar `bancada/package.json` (versões fixas, sem `^`) com `package-lock.json`, `bancada/rodar.mjs`,
 `bancada/LEIA.md` e `bancada/relatorios/.gitkeep`.
@@ -323,7 +323,7 @@ Caio; a Amott fica fora). Criar os moldes `fonte/modelos/{home,perfil,projetos,c
   (`relatorios/<data>-base/`). Falhas aqui são esperadas e anotadas, não corrigidas.
 - [ ] **Passo 2:** commit `alldevs: bancada (capturas, axe, sem JS, Lighthouse)`.
 
-### Tarefa 9: tokens, fontes e vendor
+### Task 9: tokens, fontes e vendor
 
 **Arquivos:** criar `css/tokens.css`, `assets/fontes/{fraunces,dm-sans,jetbrains-mono}-*.woff2` + `assets/fontes/OFL.txt`
 (vindos dos pacotes @fontsource com versão fixa, só os pesos usados e com o subconjunto latin), `js/vendor/gsap.min.js`,
@@ -341,7 +341,7 @@ Caio; a Amott fica fora). Criar os moldes `fonte/modelos/{home,perfil,projetos,c
 - [ ] **Passo 2:** FAIL. **Passo 3:** criar os arquivos e calcular os sha256 com `sha256sum`. **Passo 4:** `OK`.
 - [ ] **Passo 5:** commit `alldevs: tokens, fontes e bibliotecas com versão fixa`.
 
-### Tarefa 10: visual novo e imagens OG
+### Task 10: visual novo e imagens OG
 
 **Arquivos:** criar `css/site.css` e `js/site.js`; alterar os moldes para usar `tokens.css` + `site.css` + `site.js`.
 Os CSS antigos (`css/styles.css`, `css/servico.css`) e o `js/servico-gsap.js` vão para
@@ -368,7 +368,7 @@ Criar `fonte/modelos/og.html`, `bancada/og.mjs` e `assets/og/<slug>.png`.
 - [ ] **Passo 4:** gerar as OG; o aviso "OG faltando" some do `gerar.py`.
 - [ ] **Passo 5:** commit `alldevs: visual novo (tokens, grade, movimento) e imagens OG`.
 
-### Tarefa 11: hero inspetor
+### Task 11: hero inspetor
 
 **Arquivos:** criar `js/inspetor.js` (≤ 8 KB sem minificar), `fonte/dados/inspecao/{heisuca,prosup,fakly}.json`,
 `assets/inspetor/<slug>.webp` e `fonte/testes/test_inspetor.py`. Alterar `home.html`.
@@ -392,7 +392,7 @@ Criar `fonte/modelos/og.html`, `bancada/og.mjs` e `assets/og/<slug>.png`.
   Rosiel mandar a captura, e até lá o rodízio fica com 2 telas. **Passo 4:** `OK`, e a bancada mantém o LCP < 2500.
 - [ ] **Passo 5:** commit `alldevs: hero inspetor`.
 
-### Tarefa 12: paleta de comandos
+### Task 12: paleta de comandos
 
 **Arquivos:** criar `js/paleta.js` e `fonte/testes/test_paleta.py`. Alterar `paginas.py` (gera `assets/paleta.json`) e
 `base.html`.
@@ -414,7 +414,7 @@ Criar `fonte/modelos/og.html`, `bancada/og.mjs` e `assets/og/<slug>.png`.
   Esc devolve o foco".
 - [ ] **Passo 5:** commit `alldevs: paleta de comandos`.
 
-### Tarefa 13: fechamento e PR (sem push)
+### Task 13: fechamento e PR (sem push)
 
 - [ ] **Passo 1:** rodar tudo: o unittest, `python3 fonte/gerar.py && git diff --exit-code`, `python3 fonte/checar.py` e a
   bancada na prévia. O relatório fica em `bancada/relatorios/<data>/RELATORIO.md`.
