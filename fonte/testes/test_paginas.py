@@ -71,11 +71,13 @@ class TestGerar(Base):
             self.assertIn(f"%5Bsite%C2%B7servico%C2%B7{slug}%5D", txt)
             self.assertIn("https://wa.me/558189477459?text=", txt)
 
-    def test_historia_style_no_head(self):
-        txt = (self.saida / "historia.html").read_text(encoding="utf-8")
-        head, _, corpo = txt.partition("</head>")
-        self.assertIn("<style>", head)
-        self.assertNotIn("<style", corpo)
+    def test_sem_style_inline_nem_cdn(self):
+        for arq in self.saida.rglob("*.html"):
+            txt = arq.read_text(encoding="utf-8")
+            self.assertNotIn("<style", txt, arq)
+            self.assertNotIn(" style=", txt, arq)
+            for cdn in ("googleapis", "gstatic", "cdnjs", "jsdelivr", "unpkg"):
+                self.assertNotIn(cdn, txt, arq)
 
     def test_botoes_dentro_do_servico_cta(self):
         for slug in TITULOS:
@@ -87,9 +89,33 @@ class TestGerar(Base):
         fecho = hist[hist.index('class="closing-inner'):hist.index("</section>", hist.index('class="closing-inner'))]
         self.assertIn("https://wa.me/", fecho)
 
-    def test_fonte_com_italico_na_home_e_historia(self):
-        for nome in ("index.html", "historia.html"):
-            self.assertIn("0,9..40,500;1,9..40,300&display", (self.saida / nome).read_text(encoding="utf-8"))
+    def test_head_com_tokens_site_e_preload_so_do_titulo(self):
+        scripts = ["/js/vendor/gsap.min.js", "/js/vendor/ScrollTrigger.min.js", "/js/vendor/SplitText.min.js",
+                   "/js/vendor/lenis.min.js", "/js/site.js"]
+        for arq in self.saida.rglob("*.html"):
+            head = arq.read_text(encoding="utf-8").partition("</head>")[0]
+            self.assertLess(head.index('href="/css/tokens.css"'), head.index('href="/css/site.css"'), arq)
+            self.assertEqual(re.findall(r'<link rel="preload" href="([^"]+)"', head),
+                             ["/assets/fontes/fraunces-latin-600-normal.woff2"], arq)
+            achados = re.findall(r'<script src="([^"]+)"( defer)?></script>', head)
+            self.assertEqual([s for s, _ in achados], scripts, arq)
+            self.assertTrue(all(d for _, d in achados), arq)
+            self.assertNotIn('type="module"', head, arq)
+
+    def test_og_e_twitter_card_com_imagem_existente(self):
+        vistos = {}
+        for arq in sorted(self.saida.rglob("*.html")):
+            txt = arq.read_text(encoding="utf-8")
+            img = re.search(r'<meta property="og:image" content="https://all\.dev\.br/assets/og/([a-z0-9-]+)\.png">', txt)
+            self.assertIsNotNone(img, arq)
+            self.assertIn('<meta name="twitter:card" content="summary_large_image">', txt)
+            self.assertIn('<meta property="og:image:width" content="1200">', txt)
+            slug = img.group(1)
+            self.assertNotIn(slug, vistos, f"{arq} e {vistos.get(slug)} com a mesma imagem OG")
+            vistos[slug] = arq
+            self.assertTrue((REPO / "assets" / "og" / f"{slug}.png").is_file(), f"falta assets/og/{slug}.png")
+        self.assertEqual(vistos["site"].name, "index.html")
+        self.assertEqual(vistos["historia"].name, "historia.html")
 
     def test_home_com_origem_e_sem_numero_solto(self):
         txt = (self.saida / "index.html").read_text(encoding="utf-8")
@@ -125,7 +151,7 @@ class TestEscrever(Base):
     def test_previa_copia_estaticos_sem_cname(self):
         rc, _, err = rodar("--previa", "--raiz", str(REPO), "--saida", str(self.saida))
         self.assertEqual(rc, 0, err)
-        self.assertTrue((self.saida / "css" / "styles.css").is_file())
+        self.assertTrue((self.saida / "css" / "site.css").is_file())
         self.assertTrue((self.saida / "js").is_dir())
         self.assertTrue((self.saida / "assets").is_dir())
         self.assertTrue((self.saida / "icon.svg").is_file())

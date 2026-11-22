@@ -5,8 +5,8 @@ from pathlib import Path
 
 from . import dados as mod_dados
 
-# Arquivos ainda no visual antigo; a tarefa de limpeza esvazia esta tupla.
-EXCECOES_TEMPORARIAS = ("css/styles.css", "css/servico.css", "historia.html", "index.html", "js/servico-gsap.js")
+# Visual antigo removido na tarefa 10: nenhum arquivo tem passe livre para cor fora dos tokens.
+EXCECOES_TEMPORARIAS = ()
 
 IGNORAR = {".git", ".superpowers", ".github", "docs", "fonte", "bancada", "dist-previa", "inspecao"}
 EXTENSOES = {".css", ".js", ".html"}

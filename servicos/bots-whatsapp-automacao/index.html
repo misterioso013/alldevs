@@ -11,11 +11,22 @@
 <meta property="og:description" content="Crie um bot para WhatsApp, Discord ou Telegram com atendimento automático 24h. Automações, tickets e comandos customizados a partir de R$ 500.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://all.dev.br/servicos/bots-whatsapp-automacao/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap" rel="stylesheet">
+<meta property="og:image" content="https://all.dev.br/assets/og/bots-whatsapp-automacao.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bot para WhatsApp, Discord e Telegram | Automação de Atendimento 24h — AllDevs">
+<meta name="twitter:description" content="Crie um bot para WhatsApp, Discord ou Telegram com atendimento automático 24h. Automações, tickets e comandos customizados a partir de R$ 500.">
+<meta name="twitter:image" content="https://all.dev.br/assets/og/bots-whatsapp-automacao.png">
+<link rel="preload" href="/assets/fontes/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/site.css">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="stylesheet" href="/css/servico.css">
+<script src="/js/vendor/gsap.min.js" defer></script>
+<script src="/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="/js/vendor/SplitText.min.js" defer></script>
+<script src="/js/vendor/lenis.min.js" defer></script>
+<script src="/js/site.js" defer></script>
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Service", "description": "Crie um bot para WhatsApp, Discord ou Telegram com atendimento automático 24h. Automações, tickets e comandos customizados a partir de R$ 500.", "name": "Bots e atendimento", "provider": {"@id": "https://all.dev.br/#organizacao"}}]</script>
 </head>
 <body>
@@ -34,11 +45,12 @@
   <a href="#contato" class="nav-cta">Pedir orçamento</a>
 </header>
 
+<main>
 
 <div class="breadcrumb">
   <a href="/">Home</a>
   <span class="breadcrumb-sep">›</span>
-  <a href="/#services">Serviços</a>
+  <a href="/#servicos">Serviços</a>
   <span class="breadcrumb-sep">›</span>
   <span class="breadcrumb-current">Bots e atendimento</span>
 </div>
@@ -115,35 +127,35 @@
   <h2>Perguntas frequentes sobre bots de atendimento</h2>
   <div class="faq-section">
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         O bot para WhatsApp pode me banir?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Não, quando configurado corretamente usando APIs oficiais ou soluções como Baileys com número dedicado. Evite envios em massa sem opt-in. Você recebe orientação completa sobre boas práticas para operar sem riscos.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Posso ter múltiplos atendentes respondendo pelo bot?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Sim. O bot pode funcionar como triagem e repassar para atendentes humanos de forma inteligente, com histórico de conversa preservado. Cada atendente vê o contexto completo antes de assumir.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         O bot integra com meu CRM ou planilha?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Sim. Podemos integrar com Google Sheets, Notion, HubSpot, RD Station ou qualquer sistema que disponibilize uma API. Se o sistema tiver uma forma de se comunicar com o mundo externo, o bot consegue se conectar a ele.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Quem faz a manutenção após a entrega?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Oferecemos plano de manutenção mensal opcional para quem prefere ter suporte contínuo. O código é entregue e documentado para que sua equipe ou outro desenvolvedor possa manter e evoluir sem dependência.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Em quanto tempo o bot fica pronto?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
@@ -188,6 +200,7 @@
 </section>
 
 
+</main>
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
@@ -222,10 +235,6 @@
   </div>
 </footer>
 
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="/js/servico-gsap.js"></script>
 
 </body>
 </html>

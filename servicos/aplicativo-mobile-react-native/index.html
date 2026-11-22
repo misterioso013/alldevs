@@ -11,11 +11,22 @@
 <meta property="og:description" content="Crie um aplicativo mobile para iOS e Android com React Native. MVP funcional com autenticação e backend a partir de R$ 2.500. Do zero à App Store.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://all.dev.br/servicos/aplicativo-mobile-react-native/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap" rel="stylesheet">
+<meta property="og:image" content="https://all.dev.br/assets/og/aplicativo-mobile-react-native.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Desenvolvimento de Aplicativo Mobile iOS e Android | React Native — AllDevs">
+<meta name="twitter:description" content="Crie um aplicativo mobile para iOS e Android com React Native. MVP funcional com autenticação e backend a partir de R$ 2.500. Do zero à App Store.">
+<meta name="twitter:image" content="https://all.dev.br/assets/og/aplicativo-mobile-react-native.png">
+<link rel="preload" href="/assets/fontes/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/site.css">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="stylesheet" href="/css/servico.css">
+<script src="/js/vendor/gsap.min.js" defer></script>
+<script src="/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="/js/vendor/SplitText.min.js" defer></script>
+<script src="/js/vendor/lenis.min.js" defer></script>
+<script src="/js/site.js" defer></script>
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Service", "description": "Crie um aplicativo mobile para iOS e Android com React Native. MVP funcional com autenticação e backend a partir de R$ 2.500. Do zero à App Store.", "name": "Aplicativo mobile", "provider": {"@id": "https://all.dev.br/#organizacao"}}]</script>
 </head>
 <body>
@@ -34,11 +45,12 @@
   <a href="#contato" class="nav-cta">Pedir orçamento</a>
 </header>
 
+<main>
 
 <div class="breadcrumb">
   <a href="/">Home</a>
   <span class="breadcrumb-sep">›</span>
-  <a href="/#services">Serviços</a>
+  <a href="/#servicos">Serviços</a>
   <span class="breadcrumb-sep">›</span>
   <span class="breadcrumb-current">Aplicativo mobile</span>
 </div>
@@ -115,35 +127,35 @@
   <h2>Perguntas frequentes sobre o desenvolvimento mobile</h2>
   <div class="faq-section">
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         O app vai funcionar em iOS e Android?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Sim. React Native gera código nativo para ambas as plataformas a partir de uma única base de código, reduzindo custo e prazo comparado ao desenvolvimento nativo separado.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Vocês publicam o app na App Store e Google Play?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Sim. Auxiliamos em todo o processo de publicação, incluindo criação das contas de desenvolvedor, preparação dos assets e submissão para revisão das stores.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Quanto custa manter o app após o lançamento?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Manutenção e atualizações são cobradas separadamente por demanda ou em plano mensal. A estimativa é fornecida na proposta.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         O app terá área de login e cadastro?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Sim. A autenticação (login com e-mail, Google e Apple) é parte padrão dos projetos de MVP. Podemos usar Firebase Auth, Supabase ou Better Auth conforme a stack do projeto.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Em quanto tempo o app fica pronto?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
@@ -188,6 +200,7 @@
 </section>
 
 
+</main>
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
@@ -222,10 +235,6 @@
   </div>
 </footer>
 
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="/js/servico-gsap.js"></script>
 
 </body>
 </html>

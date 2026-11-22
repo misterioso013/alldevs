@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<!-- Molde da imagem OG (1200×630). Preenchido por bancada/og.mjs; cores e fontes só dos tokens. -->
+<link rel="stylesheet" href="$base/css/tokens.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background: var(--fundo);
+    color: var(--claro);
+    font-family: var(--fonte-texto);
+    background-image: linear-gradient(90deg, var(--grade) 1px, transparent 1px);
+    background-size: 100px 100%;
+    background-position: 0 0;
+  }
+  .moldura {
+    position: absolute;
+    inset: 56px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .topo, .base { display: flex; justify-content: space-between; align-items: baseline; }
+  .logo, .dominio, .tipo { font-family: var(--fonte-mono); font-weight: 400; }
+  .logo { font-size: 34px; }
+  .logo span { color: var(--suave); }
+  .tipo { font-size: 26px; color: var(--suave); }
+  h1 {
+    font-family: var(--fonte-titulo);
+    font-weight: 600;
+    font-size: $tamanho;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    max-width: 1000px;
+    background: var(--fundo);
+  }
+  .dominio { font-size: 24px; color: var(--suave); }
+  .acento { position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: $acento; }
+</style>
+</head>
+<body>
+  <div class="moldura">
+    <div class="topo"><span class="logo">all<span>.</span>dev</span><span class="tipo">// $tipo</span></div>
+    <h1>$titulo</h1>
+    <div class="base"><span class="dominio">all.dev.br</span></div>
+  </div>
+  <div class="acento"></div>
+</body>
+</html>

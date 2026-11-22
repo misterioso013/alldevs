@@ -18,17 +18,11 @@ HOME_DESCRICAO = (
 )
 PROJETOS_TITULO = "Projetos — AllDevs"
 PROJETOS_DESCRICAO = "Os projetos da AllDevs: sites, apps, bots e produtos próprios, de cada sócio."
-CSS_ESTILOS = Seguro('<link rel="stylesheet" href="/css/styles.css">')
 HISTORIA_TITULO = "A história — AllDevs"
 HISTORIA_DESCRICAO = (
     "Como um adolescente que programava no celular virou engenheiro sênior, mentor de desenvolvedores "
     "e fundador do ForjaDev."
 )
-FONTES = (
-    "https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800"
-    "&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap"
-)
-FONTES_ITALICO = FONTES.replace("0,9..40,500&", "0,9..40,500;1,9..40,300&")
 MARCADOR_CONTATO = "<!--contato-->"
 
 
@@ -43,13 +37,22 @@ class Pagina:
     indexar: bool = True
 
 
-def _documento(caminho, titulo, descricao, css, corpo, fontes=FONTES, json_ld=(), previa=False) -> Seguro:
+def og_slug(caminho: str) -> str:
+    """Nome da imagem OG (assets/og/<slug>.png) de cada página: a home é `site`, o resto é a última pasta."""
+    if caminho == "index.html":
+        return "site"
+    if caminho.endswith("/index.html"):
+        return caminho[: -len("/index.html")].rsplit("/", 1)[-1]
+    return caminho.rsplit("/", 1)[-1].removesuffix(".html")
+
+
+def _documento(caminho, titulo, descricao, corpo, json_ld=(), previa=False) -> Seguro:
     if json_ld:
         bloco = f'\n<script type="application/ld+json">{seo.serializar(json_ld)}</script>'
     else:
         bloco = ""
     return render("base", titulo=titulo, descricao=descricao, canonical=seo.url_publica(caminho),
-                  fontes=Seguro(fontes), css=css, corpo=corpo, json_ld=Seguro(bloco),
+                  og_imagem=f"{seo.SITE}/assets/og/{og_slug(caminho)}.png", corpo=corpo, json_ld=Seguro(bloco),
                   robots_meta=Seguro(seo.META_NOINDEX if previa else ""))
 
 
@@ -97,10 +100,15 @@ def _com_ano(tipo, ano) -> list:
     return [str(tipo)] if ano is None else [str(tipo), str(ano)]
 
 
+def _dupla(autores) -> str:
+    """Classe do degradê violeta↔laranja: só no que os dois sócios fizeram juntos."""
+    return " obra-dupla" if len(set(autores)) > 1 else ""
+
+
 def _cartao_pessoa(p) -> str:
     return (
         f'    <article class="cartao-pessoa" data-slug="{esc(p.slug)}">\n'
-        f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="160" height="160" loading="lazy">\n'
+        f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="160" height="160">\n'
         f'      <h3>{esc(p.nome)}</h3>\n'
         f'      <p class="rotulo-mono">{esc(p.papel_mono)}</p>\n'
         f'      <p>{esc(p.frase)}</p>\n'
@@ -112,7 +120,7 @@ def _cartao_pessoa(p) -> str:
 def _cartao_projeto(proj, dados: Dados, classe: str, com_autores: bool, nivel: int = 3) -> str:
     attr = f' data-autores="{esc(" ".join(proj.autores))}"' if com_autores else ""
     return (
-        f'    <article class="{classe}" data-slug="{esc(proj.slug)}"{attr}>\n'
+        f'    <article class="{classe}{_dupla(proj.autores)}" data-slug="{esc(proj.slug)}"{attr}>\n'
         f'      <p class="rotulo-mono">{esc(" · ".join(_com_ano(proj.tipo, proj.ano)))}</p>\n'
         f'      <h{nivel}><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h{nivel}>\n'
         f'      <p>{esc(proj.resumo)}</p>\n'
@@ -127,7 +135,7 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     destaques = "\n".join(
         _cartao_projeto(p, dados, "cartao-destaque", False) for p in visiveis(dados.projetos) if p.destaque)
     servicos = "\n".join(
-        f'    <article class="cartao-servico">\n'
+        f'    <article class="cartao-servico{_dupla(s.quem_toca)}">\n'
         f'      <h3><a href="/servicos/{esc(s.slug)}/">{esc(s.nome)}</a></h3>\n'
         f'      <p>{esc(s.resumo)}</p>\n'
         + (f'      <p>{_selos(dados, s.quem_toca)}</p>\n' if s.quem_toca else "")
@@ -140,7 +148,7 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     )
     caminho = "index.html"
     ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in _rosiel_primeiro(dados)))
-    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, CSS_ESTILOS, corpo, FONTES_ITALICO, ld, previa)
+    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, corpo, ld, previa)
     return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ld)
 
 
@@ -168,7 +176,7 @@ def _perfil(p, dados: Dados, previa: bool) -> Pagina:
     titulo = f"{p.nome} — AllDevs"
     descricao = f"{p.nome}, sócio da AllDevs: {p.papel.lower()}."
     ld = (seo.json_ld_pessoa(p),)
-    doc = _documento(caminho, titulo, descricao, CSS_ESTILOS, corpo, json_ld=ld, previa=previa)
+    doc = _documento(caminho, titulo, descricao, corpo, json_ld=ld, previa=previa)
     return Pagina(caminho, titulo, descricao, doc, p.atualizado, ld)
 
 
@@ -181,7 +189,7 @@ def _projetos(dados: Dados, previa: bool) -> Pagina:
     )
     caminho = "projetos/index.html"
     atualizado = max([x.atualizado for x in vis] + [dados.estudio.atualizado])
-    doc = _documento(caminho, PROJETOS_TITULO, PROJETOS_DESCRICAO, CSS_ESTILOS, corpo, previa=previa)
+    doc = _documento(caminho, PROJETOS_TITULO, PROJETOS_DESCRICAO, corpo, previa=previa)
     return Pagina(caminho, PROJETOS_TITULO, PROJETOS_DESCRICAO, doc, atualizado, ())
 
 
@@ -219,7 +227,7 @@ def _case(proj, dados: Dados, previa: bool) -> Pagina:
     caminho = f"projetos/{proj.slug}/index.html"
     titulo = f"{proj.nome}: {proj.tipo} — AllDevs"
     ld = (seo.json_ld_case(proj, dados),)
-    doc = _documento(caminho, titulo, proj.resumo, CSS_ESTILOS, corpo, json_ld=ld, previa=previa or proj.rascunho)
+    doc = _documento(caminho, titulo, proj.resumo, corpo, json_ld=ld, previa=previa or proj.rascunho)
     return Pagina(caminho, titulo, proj.resumo, doc, proj.atualizado, ld, indexar=not proj.rascunho)
 
 
@@ -229,7 +237,7 @@ def _historia(dados: Dados, raiz: Path, previa: bool) -> Pagina:
         conteudo=_ler_conteudo(raiz, ("historia.html",), _bloco_contato(dados.estudio, "home")),
     )
     caminho = "historia.html"
-    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, render("historia_estilo"), corpo, FONTES_ITALICO, (), previa)
+    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, corpo, (), previa)
     return Pagina(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, doc, dados.estudio.atualizado, ())
 
 
@@ -243,9 +251,8 @@ def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
             _bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug)),
     )
     caminho = f"servicos/{s.slug}/index.html"
-    css = Seguro('<link rel="stylesheet" href="/css/servico.css">')
     ld = (seo.json_ld_servico(s),)
-    doc = _documento(caminho, s.titulo, s.descricao, css, corpo, json_ld=ld, previa=previa)
+    doc = _documento(caminho, s.titulo, s.descricao, corpo, json_ld=ld, previa=previa)
     return Pagina(caminho, s.titulo, s.descricao, doc, s.atualizado, ld)
 
 

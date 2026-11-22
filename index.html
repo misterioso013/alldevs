@@ -11,11 +11,22 @@
 <meta property="og:description" content="Estúdio de software com dois sócios, Caio Guerras e Rosiel Victor. Sites, apps, bots e produtos próprios no ar.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://all.dev.br/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<meta property="og:image" content="https://all.dev.br/assets/og/site.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AllDevs — Estúdio de software: sites, apps e automações">
+<meta name="twitter:description" content="Estúdio de software com dois sócios, Caio Guerras e Rosiel Victor. Sites, apps, bots e produtos próprios no ar.">
+<meta name="twitter:image" content="https://all.dev.br/assets/og/site.png">
+<link rel="preload" href="/assets/fontes/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/site.css">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="stylesheet" href="/css/styles.css">
+<script src="/js/vendor/gsap.min.js" defer></script>
+<script src="/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="/js/vendor/SplitText.min.js" defer></script>
+<script src="/js/vendor/lenis.min.js" defer></script>
+<script src="/js/site.js" defer></script>
 <script type="application/ld+json">[{"@context": "https://schema.org", "@id": "https://all.dev.br/#organizacao", "@type": "Organization", "member": [{"@id": "https://all.dev.br/#caio-guerras"}, {"@id": "https://all.dev.br/#rosiel-victor"}], "name": "AllDevs", "url": "https://all.dev.br/"}, {"@context": "https://schema.org", "@id": "https://all.dev.br/#rosiel-victor", "@type": "Person", "jobTitle": "Produto, web e automação", "name": "Rosiel Victor", "worksFor": {"@id": "https://all.dev.br/#organizacao"}}, {"@context": "https://schema.org", "@id": "https://all.dev.br/#caio-guerras", "@type": "Person", "jobTitle": "Infraestrutura, mídia e apps", "name": "Caio Guerras", "worksFor": {"@id": "https://all.dev.br/#organizacao"}}]</script>
 </head>
 <body>
@@ -50,14 +61,14 @@
   <h2>Os dois sócios</h2>
   <div class="cartoes-pessoas" data-sortear>
     <article class="cartao-pessoa" data-slug="caio">
-      <img src="/assets/images/caio.jpeg" alt="Foto de Caio Guerras" width="160" height="160" loading="lazy">
+      <img src="/assets/images/caio-640.webp" alt="Foto de Caio Guerras" width="160" height="160">
       <h3>Caio Guerras</h3>
       <p class="rotulo-mono">caio · infraestrutura, mídia, apps</p>
       <p>Sócio do estúdio. Cuida da infraestrutura, da mídia e dos apps.</p>
       <a href="/caio/" class="link-seta">Ver perfil de Caio Guerras</a>
     </article>
     <article class="cartao-pessoa" data-slug="rosiel">
-      <img src="/assets/images/rosiel.jpg" alt="Foto de Rosiel Victor" width="160" height="160" loading="lazy">
+      <img src="/assets/images/rosiel-640.webp" alt="Foto de Rosiel Victor" width="160" height="160">
       <h3>Rosiel Victor</h3>
       <p class="rotulo-mono">rosiel · produto, web, automação</p>
       <p>Sócio do estúdio. Cuida de produto, web e automação.</p>
@@ -102,32 +113,32 @@
   <p class="rotulo-mono">// 03 — serviços</p>
   <h2>O que fazemos</h2>
   <div class="grade-servicos">
-    <article class="cartao-servico">
+    <article class="cartao-servico obra-dupla">
       <h3><a href="/servicos/aplicativo-mobile-react-native/">Aplicativo mobile</a></h3>
       <p>Apps para iOS e Android em React Native, da ideia à loja.</p>
       <p><span class="selo selo-caio">Caio Guerras</span><span class="selo selo-rosiel">Rosiel Victor</span></p>
     </article>
-    <article class="cartao-servico">
+    <article class="cartao-servico obra-dupla">
       <h3><a href="/servicos/automacoes-integracoes-api/">Automações e APIs</a></h3>
       <p>Integrações por API, webhook e scripts que tiram o trabalho braçal da equipe.</p>
       <p><span class="selo selo-caio">Caio Guerras</span><span class="selo selo-rosiel">Rosiel Victor</span></p>
     </article>
-    <article class="cartao-servico">
+    <article class="cartao-servico obra-dupla">
       <h3><a href="/servicos/bots-whatsapp-automacao/">Bots e atendimento</a></h3>
       <p>Bots de WhatsApp, Discord e Telegram para atender 24 horas.</p>
       <p><span class="selo selo-caio">Caio Guerras</span><span class="selo selo-rosiel">Rosiel Victor</span></p>
     </article>
-    <article class="cartao-servico">
+    <article class="cartao-servico obra-dupla">
       <h3><a href="/servicos/criacao-de-sites-institucionais/">Site institucional</a></h3>
       <p>Sites institucionais rápidos, responsivos e prontos para o Google.</p>
       <p><span class="selo selo-caio">Caio Guerras</span><span class="selo selo-rosiel">Rosiel Victor</span></p>
     </article>
-    <article class="cartao-servico">
+    <article class="cartao-servico obra-dupla">
       <h3><a href="/servicos/desenvolvimento-mvp-startups/">MVP para startups</a></h3>
       <p>MVP web com Next.js e backend, do zero ao ar em semanas.</p>
       <p><span class="selo selo-caio">Caio Guerras</span><span class="selo selo-rosiel">Rosiel Victor</span></p>
     </article>
-    <article class="cartao-servico">
+    <article class="cartao-servico obra-dupla">
       <h3><a href="/servicos/landing-page-conversao/">Landing page</a></h3>
       <p>Landing pages focadas em conversão, com WhatsApp, em 3 dias.</p>
       <p><span class="selo selo-caio">Caio Guerras</span><span class="selo selo-rosiel">Rosiel Victor</span></p>

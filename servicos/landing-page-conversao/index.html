@@ -11,11 +11,22 @@
 <meta property="og:description" content="Landing page profissional focada em conversão com integração WhatsApp e formulários. Entrega em 3 dias a partir de R$ 600. Ideal para capturar leads e vender mais.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://all.dev.br/servicos/landing-page-conversao/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap" rel="stylesheet">
+<meta property="og:image" content="https://all.dev.br/assets/og/landing-page-conversao.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Landing Page de Alta Conversão com WhatsApp | Entrega em 3 Dias — AllDevs">
+<meta name="twitter:description" content="Landing page profissional focada em conversão com integração WhatsApp e formulários. Entrega em 3 dias a partir de R$ 600. Ideal para capturar leads e vender mais.">
+<meta name="twitter:image" content="https://all.dev.br/assets/og/landing-page-conversao.png">
+<link rel="preload" href="/assets/fontes/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/site.css">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="stylesheet" href="/css/servico.css">
+<script src="/js/vendor/gsap.min.js" defer></script>
+<script src="/js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="/js/vendor/SplitText.min.js" defer></script>
+<script src="/js/vendor/lenis.min.js" defer></script>
+<script src="/js/site.js" defer></script>
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Service", "description": "Landing page profissional focada em conversão com integração WhatsApp e formulários. Entrega em 3 dias a partir de R$ 600. Ideal para capturar leads e vender mais.", "name": "Landing page", "provider": {"@id": "https://all.dev.br/#organizacao"}}]</script>
 </head>
 <body>
@@ -34,11 +45,12 @@
   <a href="#contato" class="nav-cta">Pedir orçamento</a>
 </header>
 
+<main>
 
 <div class="breadcrumb">
   <a href="/">Home</a>
   <span class="breadcrumb-sep">›</span>
-  <a href="/#services">Serviços</a>
+  <a href="/#servicos">Serviços</a>
   <span class="breadcrumb-sep">›</span>
   <span class="breadcrumb-current">Landing page</span>
 </div>
@@ -115,35 +127,35 @@
   <h2>Perguntas frequentes sobre landing pages</h2>
   <div class="faq-section">
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         O que é uma landing page e para que serve?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Uma landing page é uma página de destino com foco único: fazer o visitante tomar uma ação específica — preencher um formulário, clicar no WhatsApp ou realizar uma compra. Elimina distrações e maximiza a taxa de conversão.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Como a landing page integra com meu WhatsApp?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>O botão de WhatsApp é configurado com uma mensagem pré-preenchida que identifica de onde o cliente veio. Os dados do formulário também podem ser enviados diretamente para o seu WhatsApp via API, sem custo adicional.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Posso instalar o Meta Pixel e o Google Analytics?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Sim. Instalamos e configuramos o Meta Pixel (Facebook e Instagram Ads), Google Analytics 4 e Google Tag Manager sem custo adicional, para rastrear conversões e criar audiências personalizadas para campanhas futuras.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         Quantas revisões estão incluídas?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>O projeto inclui até 2 rodadas de revisão após a primeira apresentação do design. Ajustes de texto, cores e imagens dentro do escopo combinado são bem-vindos.</p></div>
     </div>
     <div class="faq-item">
-      <button class="faq-question" aria-expanded="false">
+      <button type="button" class="faq-question" aria-expanded="true">
         A landing page funciona bem no celular?
         <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
@@ -188,6 +200,7 @@
 </section>
 
 
+</main>
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
@@ -222,10 +235,6 @@
   </div>
 </footer>
 
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="/js/servico-gsap.js"></script>
 
 </body>
 </html>

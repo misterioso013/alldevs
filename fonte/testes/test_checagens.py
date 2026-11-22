@@ -49,9 +49,12 @@ class TestChecagens(Base):
         self.escrever("js/vendor/lib.js", "var c='#abcdef'\n")
         self.assertEqual(self.problemas(), [])
 
-    def test_excecao_temporaria_libera_hex(self):
+    def test_sem_excecoes_temporarias(self):
+        self.assertEqual(checagens.EXCECOES_TEMPORARIAS, ())
+
+    def test_css_antigo_nao_tem_mais_passe_livre(self):
         self.escrever("css/styles.css", "a{color:#fff}\n")
-        self.assertEqual(self.problemas(), [])
+        self.assertEqual(self.problemas(), ["css/styles.css:1: cor fora dos tokens (#fff)"])
 
     def test_pastas_fora_do_site_ignoradas(self):
         self.escrever("docs/a.html", "Olá Rosiel #fff Playfair\n")
