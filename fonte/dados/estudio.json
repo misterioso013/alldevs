@@ -4,10 +4,10 @@
   "email": "rosielvictor.dev@gmail.com",
   "telegram": "https://t.me/m/PYdcFSXtNjZh",
   "mensagens": {
-    "home": "Olá, AllDevs! Vim pelo site e quero conversar sobre um projeto. [site·home]",
-    "servico": "Olá, AllDevs! Tenho interesse em *{servico}*. [site·servico·{slug}]",
-    "case": "Olá, AllDevs! Vi o case do *{projeto}* e quero algo parecido. [site·case·{slug}]",
-    "perfil": "Olá, AllDevs! Vim pela página do {nome}. [site·perfil·{slug}]"
+    "home": "Olá, AllDevs! Vim pelo site e quero conversar sobre um projeto. [{codigo}]",
+    "servico": "Olá, AllDevs! Tenho interesse em *{alvo}*. [{codigo}]",
+    "case": "Olá, AllDevs! Vi o case do *{alvo}* e quero algo parecido. [{codigo}]",
+    "perfil": "Olá, AllDevs! Vim pela página do {alvo}. [{codigo}]"
   },
   "redes": [],
   "inspetor": [],
