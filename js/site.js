@@ -45,6 +45,7 @@
     resposta.id = resposta.id || "faq-resposta-" + (n + 1);
     botao.setAttribute("aria-controls", resposta.id);
     botao.setAttribute("aria-expanded", "false");
+    botao.removeAttribute("disabled"); // vem desativado no HTML: sem JS a resposta fica aberta e o botão não engana
     resposta.hidden = true;
     botao.addEventListener("click", function () {
       var abrir = botao.getAttribute("aria-expanded") !== "true";
@@ -138,17 +139,22 @@
       doc.querySelectorAll("main h1, main h2").forEach(function (titulo) {
         // Título com link ou botão fica inteiro: dividido, o link perderia o nome acessível.
         if (titulo.querySelector("a, button")) return;
-        var lido = (titulo.innerText || titulo.textContent).replace(/\s+/g, " ").trim();
-        var partes = Split.create(titulo, { type: "words,chars", wordsClass: "palavra", charsClass: "letra", tag: "span" });
-        if (titulo.hasAttribute("aria-label")) titulo.setAttribute("aria-label", lido);
-        partes.chars.forEach(function (c) { c.setAttribute("data-c", c.textContent); });
-        if (naTela(titulo) || !ST) {
-          digitar(partes.chars);
-        } else {
-          ST.create({ trigger: titulo, start: "top 85%", once: true, onEnter: function () { digitar(partes.chars); } });
+        // Erro num título não derruba os outros nem o caret/refresh abaixo; o título fica como veio.
+        try {
+          var lido = (titulo.innerText || titulo.textContent).replace(/\s+/g, " ").trim();
+          var partes = Split.create(titulo, { type: "words,chars", wordsClass: "palavra", charsClass: "letra", tag: "span" });
+          if (titulo.hasAttribute("aria-label")) titulo.setAttribute("aria-label", lido);
+          partes.chars.forEach(function (c) { c.setAttribute("data-c", c.textContent); });
+          if (naTela(titulo) || !ST) {
+            digitar(partes.chars);
+          } else {
+            ST.create({ trigger: titulo, start: "top 85%", once: true, onEnter: function () { digitar(partes.chars); } });
+          }
+        } catch (erro) {
+          if (window.console) console.warn("SplitText falhou em", titulo, erro);
         }
       });
-      poeCaret();
+      try { poeCaret(); } catch (erro) { if (window.console) console.warn("caret falhou", erro); }
       if (ST) ST.refresh();
     });
   }

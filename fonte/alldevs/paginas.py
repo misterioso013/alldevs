@@ -105,10 +105,12 @@ def _dupla(autores) -> str:
     return " obra-dupla" if len(set(autores)) > 1 else ""
 
 
-def _cartao_pessoa(p) -> str:
+def _cartao_pessoa(p, prioridade: bool = False) -> str:
+    # Foto em 4/5 (retrato inteiro); só a primeira do HTML ganha prioridade de LCP, nenhuma é lazy.
+    prio = ' fetchpriority="high"' if prioridade else ""
     return (
         f'    <article class="cartao-pessoa" data-slug="{esc(p.slug)}">\n'
-        f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="160" height="160">\n'
+        f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="512" height="640"{prio}>\n'
         f'      <h3>{esc(p.nome)}</h3>\n'
         f'      <p class="rotulo-mono">{esc(p.papel_mono)}</p>\n'
         f'      <p>{esc(p.frase)}</p>\n'
@@ -131,7 +133,8 @@ def _cartao_projeto(proj, dados: Dados, classe: str, com_autores: bool, nivel: i
 
 def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     est = dados.estudio
-    cartoes = "\n".join(_cartao_pessoa(p) for p in sorted(dados.pessoas, key=lambda p: p.slug))
+    cartoes = "\n".join(_cartao_pessoa(p, prioridade=(i == 0))
+                         for i, p in enumerate(sorted(dados.pessoas, key=lambda p: p.slug)))
     destaques = "\n".join(
         _cartao_projeto(p, dados, "cartao-destaque", False) for p in visiveis(dados.projetos) if p.destaque)
     servicos = "\n".join(

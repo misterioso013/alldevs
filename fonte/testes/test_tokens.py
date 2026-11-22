@@ -60,6 +60,20 @@ class TestTokens(unittest.TestCase):
         no_disco = {p.name for p in VENDOR.glob("*") if p.is_file()} - {"VERSOES.json", "LICENCAS.md"}
         self.assertEqual(no_disco, set(versoes))
 
+    def test_reservas_com_metrica_nas_pilhas(self):
+        css = TOKENS.read_text("utf-8")
+        for familia, local in (("DM Sans Reserva", "Arial"), ("Fraunces Reserva", "Georgia")):
+            blocos = [b for b in re.findall(r"@font-face\s*\{[^}]*\}", css) if f'"{familia}"' in b]
+            self.assertTrue(blocos, familia)
+            for b in blocos:
+                self.assertIn(f'local("{local}', b)
+                self.assertNotIn("url(", b)
+                for prop in ("size-adjust", "ascent-override", "descent-override"):
+                    self.assertRegex(b, prop + r":\s*[\d.]+%;")
+        v = _variaveis()
+        self.assertTrue(v["--fonte-texto"].startswith('"DM Sans", "DM Sans Reserva"'))
+        self.assertTrue(v["--fonte-titulo"].startswith('"Fraunces", "Fraunces Reserva"'))
+
     def test_fontes_com_licenca(self):
         css = TOKENS.read_text("utf-8")
         blocos = re.findall(r"@font-face\s*\{[^}]*\}", css)

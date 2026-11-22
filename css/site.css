@@ -20,7 +20,7 @@ body {
   font-family: var(--fonte-texto);
   font-size: 1rem;
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -139,6 +139,9 @@ main > .breadcrumb + section { border-top: 0; }
   gap: 24px;
 }
 .nav-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   text-decoration: none;
   color: var(--suave);
   font-size: 0.95rem;
@@ -154,8 +157,14 @@ main > .breadcrumb + section { border-top: 0; }
   border: 1px solid var(--grade);
   border-radius: 999px;
   padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .nav-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 0.9rem;
   font-weight: 500;
   text-decoration: none;
@@ -242,7 +251,7 @@ main > .breadcrumb + section { border-top: 0; }
 .cartao-pessoa img {
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 5; /* retrato inteiro: em 16:10 a foto quadrada perdia testa ou queixo */
   object-fit: cover;
   border-radius: 2px;
   margin-bottom: 16px;
@@ -420,6 +429,14 @@ main > .breadcrumb + section { border-top: 0; }
   cursor: pointer;
 }
 .faq-chevron { flex: none; color: var(--suave); }
+/* Sem JS o botão vem desativado e a resposta aberta: sem seta, sem cursor de clique. */
+.faq-question:disabled { cursor: default; }
+.faq-question:disabled .faq-chevron { display: none; }
+/* Seta gira ao abrir; com movimento reduzido não gira (nem transição, nem transform). */
+@media (prefers-reduced-motion: no-preference) {
+  .faq-chevron { transition: transform var(--t-medio) var(--curva); }
+  .faq-question[aria-expanded="true"] .faq-chevron { transform: rotate(180deg); }
+}
 .faq-answer { color: var(--suave); padding-bottom: 16px; }
 .faq-answer p { margin: 0; max-width: 68ch; }
 .servico-cta {
@@ -446,13 +463,13 @@ main > .breadcrumb + section { border-top: 0; }
   color: var(--suave);
   margin-bottom: 16px;
 }
-.hist-title { max-width: 14ch; }
+.hist-title { max-width: 47rem; } /* rem, não ch: ch muda na troca da fonte e gera CLS */
 .hist-title em,
 .horizontal-story__text em,
 .closing-title em { font-style: normal; color: var(--rosiel); }
-.hist-sub { font-size: 1.15rem; color: var(--suave); max-width: 56ch; }
+.hist-sub { font-size: 1.15rem; color: var(--suave); max-width: 45.5rem; }
 .hist-sub strong { color: var(--claro); }
-.horizontal-story__text { max-width: 26ch; }
+.horizontal-story__text { max-width: 45.5rem; }
 #timeline {
   position: relative;
   padding-block: 32px 64px;

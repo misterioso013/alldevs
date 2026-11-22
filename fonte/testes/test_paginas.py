@@ -123,6 +123,32 @@ class TestGerar(Base):
         self.assertNotIn("contato@all.dev.br", txt)
         self.assertNotIn("Amott", txt)
 
+    def test_fotos_da_home_4x5_e_so_a_primeira_com_prioridade(self):
+        txt = (self.saida / "index.html").read_text(encoding="utf-8")
+        fotos = re.findall(r'<article class="cartao-pessoa"[^>]*>\s*(<img [^>]+>)', txt)
+        self.assertEqual(len(fotos), 2)
+        for img in fotos:
+            self.assertIn('width="512" height="640"', img)  # 4/5, igual ao aspect-ratio do CSS
+            self.assertNotIn("loading=", img)
+        self.assertIn('fetchpriority="high"', fotos[0])
+        self.assertNotIn("fetchpriority", fotos[1])
+        css = (REPO / "css" / "site.css").read_text(encoding="utf-8")
+        regra = css[css.index(".cartao-pessoa img {"):]
+        self.assertIn("aspect-ratio: 4 / 5;", regra[:regra.index("}")])
+
+    def test_faq_desativado_sem_js(self):
+        total = 0
+        for slug in TITULOS:
+            txt = (self.saida / "servicos" / slug / "index.html").read_text(encoding="utf-8")
+            botoes = re.findall(r'<button [^>]*class="faq-question"[^>]*>', txt)
+            self.assertTrue(botoes, slug)
+            for b in botoes:
+                self.assertRegex(b, r"\sdisabled[\s>]", slug)
+            total += len(botoes)
+        self.assertEqual(total, 30)
+        js = (REPO / "js" / "site.js").read_text(encoding="utf-8")
+        self.assertIn('botao.removeAttribute("disabled")', js)
+
     def test_toda_pagina_tem_cabecalho_depois_do_doctype(self):
         for arq in self.saida.rglob("*.html"):
             linhas = arq.read_text(encoding="utf-8").split("\n")

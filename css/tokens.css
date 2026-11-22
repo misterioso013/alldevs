@@ -42,6 +42,59 @@
   src: url("../assets/fontes/jetbrains-mono-latin-400-normal.woff2") format("woff2");
 }
 
+/* Reservas com métrica: a fonte local (Arial/Georgia) ajustada ao tamanho da web font,
+   para a troca do font-display: swap não empurrar o layout (CLS). Valores da capsize. */
+@font-face {
+  font-family: "DM Sans Reserva";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 104.53%;
+  ascent-override: 94.90%;
+  descent-override: 29.66%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "DM Sans Reserva";
+  font-style: normal;
+  font-weight: 500;
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 106.33%;
+  ascent-override: 93.30%;
+  descent-override: 29.16%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "DM Sans Reserva";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Arimo Bold");
+  size-adjust: 102.71%;
+  ascent-override: 96.58%;
+  descent-override: 30.18%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Fraunces Reserva";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Georgia");
+  size-adjust: 105.20%;
+  ascent-override: 92.96%;
+  descent-override: 24.24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Fraunces Reserva";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Georgia Bold"), local("Georgia-Bold");
+  size-adjust: 93.43%;
+  ascent-override: 104.67%;
+  descent-override: 27.29%;
+  line-gap-override: 0%;
+}
+
 :root {
   --fundo: #0d0c12;
   --claro: #ecebe6;
@@ -59,7 +112,7 @@
   --t-longo: 900ms;
   --curva: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --fonte-titulo: "Fraunces", Georgia, serif;
-  --fonte-texto: "DM Sans", system-ui, sans-serif;
+  --fonte-titulo: "Fraunces", "Fraunces Reserva", Georgia, serif;
+  --fonte-texto: "DM Sans", "DM Sans Reserva", system-ui, sans-serif;
   --fonte-mono: "JetBrains Mono", ui-monospace, monospace;
 }

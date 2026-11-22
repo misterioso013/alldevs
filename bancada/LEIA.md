@@ -11,9 +11,11 @@ cd bancada && npm ci && npx playwright install chromium
 ```
 PREVIA=$(mktemp -d)                                 # prévia FORA do repo
 python3 fonte/gerar.py --previa --saida $PREVIA
-python3 -m http.server 8765 -d $PREVIA &            # guarde o PID e encerre depois (kill <PID>)
+python3 bancada/gzserver.py 8765 $PREVIA &          # com gzip, como o GitHub Pages; guarde o PID e encerre depois (kill <PID>)
 node bancada/rodar.mjs --url http://127.0.0.1:8765 --saida bancada/relatorios/<AAAA-MM-DD>
 ```
+Use o `gzserver.py`, não o `python3 -m http.server`: sem compressão o JS de vendor chega inteiro e o LCP do
+Lighthouse sobe uns 600 ms nas páginas com foto (`/`, `/caio/`, `/rosiel/`), o que não acontece em produção.
 Aviso: não gere a prévia dentro do repo (`dist-previa/`): `checar.py` varre o repo e a cor `rgba()` dos estáticos o reprova
 (`dist-previa/` agora é ignorada pelo `checar.py`, mas mantenha a prévia fora). Não mexa na prévia durante a rodada.
 Gera `RELATORIO.md` (resumo + uma tabela por meta) e as capturas PNG (ignoradas pelo git). Sai com rc 1 se alguma meta falhar.
