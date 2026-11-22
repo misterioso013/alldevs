@@ -1,0 +1,44 @@
+/* Tokens do ALL.dev: cores, movimento, fontes. Fontes e licença em assets/fontes/. */
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../assets/fontes/fraunces-latin-400 600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400 500 700;
+  font-display: swap;
+  src: url("../assets/fontes/dm-sans-latin-400 500 700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fontes/jetbrains-mono-latin-400-normal.woff2") format("woff2");
+}
+
+:root {
+  --fundo: #0d0c12;
+  --claro: #ecebe6;
+  --suave: #9b99a6;
+  --grade: #24222c;
+
+  --caio: #7c3aed;
+  --caio-texto: #a78bfa;
+  --caio-texto-claro: #6d28d9;
+  --rosiel: #f97316;
+  --rosiel-texto: #9a3412;
+
+  --t-curto: 200ms;
+  --t-medio: 450ms;
+  --t-longo: 900ms;
+  --curva: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --fonte-titulo: "Fraunces", Georgia, serif;
+  --fonte-texto: "DM Sans", system-ui, sans-serif;
+  --fonte-mono: "JetBrains Mono", ui-monospace, monospace;
+}

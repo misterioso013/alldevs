@@ -1,0 +1,22 @@
+{
+  "gsap.min.js": {
+    "pacote": "gsap",
+    "versao": "3.13.0",
+    "sha256": "96c01b81f44a3290e2b4532f55e2c9534b2adc43273a19f3756b2cb41f0fd0b6"
+  },
+  "ScrollTrigger.min.js": {
+    "pacote": "gsap",
+    "versao": "3.13.0",
+    "sha256": "308219390e5e3b84cda0c481e70caa9820883ae10bda44e6e9a149a81aac4b3f"
+  },
+  "SplitText.min.js": {
+    "pacote": "gsap",
+    "versao": "3.13.0",
+    "sha256": "5e519ea2470faa15ca4d4f27e9263e5906c07c034a9b4771164dee108136563a"
+  },
+  "lenis.min.js": {
+    "pacote": "lenis",
+    "versao": "1.3.27",
+    "sha256": "80f53e77f1c13e379fc246d2b5e299188e20bcb2b2fe7ebb13e8e8c7563a6da7"
+  }
+}
