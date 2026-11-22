@@ -111,6 +111,13 @@ class TestDados(Base):
         erros, _ = self.validar()
         self.assertGreaterEqual(len(erros), 2)
 
+    def test_visivel_e_destaque_nao_booleanos_sao_erro(self):
+        for campo in ("visivel", "destaque"):
+            self.editar("projetos.json", lambda o, c=campo: o[0].__setitem__(c, "false"))
+            erros, _ = self.validar()
+            self.assertTrue(any("beta" in e and campo in e for e in erros), erros)
+            self.editar("projetos.json", lambda o, c=campo: o[0].__setitem__(c, False))
+
     def test_visiveis_exclui_vetado(self):
         d = D.carregar(self.raiz)
         self.assertEqual([p.slug for p in D.visiveis(d.projetos)], ["alfa"])

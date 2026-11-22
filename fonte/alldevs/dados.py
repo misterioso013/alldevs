@@ -181,6 +181,9 @@ def validar(dados: Dados, raiz: Path):
         if not isinstance(p.ano, int) or isinstance(p.ano, bool):
             e(f"{rot}: ano deve ser inteiro")
         data(rot, p.atualizado)
+        for campo in ("visivel", "destaque"):
+            if not isinstance(getattr(p, campo), bool):
+                e(f"{rot}: {campo} deve ser booleano (veio {getattr(p, campo)!r})")
         if p.link:
             https(rot, p.link)
         for au in p.autores:
