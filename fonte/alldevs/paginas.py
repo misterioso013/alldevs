@@ -3,12 +3,11 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import contato
+from . import contato, seo
 from .dados import Dados
 from .modelos import Seguro, render
 
 CABECALHO = "<!-- gerado por fonte/gerar.py — não editar -->"
-SITE = "https://all.dev.br"
 ESTATICOS = ("css", "js", "assets", "icon.svg")
 
 HOME_TITULO = "AllDevs — Desenvolvimento Web, Mobile e Automações | Rosiel Victor"
@@ -44,18 +43,14 @@ class Pagina:
     json_ld: tuple
 
 
-def _url(caminho: str) -> str:
-    """URL pública da página (index.html some, como no site atual)."""
-    if caminho == "index.html":
-        return SITE + "/"
-    if caminho.endswith("/index.html"):
-        return f"{SITE}/{caminho[: -len('index.html')]}"
-    return f"{SITE}/{caminho}"
-
-
-def _documento(caminho, titulo, descricao, css, corpo, fontes=FONTES) -> Seguro:
-    return render("base", titulo=titulo, descricao=descricao, canonical=_url(caminho),
-                  fontes=Seguro(fontes), css=css, corpo=corpo)
+def _documento(caminho, titulo, descricao, css, corpo, fontes=FONTES, json_ld=(), previa=False) -> Seguro:
+    if json_ld:
+        bloco = f'\n<script type="application/ld+json">{seo.serializar(json_ld)}</script>'
+    else:
+        bloco = ""
+    return render("base", titulo=titulo, descricao=descricao, canonical=seo.url_publica(caminho),
+                  fontes=Seguro(fontes), css=css, corpo=corpo, json_ld=Seguro(bloco),
+                  robots_meta=Seguro(seo.META_NOINDEX if previa else ""))
 
 
 def _bloco_contato(estudio, tipo, alvo=None, slug=None) -> Seguro:
@@ -77,7 +72,11 @@ def _ler_conteudo(raiz: Path, partes, contato_html: Seguro) -> Seguro:
     return Seguro(texto.replace(MARCADOR_CONTATO, contato_html.rstrip("\n")))
 
 
-def _home(dados: Dados, raiz: Path) -> Pagina:
+def _rosiel_primeiro(dados: Dados):
+    return sorted(dados.pessoas, key=lambda p: (p.slug != "rosiel", p.slug))
+
+
+def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     est = dados.estudio
     codigo = contato.codigo_origem("home")
     corpo = render(
@@ -89,21 +88,22 @@ def _home(dados: Dados, raiz: Path) -> Pagina:
         codigo=codigo,
     )
     caminho = "index.html"
-    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, Seguro(GSAP_HOME), corpo, FONTES_ITALICO)
-    return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ())
+    ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in _rosiel_primeiro(dados)))
+    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, Seguro(GSAP_HOME), corpo, FONTES_ITALICO, ld, previa)
+    return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ld)
 
 
-def _historia(dados: Dados, raiz: Path) -> Pagina:
+def _historia(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     corpo = render(
         "historia",
         conteudo=_ler_conteudo(raiz, ("historia.html",), _bloco_contato(dados.estudio, "home")),
     )
     caminho = "historia.html"
-    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, render("historia_estilo"), corpo, FONTES_ITALICO)
+    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, render("historia_estilo"), corpo, FONTES_ITALICO, (), previa)
     return Pagina(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, doc, dados.estudio.atualizado, ())
 
 
-def _servico(s, dados: Dados, raiz: Path) -> Pagina:
+def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     corpo = render(
         "servico",
         nome=s.nome,
@@ -114,14 +114,15 @@ def _servico(s, dados: Dados, raiz: Path) -> Pagina:
     )
     caminho = f"servicos/{s.slug}/index.html"
     css = Seguro('<link rel="stylesheet" href="/css/servico.css">')
-    doc = _documento(caminho, s.titulo, s.descricao, css, corpo)
-    return Pagina(caminho, s.titulo, s.descricao, doc, s.atualizado, ())
+    ld = (seo.json_ld_servico(s),)
+    doc = _documento(caminho, s.titulo, s.descricao, css, corpo, json_ld=ld, previa=previa)
+    return Pagina(caminho, s.titulo, s.descricao, doc, s.atualizado, ld)
 
 
 def montar_todas(dados: Dados, raiz: Path, previa: bool) -> list:
-    """Todas as páginas, ordenadas por caminho. `previa` fica para o SEO (Tarefa 5)."""
-    paginas = [_home(dados, raiz), _historia(dados, raiz)]
-    paginas += [_servico(s, dados, raiz) for s in dados.servicos]
+    """Todas as páginas, ordenadas por caminho. Na `previa` cada uma leva a meta noindex."""
+    paginas = [_home(dados, raiz, previa), _historia(dados, raiz, previa)]
+    paginas += [_servico(s, dados, raiz, previa) for s in dados.servicos]
     return sorted(paginas, key=lambda p: p.caminho)
 
 
@@ -152,7 +153,10 @@ def escrever(paginas, saida: Path, previa: bool, raiz: Path | None = None) -> No
         destino = saida / p.caminho
         destino.parent.mkdir(parents=True, exist_ok=True)
         destino.write_text(_com_cabecalho(p.corpo), encoding="utf-8")
+    (saida / "sitemap.xml").write_text(seo.sitemap(paginas), encoding="utf-8")
     if previa:
+        (saida / "robots.txt").write_text(seo.robots_previa(), encoding="utf-8")
+        (saida / "_headers").write_text(seo.headers_previa(), encoding="utf-8")
         raiz = Path(raiz) if raiz else Path(__file__).resolve().parent.parent.parent
         for nome in ESTATICOS:
             origem = raiz / nome
