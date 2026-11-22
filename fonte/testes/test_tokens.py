@@ -57,15 +57,22 @@ class TestTokens(unittest.TestCase):
             with self.subTest(arquivo=arq):
                 self.assertEqual(hashlib.sha256((VENDOR / arq).read_bytes()).hexdigest(), info["sha256"])
                 self.assertTrue(info["pacote"] and info["versao"])
-        no_disco = {p.name for p in VENDOR.glob("*") if p.is_file() and p.name != "VERSOES.json"}
+        no_disco = {p.name for p in VENDOR.glob("*") if p.is_file()} - {"VERSOES.json", "LICENCAS.md"}
         self.assertEqual(no_disco, set(versoes))
 
     def test_fontes_com_licenca(self):
         css = TOKENS.read_text("utf-8")
-        arquivos = re.findall(r"url\(['\"]?\.\./assets/fontes/([\w.-]+\.woff2)", css)
-        self.assertTrue(arquivos)
-        for a in arquivos:
-            self.assertTrue((FONTES / a).is_file(), a)
+        blocos = re.findall(r"@font-face\s*\{[^}]*\}", css)
+        urls = [u for b in blocos for u in re.findall(r"url\(\s*[\"']?([^\"')]+)[\"']?\s*\)", b)]
+        self.assertEqual(len(urls), 6)
+        for u in urls:
+            self.assertTrue((TOKENS.parent / u).resolve().is_file(), u)
+        referenciados = {(TOKENS.parent / u).resolve().name for u in urls}
+        em_disco = {p.name for p in FONTES.glob("*.woff2")}
+        self.assertEqual(em_disco, referenciados)
+        self.assertEqual(len(em_disco), 6)
+        for b in blocos:
+            self.assertRegex(b, r"font-weight:\s*\d{3};")
         self.assertIn("font-display: swap", css)
         licenca = (FONTES / "OFL.txt").read_text("utf-8")
         for familia in ("Fraunces", "DM Sans", "JetBrains Mono"):

@@ -2,16 +2,37 @@
 @font-face {
   font-family: "Fraunces";
   font-style: normal;
-  font-weight: 400 600;
+  font-weight: 400;
   font-display: swap;
-  src: url("../assets/fontes/fraunces-latin-400 600-normal.woff2") format("woff2");
+  src: url("../assets/fontes/fraunces-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fontes/fraunces-latin-600-normal.woff2") format("woff2");
 }
 @font-face {
   font-family: "DM Sans";
   font-style: normal;
-  font-weight: 400 500 700;
+  font-weight: 400;
   font-display: swap;
-  src: url("../assets/fontes/dm-sans-latin-400 500 700-normal.woff2") format("woff2");
+  src: url("../assets/fontes/dm-sans-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fontes/dm-sans-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fontes/dm-sans-latin-700-normal.woff2") format("woff2");
 }
 @font-face {
   font-family: "JetBrains Mono";
