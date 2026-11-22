@@ -1,4 +1,5 @@
 """Monta as páginas do site a partir dos dados e dos moldes."""
+import json
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
@@ -131,6 +132,65 @@ def _cartao_projeto(proj, dados: Dados, classe: str, com_autores: bool, nivel: i
     )
 
 
+def _tamanho_webp(arq: Path) -> tuple:
+    """(largura, altura) de um WebP pelo cabeçalho RIFF (VP8, VP8L ou VP8X), sem dependência."""
+    b = arq.read_bytes()[:30]
+    if b[:4] != b"RIFF" or b[8:12] != b"WEBP":
+        raise ValueError(f"{arq}: não é WebP")
+    tipo = b[12:16]
+    if tipo == b"VP8 ":
+        return int.from_bytes(b[26:28], "little") & 0x3FFF, int.from_bytes(b[28:30], "little") & 0x3FFF
+    if tipo == b"VP8L":
+        v = int.from_bytes(b[21:25], "little")
+        return (v & 0x3FFF) + 1, ((v >> 14) & 0x3FFF) + 1
+    if tipo == b"VP8X":
+        return int.from_bytes(b[24:27], "little") + 1, int.from_bytes(b[27:30], "little") + 1
+    raise ValueError(f"{arq}: bloco WebP desconhecido {tipo!r}")
+
+
+def _cor_autor(autores) -> str:
+    return autores[0] if len(set(autores)) == 1 else "dupla"
+
+
+def _inspetor(dados: Dados, raiz: Path) -> Seguro:
+    """Janela do hero: 1ª tela parada (sem JS é só isso), dados de todas inline e o botão "próximo".
+    A imagem é lazy e de baixa prioridade, sem preload: o LCP continua sendo o título."""
+    slugs = dados.estudio.inspetor
+    if not slugs:
+        return Seguro("")
+    projetos = {p.slug: p for p in dados.projetos}
+    nomes = {p.slug: p.nome for p in dados.pessoas}
+    telas = []
+    for slug in slugs:
+        insp = dados.inspecao[slug]
+        proj = projetos[slug]
+        lw, lh = _tamanho_webp(Path(raiz) / insp["imagem"])
+        telas.append({
+            "slug": slug, "nome": proj.nome, "autor": _nomes(dados, proj.autores),
+            "cor": _cor_autor(proj.autores), "imagem": "/" + insp["imagem"], "w": lw, "h": lh,
+            "caixas": insp["caixas"],
+        })
+    t = telas[0]
+    bloco = json.dumps({"telas": telas}, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+    return Seguro(
+        f'  <div class="inspetor inspetor-{esc(t["cor"])}" aria-hidden="true">\n'
+        f'    <div class="inspetor-barra"><span class="inspetor-pontos"></span>'
+        f'<span class="inspetor-selo">{esc(t["nome"])} · {esc(t["autor"])}</span></div>\n'
+        f'    <div class="inspetor-palco">\n'
+        '      <div class="inspetor-tela">\n'
+        f'        <img src="{esc(t["imagem"])}" alt="Tela do {esc(t["nome"])}" width="{t["w"]}" height="{t["h"]}" '
+        f'loading="lazy" fetchpriority="low" decoding="async">\n'
+        f'      </div>\n'
+        f'    </div>\n'
+        f'    <p class="inspetor-codigo"><code>/* {esc(t["slug"])}.webp · {t["w"]}×{t["h"]} */</code></p>\n'
+        f'  </div><!-- /inspetor -->\n'
+        f'  <button type="button" class="inspetor-proximo" aria-label="Mostrar a próxima tela de produto" hidden>'
+        f'próxima tela</button>\n'
+        f'  <script type="application/json" id="inspecao">{bloco}</script>\n'
+        f'  <script src="/js/inspetor.js" defer></script>'
+    )
+
+
 def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     est = dados.estudio
     cartoes = "\n".join(_cartao_pessoa(p, prioridade=(i == 0))
@@ -147,7 +207,7 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     corpo = render(
         "home", **_cabecalho_e_rodape(dados),
         cartoes=Seguro(cartoes), destaques=Seguro(destaques), servicos=Seguro(servicos),
-        contato=_bloco_contato(est, "home"),
+        contato=_bloco_contato(est, "home"), inspetor=_inspetor(dados, raiz),
     )
     caminho = "index.html"
     ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in _rosiel_primeiro(dados)))

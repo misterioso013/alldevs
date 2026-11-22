@@ -219,10 +219,159 @@ main > .breadcrumb + section { border-top: 0; }
 }
 
 /* ---------- Hero ---------- */
-.hero { padding-block: 96px 64px; }
+.hero {
+  padding-block: 96px 64px;
+  display: grid;
+  gap: 48px;
+  align-items: center;
+}
 .hero-headline { max-width: 14ch; }
 .hero-sub { font-size: 1.15rem; color: var(--suave); max-width: 52ch; }
 .hero-ctas { margin-top: 32px; }
+@media (min-width: 960px) {
+  .hero { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+}
+
+/* Inspetor do hero (js/inspetor.js): janela com uma tela real e caixas por cima.
+   Sem transform: as caixas andam por left/top/width/height; sem JS fica só a imagem. */
+.hero-janela { position: relative; }
+.inspetor {
+  --cor-autor: var(--caio);
+  --cor-autor-texto: var(--caio-texto);
+  border: 1px solid var(--grade);
+  border-radius: 4px;
+  background: var(--fundo);
+}
+.inspetor-rosiel { --cor-autor: var(--rosiel); --cor-autor-texto: var(--rosiel); }
+.inspetor-barra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--grade);
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+}
+.inspetor-pontos {
+  flex: none;
+  width: 36px;
+  height: 8px;
+  background: radial-gradient(circle, var(--grade) 3px, transparent 3.5px) 0 50% / 12px 8px repeat-x;
+}
+.inspetor-selo {
+  padding: 2px 8px;
+  border: 1px solid var(--cor-autor);
+  border-radius: 999px;
+  color: var(--cor-autor-texto);
+  white-space: nowrap;
+}
+.inspetor-palco {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  container-type: size;
+  background:
+    repeating-linear-gradient(90deg, var(--grade) 0 1px, transparent 1px 8px) 0 0 / 100% 6px no-repeat,
+    repeating-linear-gradient(0deg, var(--grade) 0 1px, transparent 1px 8px) 0 0 / 6px 100% no-repeat;
+}
+/* Com a janela abaixo do título, o palco fica baixo: a área pintada da tela não passa a do <h1> (o LCP segue o título). */
+@media (max-width: 959px) { .inspetor-palco { aspect-ratio: 2 / 1; } }
+@media (max-width: 479px) { .inspetor-palco { aspect-ratio: 16 / 10; } }
+/* A tela tem tamanho fixo (sem CLS); a imagem cabe nela por object-fit e o alvo das caixas, criado pelo JS,
+   tem a proporção da imagem (--w/--h postos pelo JS), centrado na mesma célula da grade. */
+.inspetor-tela {
+  position: absolute;
+  inset: 6%;
+  display: grid;
+  place-items: center;
+  container-type: size;
+  transition: opacity var(--t-medio) var(--curva);
+}
+.inspetor-tela img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
+.inspetor-alvo {
+  grid-area: 1 / 1;
+  position: relative;
+  width: min(100cqw, 100cqh * var(--w, 1) / var(--h, 1));
+  aspect-ratio: var(--w, 1) / var(--h, 1);
+}
+.inspetor-tela.trocando { opacity: 0; }
+.inspetor-caixa {
+  position: absolute;
+  border: 4px solid var(--cor-autor);
+  border-image: repeating-linear-gradient(-45deg, var(--cor-autor) 0 1px, transparent 1px 4px) 4;
+  outline: 1px solid var(--cor-autor);
+  pointer-events: none;
+  transition: left var(--t-medio) var(--curva), top var(--t-medio) var(--curva),
+    width var(--t-medio) var(--curva), height var(--t-medio) var(--curva), opacity var(--t-curto) var(--curva);
+}
+.inspetor-caixa::before,
+.inspetor-caixa::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.inspetor-caixa::before {
+  left: -200vmax;
+  right: -200vmax;
+  top: -4px;
+  bottom: -4px;
+  border-block: 1px dashed var(--cor-autor);
+  opacity: 0.45;
+}
+.inspetor-caixa::after {
+  top: -200vmax;
+  bottom: -200vmax;
+  left: -4px;
+  right: -4px;
+  border-inline: 1px dashed var(--cor-autor);
+  opacity: 0.45;
+}
+.inspetor-rotulo {
+  position: absolute;
+  left: -5px;
+  bottom: calc(100% + 6px);
+  z-index: 1;
+  padding: 1px 6px;
+  border: 1px solid var(--cor-autor);
+  border-radius: 2px;
+  background: var(--fundo);
+  color: var(--cor-autor-texto);
+  font: 0.7rem / 1.4 var(--fonte-mono);
+  white-space: nowrap;
+}
+.inspetor-caixa.embaixo .inspetor-rotulo { bottom: auto; top: calc(100% + 6px); }
+.inspetor-caixa.direita .inspetor-rotulo { left: auto; right: -5px; }
+.inspetor-codigo {
+  margin: 0;
+  padding: 8px 12px;
+  border-top: 1px solid var(--grade);
+  color: var(--claro);
+  font: 0.8rem / 1.5 var(--fonte-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inspetor:not(.ativo) .inspetor-codigo code { visibility: hidden; }
+.inspetor-proximo {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid var(--grade);
+  border-radius: 4px;
+  background: var(--fundo);
+  color: var(--claro);
+  font: 0.75rem / 1 var(--fonte-mono);
+  cursor: pointer;
+  transition: border-color var(--t-curto) var(--curva);
+}
+.inspetor-proximo:hover,
+.inspetor-proximo:focus-visible { border-color: var(--claro); }
+.inspetor-proximo::after { content: " →"; }
 
 /* ---------- Cartões ---------- */
 .cartao-pessoa,
