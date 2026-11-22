@@ -9,17 +9,21 @@ cd bancada && npm ci && npx playwright install chromium
 
 ## Rodar
 ```
-python3 fonte/gerar.py --previa --saida dist-previa
-python3 -m http.server 8765 -d dist-previa &      # guarde o PID e encerre depois
+PREVIA=$(mktemp -d)                                 # prévia FORA do repo
+python3 fonte/gerar.py --previa --saida $PREVIA
+python3 -m http.server 8765 -d $PREVIA &            # guarde o PID e encerre depois (kill <PID>)
 node bancada/rodar.mjs --url http://127.0.0.1:8765 --saida bancada/relatorios/<AAAA-MM-DD>
 ```
+Aviso: não gere a prévia dentro do repo (`dist-previa/`): `checar.py` varre o repo e a cor `rgba()` dos estáticos o reprova
+(`dist-previa/` agora é ignorada pelo `checar.py`, mas mantenha a prévia fora). Não mexa na prévia durante a rodada.
 Gera `RELATORIO.md` (resumo + uma tabela por meta) e as capturas PNG (ignoradas pelo git). Sai com rc 1 se alguma meta falhar.
 Páginas medidas: as do `sitemap.xml` mais os links internos `.html`/diretório achados nelas (um nível).
 
 ## Metas
 - **Capturas**: página em 430 e 1440 px.
-- **axe**: zero problemas `serious` ou `critical` (430 px).
-- **Sem JS**: título (`title` e `h1`) e contato (mailto, wa.me ou `#contato`) aparecem; `/projetos/` lista todos os cards visíveis.
+- **axe**: zero problemas `serious` ou `critical`, em 430 e em 1440 px.
+- **Sem JS**: título (`title` e `h1`) e ao menos um contato (mailto, wa.me ou `#contato`) VISÍVEIS; `/projetos/` lista todos os cards visíveis.
+Toda página precisa responder 200; página sem medição numa meta conta como FALHA.
 - **Rolagem**: `scrollWidth <= clientWidth` em 430 px.
 - **Links**: links internos respondem 200 sem redirecionamento (diretório sem barra final dá 301 e conta como falha).
 - **Movimento**: com `reducedMotion: reduce`, nenhum elemento com `transform` diferente de `none` após 1 s.
@@ -32,4 +36,4 @@ extraia com `ar x` + `bsdtar -xf data.tar.*` e copie só os `.so*` para `~/.loca
 export BANCADA_LIBS=$HOME/.local/lib/chromium-deps
 ```
 Quando `BANCADA_LIBS` está definida, o `rodar.mjs` a junta ao `LD_LIBRARY_PATH` só do navegador (Playwright e Lighthouse).
-Lighthouse e Playwright usam o `chrome-headless-shell` do Playwright. Sem a variável, roda normal.
+Lighthouse e Playwright usam o `chrome-headless-shell` do Playwright (ou o binário de `CHROME_PATH`, se definido). Sem a variável, roda normal.

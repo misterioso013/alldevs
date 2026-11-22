@@ -8,7 +8,7 @@ from . import dados as mod_dados
 # Arquivos ainda no visual antigo; a tarefa de limpeza esvazia esta tupla.
 EXCECOES_TEMPORARIAS = ("css/styles.css", "css/servico.css", "historia.html", "index.html", "js/servico-gsap.js")
 
-IGNORAR = {".git", ".superpowers", ".github", "docs", "fonte", "bancada", "inspecao"}
+IGNORAR = {".git", ".superpowers", ".github", "docs", "fonte", "bancada", "dist-previa", "inspecao"}
 EXTENSOES = {".css", ".js", ".html"}
 # hex de 3, 4, 6 ou 8 dígitos; ignora entidades (&#160;) e âncoras (href="#x", id="#x", url(#x))
 RE_COR = re.compile(
