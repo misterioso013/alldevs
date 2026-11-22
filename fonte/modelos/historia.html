@@ -379,23 +379,6 @@
   }
   .btn-ghost:hover { background: var(--surface2); transform: translateY(-2px); }
 
-  /* ── WA FLOAT ── */
-  .wa-float {
-    position: fixed; bottom: 28px; right: 28px; z-index: 200;
-    width: 54px; height: 54px; border-radius: 50%;
-    background: #25d366;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
-    text-decoration: none;
-    transition: transform 0.2s;
-    animation: wa-pulse 3s ease-in-out infinite;
-  }
-  .wa-float:hover { transform: scale(1.1); }
-  @keyframes wa-pulse {
-    0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4); }
-    50% { box-shadow: 0 4px 30px rgba(37,211,102,0.6), 0 0 0 8px rgba(37,211,102,0.1); }
-  }
-
   /* ── CUSTOM CURSOR ── */
   .cursor-aura,
   .cursor-dot {

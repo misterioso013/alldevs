@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "caio",
+    "nome": "Caio Guerras",
+    "papel": "Infraestrutura, mídia e apps",
+    "papel_mono": "caio · infraestrutura, mídia, apps",
+    "frase": "Provisório até a Tarefa 7.",
+    "foto": "assets/images/caio.jpeg",
+    "links": [],
+    "cor": "roxo",
+    "atualizado": "2026-11-22"
+  },
+  {
+    "slug": "rosiel",
+    "nome": "Rosiel Victor",
+    "papel": "Produto, web e automação",
+    "papel_mono": "rosiel · produto, web, automação",
+    "frase": "Provisório até a Tarefa 7.",
+    "foto": "assets/images/rosiel.jpg",
+    "links": [],
+    "cor": "laranja",
+    "atualizado": "2026-11-22"
+  }
+]
