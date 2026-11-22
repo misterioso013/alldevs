@@ -1,6 +1,6 @@
 # Bancada
 
-Mede o site ALL.dev contra a prévia local: capturas, axe, sem JS, rolagem, links, movimento reduzido e Lighthouse.
+Mede o site ALL.dev contra a prévia local: capturas, axe, sem JS, rolagem, links, movimento reduzido, inspetor do hero, paleta de comandos e Lighthouse.
 
 ## Instalar
 ```
@@ -26,6 +26,11 @@ Só o caso do inspetor do hero (~45 s, os cenários rodam em paralelo), com a me
 node bancada/inspetor.mjs --url http://127.0.0.1:8765/     # uma linha por cenário; rc 1 se algum falhar
 ```
 
+Só o caso da paleta de comandos (~10 s por página), com a mesma prévia e o mesmo servidor:
+```
+node bancada/paleta.mjs --url http://127.0.0.1:8765/       # uma linha por cenário; rc 1 se algum falhar
+```
+
 ## Metas
 - **Capturas**: página em 430 e 1440 px.
 - **axe**: zero problemas `serious` ou `critical`, em 430 e em 1440 px.
@@ -41,6 +46,15 @@ Toda página precisa responder 200; página sem medição numa meta conta como F
   - 360, 430 e 1440 px, tecla aos 0,5 s e 40 s abertos, mouse passando no palco a cada 5 s: CLS < 0,05 e ≥ 2 trocas de tela;
   - `reducedMotion: reduce`: 2 caixas acesas em lugares diferentes, paradas depois de hover e clique nelas;
   - 360, 412, 430 e 1440 px: botão "próxima tela" com altura ≥ 44 px e sem sobrepor o selo do autor.
+
+- **Paleta** (`bancada/paleta.mjs`, em todas as páginas; o `paleta.json` vem do mesmo servidor):
+  - 1440 px, teclado: sem pedido do `paleta.json` na carga e pílula oculta; Ctrl K abre com o foco no campo, 1 pedido e todas as opções;
+    seta para baixo/cima muda a opção (`aria-selected` e `aria-activedescendant`, com volta cíclica); a busca ignora acento ("orcamento" acha 1);
+    Enter navega até o destino da opção; Esc fecha e devolve o foco ao elemento que o tinha (o logo); ⌘K (`Meta+K`) também abre; axe com a paleta aberta, 0 `serious`/`critical`;
+  - 412 px, toque: pílula visível com ≥ 44 px, sem elemento fixo colado ao rodapé; tocar na pílula abre; opções com ≥ 44 px; axe aberta;
+    Esc devolve o foco à pílula; tocar numa opção navega;
+  - `reducedMotion: reduce`: aberta, nenhum `transform` após 1 s e o diálogo termina opaco (só esmaece);
+  - 412 px com o `paleta.json` bloqueado: a pílula segue como link e leva a `/projetos/`.
 
 ## Máquina sem as libs do Chrome (Whatbox)
 Faltam `libgbm`, `libxkbcommon` etc. Baixe os .deb do Debian bookworm (libgbm1, libdrm2, libwayland-server0, libxkbcommon0),

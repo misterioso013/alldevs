@@ -180,6 +180,10 @@ class TestVetado(unittest.TestCase):
         self.assertTrue((raiz / "projetos" / visivel / "index.html").is_file())
         # vetado: nem página nem menção
         self.assertFalse((raiz / "projetos" / "segredo-vetado").exists())
+        # a paleta de comandos (T12) é gerada dos mesmos dados: o visível entra, o vetado não
+        paleta = json.loads(ler(raiz / "assets" / "paleta.json"))
+        self.assertIn(f"/projetos/{visivel}/", [i["url"] for i in paleta])
+        self.assertEqual([i for i in paleta if "segredo" in json.dumps(i, ensure_ascii=False).lower()], [])
         for arq in raiz.rglob("*"):
             if arq.is_file() and arq.suffix in {".html", ".xml", ".txt", ".json"} and "fonte" not in arq.relative_to(raiz).parts[:1]:
                 txt = ler(arq).lower()

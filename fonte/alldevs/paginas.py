@@ -334,6 +334,29 @@ def montar_todas(dados: Dados, raiz: Path, previa: bool) -> list:
     return sorted(paginas, key=lambda p: p.caminho)
 
 
+def paleta(dados: Dados) -> list:
+    """Entradas da paleta de comandos (assets/paleta.json), nesta ordem: projetos visíveis (a ordem de /projetos/),
+    serviços, pessoas e contato. Só o que tem página ou link real; o contato vem dos campos do `Estudio`.
+    `termos` só entra quando o rótulo não cobre a busca ("email" não está em "E-mail"); o tipo também é buscável no JS."""
+    est = dados.estudio
+    itens = [{"rotulo": x.nome, "tipo": "projeto", "url": f"/projetos/{x.slug}/"} for x in visiveis(dados.projetos)]
+    itens += [{"rotulo": x.nome, "tipo": "servico", "url": f"/servicos/{x.slug}/"} for x in dados.servicos]
+    itens += [{"rotulo": x.nome, "tipo": "pessoa", "url": f"/{x.slug}/"} for x in dados.pessoas]
+    itens += [
+        {"rotulo": "Pedir orçamento", "tipo": "contato", "url": "/#contato"},
+        {"rotulo": "WhatsApp", "tipo": "contato",
+         "url": contato.link_whatsapp(est.whatsapp, contato.mensagem(est, "home"))},
+        {"rotulo": "Telegram", "tipo": "contato", "url": est.telegram},
+        {"rotulo": "E-mail", "tipo": "contato", "termos": "email",
+         "url": contato.link_email(est.email, contato.codigo_origem("home"))},
+    ]
+    return itens
+
+
+def paleta_json(dados: Dados) -> str:
+    return json.dumps(paleta(dados), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+
+
 def _com_cabecalho(corpo: str) -> str:
     primeira, _, resto = corpo.partition("\n")
     if not primeira.lower().startswith("<!doctype html>"):
@@ -348,8 +371,10 @@ def _gerado(arq: Path) -> bool:
         return False
 
 
-def escrever(paginas, saida: Path, previa: bool, raiz: Path | None = None) -> None:
-    """Grava as páginas em `saida`. Na prévia copia os estáticos de `raiz` (sem o CNAME)."""
+def escrever(paginas, saida: Path, previa: bool, raiz: Path | None = None, extras: dict | None = None) -> None:
+    """Grava as páginas em `saida`. Na prévia copia os estáticos de `raiz` (sem o CNAME).
+    `extras` ({caminho: texto}) são arquivos gerados que não são páginas (assets/paleta.json); vão por último,
+    para a cópia dos estáticos da prévia não pôr por cima a versão velha do repo."""
     saida = Path(saida)
     saida.mkdir(parents=True, exist_ok=True)
     novos = {p.caminho for p in paginas}
@@ -372,3 +397,7 @@ def escrever(paginas, saida: Path, previa: bool, raiz: Path | None = None) -> No
                 shutil.copytree(origem, saida / nome, dirs_exist_ok=True)
             elif origem.is_file():
                 shutil.copy2(origem, saida / nome)
+    for caminho, texto in sorted((extras or {}).items()):
+        destino = saida / caminho
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        destino.write_text(texto, encoding="utf-8")

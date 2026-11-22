@@ -91,7 +91,7 @@ class TestGerar(Base):
 
     def test_head_com_tokens_site_e_preload_so_do_titulo(self):
         scripts = ["/js/vendor/gsap.min.js", "/js/vendor/ScrollTrigger.min.js", "/js/vendor/SplitText.min.js",
-                   "/js/vendor/lenis.min.js", "/js/site.js"]
+                   "/js/vendor/lenis.min.js", "/js/site.js", "/js/paleta.js"]
         for arq in self.saida.rglob("*.html"):
             head = arq.read_text(encoding="utf-8").partition("</head>")[0]
             self.assertLess(head.index('href="/css/tokens.css"'), head.index('href="/css/site.css"'), arq)

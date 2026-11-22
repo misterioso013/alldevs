@@ -40,7 +40,7 @@ def main(argv=None) -> int:
         return 1
 
     lista = paginas.montar_todas(dados, raiz, args.previa)
-    paginas.escrever(lista, saida, args.previa, raiz)
+    paginas.escrever(lista, saida, args.previa, raiz, {"assets/paleta.json": paginas.paleta_json(dados)})
     print(f"{len(lista)} páginas em {saida}")
     return 0
 

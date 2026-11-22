@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { medeInspetor } from './inspetor.mjs';
+import { medePaleta } from './paleta.mjs';
 
 const arg = (n) => { const i = process.argv.indexOf('--' + n); return i > 0 ? process.argv[i + 1] : null; };
 const base = (arg('url') || '').replace(/\/+$/, '');
@@ -25,6 +26,7 @@ const metas = {
   links: 'Links internos respondem 200, sem redirecionamento',
   movimento: 'reducedMotion: nenhum transform após 1 s',
   inspetor: 'Inspetor do hero: CLS < 0,05 (12 s parado e 40 s com gesto), troca após gesto, calmo parado, botão ≥ 44 px',
+  paleta: 'Paleta: Ctrl K, seta, Enter navega e Esc devolve o foco (1440 px); toque na pílula (412 px); axe aberta; reduced-motion; sem rede',
   lighthouse: 'Lighthouse móvel: LCP < 2500 ms e CLS < 0,05',
 };
 const res = {}; for (const k in metas) res[k] = {};
@@ -152,6 +154,13 @@ try {
       if (!/class="inspetor /.test(await r.text())) ok('inspetor', pg, true, 'sem inspetor');
       else { const m = await medeInspetor(navegador, url); ok('inspetor', pg, m.passou, m.det); }
     } catch (e) { marca(pg, ['inspetor'], e); }
+
+    // paleta de comandos (bancada/paleta.mjs; ~10 s por página, o cabeçalho a tem em todas)
+    try {
+      const r = await get(url);
+      if (r.status !== 200) throw new Error('página respondeu ' + r.status);
+      const m = await medePaleta(navegador, url); ok('paleta', pg, m.passou, m.det);
+    } catch (e) { marca(pg, ['paleta'], e); }
 
     // links internos
     try {

@@ -148,7 +148,7 @@ main > .breadcrumb + section { border-top: 0; }
   transition: color var(--t-curto) var(--curva);
 }
 .nav-links a:hover { color: var(--claro); }
-.paleta-pilula {
+.paleta-gatilho {
   margin-left: auto;
   font-family: var(--fonte-mono);
   font-size: 0.85rem;
@@ -177,7 +177,7 @@ main > .breadcrumb + section { border-top: 0; }
 }
 @media (min-width: 768px) {
   .nav-links { display: flex; }
-  .paleta-pilula { display: none; }
+  .paleta-gatilho { display: none; }
 }
 
 /* ---------- Botões e links ---------- */
@@ -766,6 +766,57 @@ main > .breadcrumb + section { border-top: 0; }
   border-left: 2px solid var(--suave);
   vertical-align: -0.05em;
 }
+
+/* ---------- Paleta de comandos (js/paleta.js): <dialog> nativo, só opacidade ---------- */
+dialog.paleta {
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(480px, 70vh);
+  margin: 12vh auto auto;
+  padding: 0;
+  border: 1px solid var(--grade);
+  border-radius: 0;
+  background: var(--fundo);
+  color: var(--claro);
+  overflow: hidden;
+}
+dialog.paleta[open] {
+  display: flex;
+  flex-direction: column;
+  animation: paleta-esmaece var(--t-curto) var(--curva);
+}
+dialog.paleta::backdrop { background: color-mix(in srgb, var(--fundo) 80%, transparent); }
+dialog.paleta[open]::backdrop { animation: paleta-esmaece var(--t-curto) var(--curva); }
+@keyframes paleta-esmaece { from { opacity: 0; } }
+.paleta input {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 16px;
+  border: 0;
+  border-bottom: 1px solid var(--grade);
+  border-radius: 0;
+  background: transparent;
+  color: var(--claro);
+  font: inherit;
+  font-family: var(--fonte-mono);
+  font-size: 1rem;
+}
+.paleta input::placeholder { color: var(--suave); opacity: 1; }
+.paleta input:focus-visible { outline-offset: -4px; }
+.paleta [role="listbox"] { overflow-y: auto; overscroll-behavior: contain; }
+.paleta [role="option"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  padding: 8px 16px;
+  color: var(--claro);
+  text-decoration: none;
+}
+.paleta [role="option"]:hover,
+.paleta [role="option"][aria-selected="true"] { background: var(--grade); }
+.paleta-tipo { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--suave); }
+.paleta-aviso { margin: 0; padding: 14px 16px; color: var(--suave); }
 
 /* Lenis (rolagem suave, ligada só sem reduced-motion) */
 html.lenis,
