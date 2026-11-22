@@ -39,6 +39,17 @@ class TestModelos(unittest.TestCase):
         h = RAIZ_FONTE / "conteudo" / "historia.html"
         self.assertTrue(h.read_text(encoding="utf-8").strip())
 
+    def test_render_moldes_servico_e_historia(self):
+        c = RAIZ_FONTE / "conteudo"
+        s = render("servico", nome="Landing page", quem_toca=Seguro("<i>q</i>"),
+                   conteudo=Seguro((c / "servicos" / "landing-page-conversao.html").read_text(encoding="utf-8")),
+                   contato=Seguro("<!--contato-->"))
+        self.assertIn("<!--contato-->", s)
+        self.assertNotIn("$", s.replace("R$", ""))
+        h = render("historia", conteudo=Seguro((c / "historia.html").read_text(encoding="utf-8")),
+                   contato=Seguro("<!--contato-->"))
+        self.assertIn("<!--contato-->", h)
+
 
 if __name__ == "__main__":
     unittest.main()
