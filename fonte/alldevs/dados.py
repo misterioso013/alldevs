@@ -1,7 +1,7 @@
 """Carrega e valida os dados do site (fonte/dados/*.json)."""
 import json
 import re
-from dataclasses import dataclass, fields
+from dataclasses import MISSING, dataclass, fields
 from pathlib import Path
 
 TIPOS = {"app", "site", "bot", "produto", "ferramenta"}
@@ -57,6 +57,7 @@ class Projeto:
     destaque: bool
     visivel: bool
     atualizado: str
+    rascunho: bool = False
 
 
 @dataclass(frozen=True)
@@ -92,6 +93,8 @@ def _montar(cls, obj, arquivo):
     kw = {}
     for f in fields(cls):
         if f.name not in obj:
+            if f.default is not MISSING:
+                continue
             ref = f" (slug {obj['slug']})" if "slug" in obj else ""
             raise ErroDeDados(f"{arquivo}: campo obrigatório ausente: {f.name}{ref}")
         v = obj[f.name]
@@ -181,9 +184,11 @@ def validar(dados: Dados, raiz: Path):
         if not isinstance(p.ano, int) or isinstance(p.ano, bool):
             e(f"{rot}: ano deve ser inteiro")
         data(rot, p.atualizado)
-        for campo in ("visivel", "destaque"):
+        for campo in ("visivel", "destaque", "rascunho"):
             if not isinstance(getattr(p, campo), bool):
                 e(f"{rot}: {campo} deve ser booleano (veio {getattr(p, campo)!r})")
+        if p.rascunho:
+            a(f"{rot}: rascunho (texto aguarda o autor)")
         if p.link:
             https(rot, p.link)
         for au in p.autores:
@@ -196,6 +201,10 @@ def validar(dados: Dados, raiz: Path):
             a(f"{rot}: imagens vazias")
         if p.visivel and not (raiz / "assets" / "og" / f"{p.slug}.png").is_file():
             a(f"{rot}: falta assets/og/{p.slug}.png")
+
+    n_destaques = sum(1 for p in dados.projetos if p.visivel and p.destaque)
+    if not 4 <= n_destaques <= 6:
+        a(f"destaques: {n_destaques} projetos visíveis em destaque (ideal 4 a 6)")
 
     for s in dados.servicos:
         rot = f"servico {s.slug}"

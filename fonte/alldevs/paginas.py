@@ -5,16 +5,20 @@ from pathlib import Path
 
 from . import contato, seo
 from .dados import Dados
-from .modelos import Seguro, render
+from .dados import visiveis
+from .modelos import Seguro, esc, render
 
 CABECALHO = "<!-- gerado por fonte/gerar.py — não editar -->"
 ESTATICOS = ("css", "js", "assets", "icon.svg")
 
-HOME_TITULO = "AllDevs — Desenvolvimento Web, Mobile e Automações | Rosiel Victor"
+HOME_TITULO = "AllDevs — Estúdio de software: sites, apps e automações"
 HOME_DESCRICAO = (
-    "Desenvolvedor full stack sênior disponível para freelas. Sites, apps, bots e MVPs entregues rápido. "
-    "Engenheiro de software, fundador do ForjaDev."
+    "Estúdio de software com dois sócios, Caio Guerras e Rosiel Victor. "
+    "Sites, apps, bots e produtos próprios no ar."
 )
+PROJETOS_TITULO = "Projetos — AllDevs"
+PROJETOS_DESCRICAO = "Os projetos da AllDevs: sites, apps, bots e produtos próprios, de cada sócio."
+CSS_ESTILOS = Seguro('<link rel="stylesheet" href="/css/styles.css">')
 HISTORIA_TITULO = "A história — AllDevs"
 HISTORIA_DESCRICAO = (
     "Como um adolescente que programava no celular virou engenheiro sênior, mentor de desenvolvedores "
@@ -26,11 +30,6 @@ FONTES = (
 )
 FONTES_ITALICO = FONTES.replace("0,9..40,500&", "0,9..40,500;1,9..40,300&")
 MARCADOR_CONTATO = "<!--contato-->"
-GSAP_HOME = (
-    '<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>\n'
-    '<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>\n'
-    '<link rel="stylesheet" href="/css/styles.css">'
-)
 
 
 @dataclass(frozen=True)
@@ -76,21 +75,143 @@ def _rosiel_primeiro(dados: Dados):
     return sorted(dados.pessoas, key=lambda p: (p.slug != "rosiel", p.slug))
 
 
+def _cabecalho_e_rodape(dados: Dados) -> dict:
+    itens = "\n".join(
+        f'        <li><a href="/servicos/{esc(s.slug)}/">{esc(s.nome)}</a></li>' for s in dados.servicos)
+    return {"cabecalho": render("cabecalho"), "rodape": render("rodape", servicos=Seguro(itens))}
+
+
+def _nomes(dados: Dados, autores) -> str:
+    por_slug = {p.slug: p.nome for p in dados.pessoas}
+    return " e ".join(por_slug[a] for a in autores)
+
+
+def _selos(dados: Dados, autores) -> Seguro:
+    por_slug = {p.slug: p.nome for p in dados.pessoas}
+    return Seguro("".join(
+        f'<span class="selo selo-{esc(a)}">{esc(por_slug[a])}</span>' for a in autores))
+
+
+def _cartao_pessoa(p) -> str:
+    return (
+        f'    <article class="cartao-pessoa" data-slug="{esc(p.slug)}">\n'
+        f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="160" height="160" loading="lazy">\n'
+        f'      <h3>{esc(p.nome)}</h3>\n'
+        f'      <p class="rotulo-mono">{esc(p.papel_mono)}</p>\n'
+        f'      <p>{esc(p.frase)}</p>\n'
+        f'      <a href="/{esc(p.slug)}/" class="link-seta">Ver perfil de {esc(p.nome)}</a>\n'
+        f'    </article>'
+    )
+
+
+def _cartao_projeto(proj, dados: Dados, classe: str, com_autores: bool) -> str:
+    attr = f' data-autores="{esc(" ".join(proj.autores))}"' if com_autores else ""
+    return (
+        f'    <article class="{classe}" data-slug="{esc(proj.slug)}"{attr}>\n'
+        f'      <p class="rotulo-mono">{esc(proj.tipo)} · {esc(proj.ano)}</p>\n'
+        f'      <h3><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h3>\n'
+        f'      <p>{esc(proj.resumo)}</p>\n'
+        f'      <p>{_selos(dados, proj.autores)}</p>\n'
+        f'    </article>'
+    )
+
+
 def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     est = dados.estudio
-    codigo = contato.codigo_origem("home")
+    cartoes = "\n".join(_cartao_pessoa(p) for p in sorted(dados.pessoas, key=lambda p: p.slug))
+    destaques = "\n".join(
+        _cartao_projeto(p, dados, "cartao-destaque", False) for p in visiveis(dados.projetos) if p.destaque)
+    servicos = "\n".join(
+        f'    <article class="cartao-servico">\n'
+        f'      <h3><a href="/servicos/{esc(s.slug)}/">{esc(s.nome)}</a></h3>\n'
+        f'      <p>{esc(s.resumo)}</p>\n'
+        + (f'      <p>{_selos(dados, s.quem_toca)}</p>\n' if s.quem_toca else "")
+        + '    </article>'
+        for s in dados.servicos)
     corpo = render(
-        "home",
-        wa_home=contato.link_whatsapp(est.whatsapp, contato.mensagem(est, "home")),
-        wa_numero=est.whatsapp,
-        email=est.email,
-        email_link=contato.link_email(est.email, codigo),
-        codigo=codigo,
+        "home", **_cabecalho_e_rodape(dados),
+        cartoes=Seguro(cartoes), destaques=Seguro(destaques), servicos=Seguro(servicos),
+        contato=_bloco_contato(est, "home"),
     )
     caminho = "index.html"
     ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in _rosiel_primeiro(dados)))
-    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, Seguro(GSAP_HOME), corpo, FONTES_ITALICO, ld, previa)
+    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, CSS_ESTILOS, corpo, FONTES_ITALICO, ld, previa)
     return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ld)
+
+
+def _perfil(p, dados: Dados, previa: bool) -> Pagina:
+    meus = [x for x in visiveis(dados.projetos) if p.slug in x.autores]
+    projetos = "\n".join(_cartao_projeto(x, dados, "cartao-projeto", False) for x in meus)
+    if not projetos:
+        projetos = '    <p class="vazio">Em breve.</p>'
+    links = ""
+    if p.links:
+        itens = "\n".join(
+            f'    <li><a href="{esc(l["url"])}" rel="noopener">{esc(l.get("rotulo", l["url"]))}</a></li>' for l in p.links)
+        links = f'  <ul class="perfil-links">\n{itens}\n  </ul>'
+    corpo = render(
+        "perfil", **_cabecalho_e_rodape(dados),
+        nome=p.nome, papel=p.papel, papel_mono=p.papel_mono, frase=p.frase, foto=p.foto,
+        links=Seguro(links), projetos=Seguro(projetos),
+        contato=_bloco_contato(dados.estudio, "perfil", alvo=p.nome, slug=p.slug),
+    )
+    caminho = f"{p.slug}/index.html"
+    titulo = f"{p.nome} — AllDevs"
+    descricao = f"{p.nome}, sócio da AllDevs: {p.papel.lower()}."
+    ld = (seo.json_ld_pessoa(p),)
+    doc = _documento(caminho, titulo, descricao, CSS_ESTILOS, corpo, json_ld=ld, previa=previa)
+    return Pagina(caminho, titulo, descricao, doc, p.atualizado, ld)
+
+
+def _projetos(dados: Dados, previa: bool) -> Pagina:
+    vis = visiveis(dados.projetos)
+    cartoes = "\n".join(_cartao_projeto(x, dados, "cartao-projeto", True) for x in vis)
+    corpo = render(
+        "projetos", **_cabecalho_e_rodape(dados), cartoes=Seguro(cartoes),
+        contato=_bloco_contato(dados.estudio, "home"),
+    )
+    caminho = "projetos/index.html"
+    atualizado = max([x.atualizado for x in vis] + [dados.estudio.atualizado])
+    doc = _documento(caminho, PROJETOS_TITULO, PROJETOS_DESCRICAO, CSS_ESTILOS, corpo, previa=previa)
+    return Pagina(caminho, PROJETOS_TITULO, PROJETOS_DESCRICAO, doc, atualizado, ())
+
+
+def _lista(itens) -> str:
+    return "\n".join(f"      <li>{esc(i)}</li>" for i in itens)
+
+
+def _case(proj, dados: Dados, previa: bool) -> Pagina:
+    linha = f"{proj.tipo} · {proj.ano} · {_nomes(dados, proj.autores)} · {proj.situacao}"
+    resultado = ""
+    if proj.resultado is not None:
+        resultado = (f'\n  <section data-secao="resultado">\n    <h2>Resultado</h2>\n'
+                     f'    <p>{esc(proj.resultado)}</p>\n  </section>\n')
+    stack = ""
+    if proj.stack:
+        etiquetas = "".join(f'<li class="etiqueta-mono">{esc(s)}</li>' for s in proj.stack)
+        stack = f'\n  <section data-secao="stack">\n    <h2>Stack</h2>\n    <ul class="etiquetas">{etiquetas}</ul>\n  </section>\n'
+    imagens = ""
+    if proj.imagens:
+        figuras = "\n".join(
+            f'    <img class="img-16-10" src="/{esc(i)}" alt="Captura de {esc(proj.nome)}" loading="lazy">'
+            for i in proj.imagens)
+        imagens = f'\n  <section data-secao="imagens">\n{figuras}\n  </section>\n'
+    link = ""
+    if proj.link:
+        link = (f'\n  <p class="case-link"><a href="{esc(proj.link)}" rel="noopener" class="btn-ghost">'
+                f'Ver {esc(proj.nome)} no ar</a></p>\n')
+    corpo = render(
+        "case", **_cabecalho_e_rodape(dados),
+        linha=linha, nome=proj.nome, resumo=proj.resumo, problema=proj.problema,
+        fizemos=Seguro(_lista(proj.fizemos)), resultado=Seguro(resultado), stack=Seguro(stack),
+        imagens=Seguro(imagens), link=Seguro(link),
+        contato=_bloco_contato(dados.estudio, "case", alvo=proj.nome, slug=proj.slug),
+    )
+    caminho = f"projetos/{proj.slug}/index.html"
+    titulo = f"{proj.nome}: {proj.tipo} — AllDevs"
+    ld = (seo.json_ld_case(proj, dados),)
+    doc = _documento(caminho, titulo, proj.resumo, CSS_ESTILOS, corpo, json_ld=ld, previa=previa)
+    return Pagina(caminho, titulo, proj.resumo, doc, proj.atualizado, ld)
 
 
 def _historia(dados: Dados, raiz: Path, previa: bool) -> Pagina:
@@ -121,7 +242,9 @@ def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
 
 def montar_todas(dados: Dados, raiz: Path, previa: bool) -> list:
     """Todas as páginas, ordenadas por caminho. Na `previa` cada uma leva a meta noindex."""
-    paginas = [_home(dados, raiz, previa), _historia(dados, raiz, previa)]
+    paginas = [_home(dados, raiz, previa), _historia(dados, raiz, previa), _projetos(dados, previa)]
+    paginas += [_perfil(p, dados, previa) for p in dados.pessoas]
+    paginas += [_case(x, dados, previa) for x in visiveis(dados.projetos)]
     paginas += [_servico(s, dados, raiz, previa) for s in dados.servicos]
     return sorted(paginas, key=lambda p: p.caminho)
 

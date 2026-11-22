@@ -1,1 +1,115 @@
-[]
+[
+  {
+    "slug": "prosup",
+    "nome": "ProsUp",
+    "autores": [
+      "rosiel"
+    ],
+    "tipo": "produto",
+    "situacao": "no ar",
+    "ano": 2026,
+    "resumo": "Produto próprio de software web publicado em prosup.app com portal de documentação dedicado em docs.prosup.app.",
+    "problema": "Produtos digitais próprios precisam combinar uma aplicação web rápida com documentação clara para quem usa a plataforma no dia a dia. O detalhamento funcional completo deste case aguarda o envio dos dados reais previstos na etapa de conteúdo.",
+    "fizemos": [
+      "Desenvolvemos e colocamos no ar a aplicação web principal em prosup.app.",
+      "Estruturamos e publicamos a documentação dedicada em docs.prosup.app.",
+      "Preparamos o produto para inspeção visual e captura automatizada na bancada do estúdio."
+    ],
+    "resultado": null,
+    "stack": [],
+    "link": "https://prosup.app",
+    "imagens": [],
+    "destaque": true,
+    "visivel": true,
+    "rascunho": true,
+    "atualizado": "2026-11-22"
+  },
+  {
+    "slug": "fakly",
+    "nome": "Fakly",
+    "autores": [
+      "rosiel"
+    ],
+    "tipo": "ferramenta",
+    "situacao": "no ar",
+    "ano": 2026,
+    "resumo": "Ferramenta SaaS criada para desenvolvedores gerarem páginas e seções de FAQ elegantes.",
+    "problema": "Montar e manter seções de perguntas frequentes bem acabadas costuma consumir tempo de engenharia em produtos digitais. Desenvolvedores precisam de uma solução direta para publicar FAQs elegantes sem retrabalho manual de interface.",
+    "fizemos": [
+      "Construímos uma ferramenta SaaS focada na geração rápida de FAQs elegantes.",
+      "Desenvolvemos a interface web em React voltada ao fluxo de trabalho de desenvolvedores.",
+      "Implementamos o backend em Node.js para sustentar a criação e a entrega do conteúdo."
+    ],
+    "resultado": null,
+    "stack": [
+      "Node.js",
+      "React"
+    ],
+    "link": "",
+    "imagens": [],
+    "destaque": true,
+    "visivel": true,
+    "rascunho": true,
+    "atualizado": "2026-11-22"
+  },
+  {
+    "slug": "sendany",
+    "nome": "SendAny",
+    "autores": [
+      "rosiel"
+    ],
+    "tipo": "produto",
+    "situacao": "no ar",
+    "ano": 2026,
+    "resumo": "Plataforma SaaS de compartilhamento para desenvolvedores que reúne funções de Gist, Pastebin e Drive em um só lugar.",
+    "problema": "No dia a dia técnico, compartilhar trechos de código, notas rápidas e arquivos costuma exigir a alternância entre serviços separados como Gist, Pastebin e Drive. Essa divisão espalha links e adiciona atrito ao fluxo de trabalho.",
+    "fizemos": [
+      "Unificamos o compartilhamento de código, texto e arquivos em uma única plataforma web.",
+      "Construímos a experiência de uso em React com foco em agilidade para desenvolvedores.",
+      "Desenvolvemos a estrutura SaaS no backend utilizando Node.js."
+    ],
+    "resultado": null,
+    "stack": [
+      "Node.js",
+      "React"
+    ],
+    "link": "",
+    "imagens": [],
+    "destaque": true,
+    "visivel": true,
+    "rascunho": true,
+    "atualizado": "2026-11-22"
+  },
+  {
+    "slug": "heisuca",
+    "nome": "Heisuca",
+    "autores": [
+      "caio"
+    ],
+    "tipo": "app",
+    "situacao": "no ar",
+    "ano": 2026,
+    "resumo": "Suíte multiplataforma de players de mídia para Android, TV, desktop e web com sistema unificado de design tokens.",
+    "problema": "Reproduzir mídia em celulares, TVs e navegadores exige interfaces adaptadas a cada tela sem perder fluidez em aparelhos mais simples. Além disso, manter consistência visual e atualizações seguras entre diferentes plataformas requer uma base técnica unificada.",
+    "fizemos": [
+      "Desenvolvemos aplicativos dedicados em Flutter (app completo), Kotlin (Android Lite) e web (TV e navegador).",
+      "Centralizamos a identidade em design tokens que geram temas para mobile, web e TV, com player sempre escuro e contraste calibrado para telas grandes.",
+      "Criamos transparência adaptativa em dois níveis para manter alta fluidez tanto em aparelhos potentes quanto em TVs e celulares mais modestos.",
+      "Estruturamos atualização atômica dentro do app com verificação de assinatura e hash, separando canais de teste e estável."
+    ],
+    "resultado": null,
+    "stack": [
+      "Flutter",
+      "Dart",
+      "Kotlin",
+      "CSS",
+      "Tizen"
+    ],
+    "link": "",
+    "imagens": [],
+    "destaque": true,
+    "visivel": true,
+    "rascunho": true,
+    "atualizado": "2026-11-22"
+  }
+]

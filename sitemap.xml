@@ -2,11 +2,39 @@
 <!-- gerado por fonte/gerar.py — não editar -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://all.dev.br/caio/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
     <loc>https://all.dev.br/historia.html</loc>
     <lastmod>2026-11-22</lastmod>
   </url>
   <url>
     <loc>https://all.dev.br/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://all.dev.br/projetos/fakly/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://all.dev.br/projetos/heisuca/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://all.dev.br/projetos/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://all.dev.br/projetos/prosup/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://all.dev.br/projetos/sendany/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://all.dev.br/rosiel/</loc>
     <lastmod>2026-11-22</lastmod>
   </url>
   <url>

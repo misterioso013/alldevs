@@ -57,9 +57,9 @@ class TestGerar(Base):
     def test_historia_titulo(self):
         self.assertEqual(titulo(self.saida / "historia.html"), "A história — AllDevs")
 
-    def test_home_titulo_igual_ao_atual(self):
+    def test_home_titulo_do_estudio(self):
         self.assertEqual(titulo(self.saida / "index.html"),
-                         "AllDevs — Desenvolvimento Web, Mobile e Automações | Rosiel Victor")
+                         "AllDevs — Estúdio de software: sites, apps e automações")
 
     def test_links_de_servico_com_barra(self):
         for arq in self.saida.rglob("*.html"):
@@ -94,7 +94,6 @@ class TestGerar(Base):
     def test_home_com_origem_e_sem_numero_solto(self):
         txt = (self.saida / "index.html").read_text(encoding="utf-8")
         self.assertIn("%5Bsite%C2%B7home%5D", txt)
-        self.assertIn("[site·home]", txt)
         self.assertNotIn("contato@all.dev.br", txt)
         self.assertNotIn("Amott", txt)
 

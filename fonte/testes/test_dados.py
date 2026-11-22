@@ -40,7 +40,7 @@ class TestDados(Base):
         self.assertEqual(len(d.pessoas), 2)
         slugs = [p.slug for p in d.projetos]
         self.assertEqual(slugs, sorted(slugs))
-        self.assertEqual(self.validar(d), ([], []))
+        self.assertEqual(self.validar(d), ([], ["destaques: 1 projetos visíveis em destaque (ideal 4 a 6)"]))
 
     def test_campo_obrigatorio_faltando_cita_arquivo_e_campo(self):
         self.editar("pessoas.json", lambda o: o[0].pop("frase"))
