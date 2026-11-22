@@ -141,13 +141,29 @@ class TestPrevia(Base):
 
 
 class TestProducaoNaoTocaRobots(unittest.TestCase):
+    INTOCADOS = ("robots.txt", "CNAME", "app-ads.txt", ".github/FUNDING.yml")
+
     def test_producao_nao_toca_robots(self):
-        antes = {n: sha(REPO / n) for n in ("robots.txt", "CNAME", "app-ads.txt") if (REPO / n).exists()}
-        rc, _, err = rodar()
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        raiz = Path(tmp.name)
+        shutil.copytree(REPO / "fonte", raiz / "fonte", ignore=shutil.ignore_patterns("__pycache__"))
+        for d in paginas.ESTATICOS:
+            origem = REPO / d
+            if origem.is_dir():
+                shutil.copytree(origem, raiz / d)
+            elif origem.is_file():
+                shutil.copy2(origem, raiz / d)
+        for n in self.INTOCADOS:
+            self.assertTrue((REPO / n).is_file(), f"{n} ausente no repo")
+            (raiz / n).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(REPO / n, raiz / n)
+        antes = {n: sha(raiz / n) for n in self.INTOCADOS}
+        rc, _, err = rodar("--raiz", str(raiz))
         self.assertEqual(rc, 0, err)
         for n, h in antes.items():
-            self.assertEqual(sha(REPO / n), h, n)
-        self.assertFalse((REPO / "_headers").exists())
+            self.assertEqual(sha(raiz / n), h, n)
+        self.assertFalse((raiz / "_headers").exists())
 
 
 if __name__ == "__main__":
