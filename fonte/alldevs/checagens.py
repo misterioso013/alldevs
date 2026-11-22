@@ -10,8 +10,14 @@ EXCECOES_TEMPORARIAS = ("css/styles.css", "css/servico.css", "historia.html", "i
 
 IGNORAR = {".git", ".superpowers", ".github", "docs", "fonte", "bancada", "inspecao"}
 EXTENSOES = {".css", ".js", ".html"}
-RE_COR = re.compile(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(", re.I)
-RE_WA = re.compile(r"wa\.me/(\d*)(\?text=)?")
+# hex de 3, 4, 6 ou 8 dígitos; ignora entidades (&#160;) e âncoras (href="#x", id="#x", url(#x))
+RE_COR = re.compile(
+    r"""(?<![&\w])(?<!href=")(?<!id=")(?<!url\()#(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{3,4})\b"""
+    r"|\brgba?\(|\bhsla?\(",
+    re.I,
+)
+RE_WA = re.compile(r"""wa\.me/\+?([^\s?"'<>#/]*)(\?text=([^\s"'<>&#]*))?""", re.I)
+RE_OLA = re.compile(r"Ol(?:á|%C3%A1|a\u0301)[\s+]*(?:%20)*Rosiel", re.I)
 
 
 def _arquivos(raiz: Path):
@@ -38,12 +44,13 @@ def checar(raiz: Path) -> list:
         texto = caminho.read_text(encoding="utf-8", errors="replace")
         cor_livre = rel == "css/tokens.css" or rel.startswith("js/vendor/") or rel in EXCECOES_TEMPORARIAS
         for n, linha in _linhas(texto):
-            if not cor_livre and (m := RE_COR.search(linha)):
-                problemas.append(f"{rel}:{n}: cor fora dos tokens ({m.group(0)})")
-            if caminho.suffix == ".html" and "Olá Rosiel" in linha:
+            if not cor_livre:
+                for m in RE_COR.finditer(linha):
+                    problemas.append(f"{rel}:{n}: cor fora dos tokens ({m.group(0)})")
+            if caminho.suffix == ".html" and RE_OLA.search(linha):
                 problemas.append(f"{rel}:{n}: 'Olá Rosiel' proibido")
             for m in RE_WA.finditer(linha):
-                if not m.group(2):
+                if not m.group(3):
                     problemas.append(f"{rel}:{n}: wa.me sem ?text=")
                 if m.group(1) != numero:
                     problemas.append(f"{rel}:{n}: número wa.me diferente do estúdio ({m.group(1)})")

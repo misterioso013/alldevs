@@ -9,5 +9,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 -m unittest discover -s fonte/testes -t fonte -v
-      - run: python3 fonte/gerar.py && git diff --exit-code
+      - run: |
+          python3 fonte/gerar.py
+          test -z "$(git status --porcelain)" || { git status --porcelain; exit 1; }
       - run: python3 fonte/checar.py

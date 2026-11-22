@@ -91,6 +91,39 @@ class TestChecagens(Base):
             "sitemap.xml:1: projeto invisível no sitemap (oculto)",
         ])
 
+    def test_entidade_e_ancora_nao_acusam(self):
+        self.escrever("a.html", '<p>a&#160;b</p>\n<a href="#cafe">x</a>\n<i id="face"></i>\n<use href="url(#fff)">\n')
+        self.assertEqual(self.problemas(), [])
+
+    def test_hex_de_5_digitos_nao_acusa(self):
+        self.escrever("css/a.css", "a{x:#abcde}\n")
+        self.assertEqual(self.problemas(), [])
+
+    def test_hex_de_4_6_8_digitos_acusam(self):
+        self.escrever("css/a.css", "a{x:#abcd}\nb{x:#aabbcc}\nc{x:#aabbccdd}\n")
+        self.assertEqual(len(self.problemas()), 3)
+
+    def test_duas_cores_na_mesma_linha(self):
+        self.escrever("css/a.css", "a{background:#fff;color:rgb(0,0,0)}\n")
+        self.assertEqual(len(self.problemas()), 2)
+
+    def test_wa_numero_com_sufixo_reprova(self):
+        self.escrever("a.html", '<a href="https://wa.me/558189477459abc?text=oi">x</a>\n')
+        self.assertEqual(len(self.problemas()), 1)
+        self.assertIn("número wa.me", self.problemas()[0])
+
+    def test_wa_com_mais_e_text_passa(self):
+        self.escrever("a.html", '<a href="https://WA.me/+558189477459?text=oi">x</a>\n')
+        self.assertEqual(self.problemas(), [])
+
+    def test_wa_text_vazio_reprova(self):
+        self.escrever("a.html", '<a href="https://wa.me/558189477459?text=">x</a>\n')
+        self.assertEqual(self.problemas(), ["a.html:1: wa.me sem ?text="])
+
+    def test_ola_rosiel_variantes(self):
+        self.escrever("a.html", "OLÁ ROSIEL\nhref=?text=Ol%C3%A1%20Rosiel\nhref=?text=Ol%C3%A1+Rosiel\n")
+        self.assertEqual(len(self.problemas()), 3)
+
     def test_repo_atual_limpo(self):
         self.assertEqual(checagens.checar(REPO), [])
 
