@@ -21,6 +21,12 @@ HISTORIA_DESCRICAO = (
     "Como um adolescente que programava no celular virou engenheiro sênior, mentor de desenvolvedores "
     "e fundador do ForjaDev."
 )
+FONTES = (
+    "https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800"
+    "&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap"
+)
+FONTES_ITALICO = FONTES.replace("0,9..40,500&", "0,9..40,500;1,9..40,300&")
+MARCADOR_CONTATO = "<!--contato-->"
 GSAP_HOME = (
     '<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>\n'
     '<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>\n'
@@ -47,8 +53,9 @@ def _url(caminho: str) -> str:
     return f"{SITE}/{caminho}"
 
 
-def _documento(caminho, titulo, descricao, css, corpo) -> Seguro:
-    return render("base", titulo=titulo, descricao=descricao, canonical=_url(caminho), css=css, corpo=corpo)
+def _documento(caminho, titulo, descricao, css, corpo, fontes=FONTES) -> Seguro:
+    return render("base", titulo=titulo, descricao=descricao, canonical=_url(caminho),
+                  fontes=Seguro(fontes), css=css, corpo=corpo)
 
 
 def _bloco_contato(estudio, tipo, alvo=None, slug=None) -> Seguro:
@@ -62,8 +69,12 @@ def _bloco_contato(estudio, tipo, alvo=None, slug=None) -> Seguro:
     )
 
 
-def _ler_conteudo(raiz: Path, *partes) -> Seguro:
-    return Seguro((Path(raiz) / "fonte" / "conteudo" / Path(*partes)).read_text(encoding="utf-8"))
+def _ler_conteudo(raiz: Path, partes, contato_html: Seguro) -> Seguro:
+    """Lê o conteúdo e põe o bloco de contato onde está o marcador."""
+    texto = (Path(raiz) / "fonte" / "conteudo" / Path(*partes)).read_text(encoding="utf-8")
+    if MARCADOR_CONTATO not in texto:
+        raise ValueError(f"conteúdo {'/'.join(partes)} sem o marcador {MARCADOR_CONTATO}")
+    return Seguro(texto.replace(MARCADOR_CONTATO, contato_html.rstrip("\n")))
 
 
 def _home(dados: Dados, raiz: Path) -> Pagina:
@@ -78,18 +89,17 @@ def _home(dados: Dados, raiz: Path) -> Pagina:
         codigo=codigo,
     )
     caminho = "index.html"
-    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, Seguro(GSAP_HOME), corpo)
+    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, Seguro(GSAP_HOME), corpo, FONTES_ITALICO)
     return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ())
 
 
 def _historia(dados: Dados, raiz: Path) -> Pagina:
     corpo = render(
         "historia",
-        conteudo=_ler_conteudo(raiz, "historia.html"),
-        contato=_bloco_contato(dados.estudio, "home"),
+        conteudo=_ler_conteudo(raiz, ("historia.html",), _bloco_contato(dados.estudio, "home")),
     )
     caminho = "historia.html"
-    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, Seguro(""), corpo)
+    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, render("historia_estilo"), corpo, FONTES_ITALICO)
     return Pagina(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, doc, dados.estudio.atualizado, ())
 
 
@@ -98,8 +108,9 @@ def _servico(s, dados: Dados, raiz: Path) -> Pagina:
         "servico",
         nome=s.nome,
         quem_toca=Seguro(""),
-        conteudo=_ler_conteudo(raiz, "servicos", f"{s.slug}.html"),
-        contato=_bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug),
+        conteudo=_ler_conteudo(
+            raiz, ("servicos", f"{s.slug}.html"),
+            _bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug)),
     )
     caminho = f"servicos/{s.slug}/index.html"
     css = Seguro('<link rel="stylesheet" href="/css/servico.css">')

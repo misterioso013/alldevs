@@ -71,6 +71,26 @@ class TestGerar(Base):
             self.assertIn(f"%5Bsite%C2%B7servico%C2%B7{slug}%5D", txt)
             self.assertIn("https://wa.me/558189477459?text=", txt)
 
+    def test_historia_style_no_head(self):
+        txt = (self.saida / "historia.html").read_text(encoding="utf-8")
+        head, _, corpo = txt.partition("</head>")
+        self.assertIn("<style>", head)
+        self.assertNotIn("<style", corpo)
+
+    def test_botoes_dentro_do_servico_cta(self):
+        for slug in TITULOS:
+            txt = (self.saida / "servicos" / slug / "index.html").read_text(encoding="utf-8")
+            cta = txt[txt.index('class="servico-cta"'):txt.index('servicos-relacionados')]
+            self.assertIn("https://wa.me/", cta, slug)
+            self.assertNotIn("<!--contato-->", txt)
+        hist = (self.saida / "historia.html").read_text(encoding="utf-8")
+        fecho = hist[hist.index('class="closing-inner'):hist.index("</section>", hist.index('class="closing-inner'))]
+        self.assertIn("https://wa.me/", fecho)
+
+    def test_fonte_com_italico_na_home_e_historia(self):
+        for nome in ("index.html", "historia.html"):
+            self.assertIn("0,9..40,500;1,9..40,300&display", (self.saida / nome).read_text(encoding="utf-8"))
+
     def test_home_com_origem_e_sem_numero_solto(self):
         txt = (self.saida / "index.html").read_text(encoding="utf-8")
         self.assertIn("%5Bsite%C2%B7home%5D", txt)
