@@ -77,6 +77,13 @@ class TestSitemap(unittest.TestCase):
         self.assertIn("<loc>https://all.dev.br/historia.html</loc>\n    <lastmod>2026-05-06</lastmod>", xml)
         self.assertNotIn("index.html", xml)
 
+    def test_sitemap_omite_pagina_nao_indexavel(self):
+        a = self.pag("projetos/a/index.html", "2026-01-01")
+        b = paginas.Pagina("projetos/b/index.html", "t", "d", paginas.Seguro(""), "2026-01-01", (), indexar=False)
+        xml = seo.sitemap([a, b])
+        self.assertIn("/projetos/a/", xml)
+        self.assertNotIn("/projetos/b/", xml)
+
     def test_sitemap_sem_vetado(self):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)

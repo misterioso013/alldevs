@@ -40,6 +40,7 @@ class Pagina:
     corpo: Seguro
     atualizado: str
     json_ld: tuple
+    indexar: bool = True
 
 
 def _documento(caminho, titulo, descricao, css, corpo, fontes=FONTES, json_ld=(), previa=False) -> Seguro:
@@ -92,6 +93,10 @@ def _selos(dados: Dados, autores) -> Seguro:
         f'<span class="selo selo-{esc(a)}">{esc(por_slug[a])}</span>' for a in autores))
 
 
+def _com_ano(tipo, ano) -> list:
+    return [str(tipo)] if ano is None else [str(tipo), str(ano)]
+
+
 def _cartao_pessoa(p) -> str:
     return (
         f'    <article class="cartao-pessoa" data-slug="{esc(p.slug)}">\n'
@@ -104,12 +109,12 @@ def _cartao_pessoa(p) -> str:
     )
 
 
-def _cartao_projeto(proj, dados: Dados, classe: str, com_autores: bool) -> str:
+def _cartao_projeto(proj, dados: Dados, classe: str, com_autores: bool, nivel: int = 3) -> str:
     attr = f' data-autores="{esc(" ".join(proj.autores))}"' if com_autores else ""
     return (
         f'    <article class="{classe}" data-slug="{esc(proj.slug)}"{attr}>\n'
-        f'      <p class="rotulo-mono">{esc(proj.tipo)} · {esc(proj.ano)}</p>\n'
-        f'      <h3><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h3>\n'
+        f'      <p class="rotulo-mono">{esc(" · ".join(_com_ano(proj.tipo, proj.ano)))}</p>\n'
+        f'      <h{nivel}><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h{nivel}>\n'
         f'      <p>{esc(proj.resumo)}</p>\n'
         f'      <p>{_selos(dados, proj.autores)}</p>\n'
         f'    </article>'
@@ -149,8 +154,12 @@ def _perfil(p, dados: Dados, previa: bool) -> Pagina:
         itens = "\n".join(
             f'    <li><a href="{esc(l["url"])}" rel="noopener">{esc(l.get("rotulo", l["url"]))}</a></li>' for l in p.links)
         links = f'  <ul class="perfil-links">\n{itens}\n  </ul>'
+    faz = "\n".join(f"    <li>{esc(x)}</li>" for x in p.faz)
+    historia = ""
+    if p.link_historia:
+        historia = '\n  <p><a class="link-seta perfil-historia" href="/historia.html">Leia a história</a></p>'
     corpo = render(
-        "perfil", **_cabecalho_e_rodape(dados),
+        "perfil", **_cabecalho_e_rodape(dados), faz=Seguro(faz), historia=Seguro(historia),
         nome=p.nome, papel=p.papel, papel_mono=p.papel_mono, frase=p.frase, foto=p.foto,
         links=Seguro(links), projetos=Seguro(projetos),
         contato=_bloco_contato(dados.estudio, "perfil", alvo=p.nome, slug=p.slug),
@@ -165,7 +174,7 @@ def _perfil(p, dados: Dados, previa: bool) -> Pagina:
 
 def _projetos(dados: Dados, previa: bool) -> Pagina:
     vis = visiveis(dados.projetos)
-    cartoes = "\n".join(_cartao_projeto(x, dados, "cartao-projeto", True) for x in vis)
+    cartoes = "\n".join(_cartao_projeto(x, dados, "cartao-projeto", True, 2) for x in vis)
     corpo = render(
         "projetos", **_cabecalho_e_rodape(dados), cartoes=Seguro(cartoes),
         contato=_bloco_contato(dados.estudio, "home"),
@@ -181,7 +190,7 @@ def _lista(itens) -> str:
 
 
 def _case(proj, dados: Dados, previa: bool) -> Pagina:
-    linha = f"{proj.tipo} · {proj.ano} · {_nomes(dados, proj.autores)} · {proj.situacao}"
+    linha = " · ".join([*_com_ano(proj.tipo, proj.ano), _nomes(dados, proj.autores), proj.situacao])
     resultado = ""
     if proj.resultado is not None:
         resultado = (f'\n  <section data-secao="resultado">\n    <h2>Resultado</h2>\n'
@@ -210,13 +219,13 @@ def _case(proj, dados: Dados, previa: bool) -> Pagina:
     caminho = f"projetos/{proj.slug}/index.html"
     titulo = f"{proj.nome}: {proj.tipo} — AllDevs"
     ld = (seo.json_ld_case(proj, dados),)
-    doc = _documento(caminho, titulo, proj.resumo, CSS_ESTILOS, corpo, json_ld=ld, previa=previa)
-    return Pagina(caminho, titulo, proj.resumo, doc, proj.atualizado, ld)
+    doc = _documento(caminho, titulo, proj.resumo, CSS_ESTILOS, corpo, json_ld=ld, previa=previa or proj.rascunho)
+    return Pagina(caminho, titulo, proj.resumo, doc, proj.atualizado, ld, indexar=not proj.rascunho)
 
 
 def _historia(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     corpo = render(
-        "historia",
+        "historia", **_cabecalho_e_rodape(dados),
         conteudo=_ler_conteudo(raiz, ("historia.html",), _bloco_contato(dados.estudio, "home")),
     )
     caminho = "historia.html"
@@ -226,7 +235,7 @@ def _historia(dados: Dados, raiz: Path, previa: bool) -> Pagina:
 
 def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     corpo = render(
-        "servico",
+        "servico", **_cabecalho_e_rodape(dados),
         nome=s.nome,
         quem_toca=Seguro(""),
         conteudo=_ler_conteudo(

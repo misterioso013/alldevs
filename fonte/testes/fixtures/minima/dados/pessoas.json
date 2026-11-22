@@ -8,7 +8,12 @@
     "foto": "assets/pessoas/bia.webp",
     "links": [],
     "cor": "laranja",
-    "atualizado": "2026-11-21"
+    "atualizado": "2026-11-21",
+    "faz": [
+      "a",
+      "b",
+      "c"
+    ]
   },
   {
     "slug": "ana",
@@ -24,6 +29,11 @@
       }
     ],
     "cor": "roxo",
-    "atualizado": "2026-11-21"
+    "atualizado": "2026-11-21",
+    "faz": [
+      "a",
+      "b",
+      "c"
+    ]
   }
 ]

@@ -52,18 +52,38 @@ class TestPaginas(Base):
         self.assertRegex(txt, r'<a href="#contato"[^>]*>Pedir orçamento</a>')
 
     def test_sem_formulario_nem_botao_flutuante(self):
-        for arq in self.saida.rglob("index.html"):
+        for arq in self.saida.rglob("*.html"):
             txt = ler(arq)
             self.assertNotIn("wa-float", txt, arq)
             self.assertNotIn("<form", txt, arq)
 
     def test_cabecalho_pedir_orcamento_em_todas(self):
-        for arq in ("index.html", "caio/index.html", "rosiel/index.html", "projetos/index.html"):
-            self.assertIn('class="nav-cta">Pedir orçamento</a>', ler(self.saida / arq), arq)
+        paginas = list(self.saida.rglob("*.html"))
+        self.assertGreaterEqual(len(paginas), 15)
+        for arq in paginas:
+            txt = ler(arq)
+            self.assertIn('class="nav-cta">Pedir orçamento</a>', txt, arq)
+            self.assertIn('class="cabecalho"', txt, arq)
+            self.assertIn('class="site-footer"', txt, arq)
+            self.assertIn('id="contato"', txt, arq)
+
+    def test_rodape_sem_pular_nivel_de_titulo(self):
+        for rel in ("index.html", "caio/index.html", "rosiel/index.html", "projetos/index.html",
+                    "projetos/prosup/index.html"):
+            niveis = [int(n) for n in re.findall(r"<h([1-6])\b", ler(self.saida / rel))]
+            self.assertEqual(niveis[0], 1, rel)
+            for a, b in zip(niveis, niveis[1:]):
+                self.assertLessEqual(b, a + 1, f"{rel}: h{a} -> h{b}")
+
+    def test_sem_texto_de_bastidor(self):
+        for arq in self.saida.rglob("*.html"):
+            txt = ler(arq).lower()
+            for frase in ("aguarda", "bancada", "dados reais", "rascunho"):
+                self.assertNotIn(frase, txt, f"{arq}: {frase}")
 
     def test_sem_ola_rosiel(self):
         for arq in self.saida.rglob("*.html"):
-            self.assertIsNone(re.search(r"Ol(á|%C3%A1)[\s+]*(%20)*Rosiel", ler(arq), re.I), arq)
+            self.assertIsNone(re.search(r"Ol(?:á|%C3%A1)(?:,|%2C)?(?:[\s+]|%20)+Rosiel", ler(arq), re.I), arq)
 
     def test_wa_do_case_e_do_perfil(self):
         self.assertIn("%5Bsite%C2%B7case%C2%B7prosup%5D", ler(self.saida / "projetos/prosup/index.html"))
@@ -77,7 +97,7 @@ class TestPaginas(Base):
 
     def test_sitemap_tem_perfis_projetos_e_cases(self):
         mapa = ler(self.saida / "sitemap.xml")
-        for u in ("/caio/", "/rosiel/", "/projetos/", "/projetos/prosup/", "/projetos/heisuca/"):
+        for u in ("/caio/", "/rosiel/", "/projetos/", "/historia.html"):
             self.assertIn(f"<loc>https://all.dev.br{u}</loc>", mapa)
 
     def test_json_ld_de_perfil_e_case(self):
@@ -149,22 +169,13 @@ class TestPerfis(Base):
 
 class TestVetado(unittest.TestCase):
     def test_vetado_nao_aparece(self):
-        tmp = tempfile.TemporaryDirectory()
-        self.addCleanup(tmp.cleanup)
-        raiz = Path(tmp.name) / "raiz"
-        shutil.copytree(REPO / "fonte", raiz / "fonte", ignore=shutil.ignore_patterns("__pycache__", "testes"))
-        shutil.copytree(REPO / "assets", raiz / "assets")
-        arq = raiz / "fonte" / "dados" / "projetos.json"
-        projetos = json.loads(arq.read_text(encoding="utf-8"))
-        vetado = dict(projetos[0], slug="segredo-vetado", nome="Segredo Vetado", visivel=False, destaque=True,
-                      autores=["caio", "rosiel"])
-        arq.write_text(json.dumps(projetos + [vetado]), encoding="utf-8")
-        rc, _, err = rodar("--raiz", str(raiz))
-        self.assertEqual(rc, 0, err)
+        raiz = gerar_copia(self, lambda ps: ps + [
+            modelo(ps, slug="visivel-ok", nome="Visivel Ok", rascunho=False),
+            modelo(ps, slug="segredo-vetado", nome="Segredo Vetado", visivel=False, destaque=True,
+                   rascunho=False, autores=["caio", "rosiel"])])
         # controle positivo: o visível aparece em todos os pontos
-        visivel = projetos[0]["slug"]
-        for pagina in ("index.html", "projetos/index.html", "rosiel/index.html" if "rosiel" in projetos[0]["autores"] else "caio/index.html",
-                       "sitemap.xml"):
+        visivel = "visivel-ok"
+        for pagina in ("index.html", "projetos/index.html", "caio/index.html", "sitemap.xml"):
             self.assertIn(f"/projetos/{visivel}/", ler(raiz / pagina), pagina)
         self.assertTrue((raiz / "projetos" / visivel / "index.html").is_file())
         # vetado: nem página nem menção
@@ -174,6 +185,115 @@ class TestVetado(unittest.TestCase):
                 txt = ler(arq).lower()
                 self.assertNotIn("segredo-vetado", txt, arq)
                 self.assertNotIn("segredo vetado", txt, arq)
+
+
+def gerar_copia(testcase, editar):
+    """Copia o repo, edita a lista de projetos e gera (produção). Devolve a raiz."""
+    tmp = tempfile.TemporaryDirectory()
+    testcase.addCleanup(tmp.cleanup)
+    raiz = Path(tmp.name) / "raiz"
+    shutil.copytree(REPO / "fonte", raiz / "fonte", ignore=shutil.ignore_patterns("__pycache__", "testes"))
+    shutil.copytree(REPO / "assets", raiz / "assets")
+    arq = raiz / "fonte" / "dados" / "projetos.json"
+    projetos = json.loads(arq.read_text(encoding="utf-8"))
+    arq.write_text(json.dumps(editar(projetos)), encoding="utf-8")
+    rc, _, err = rodar("--raiz", str(raiz))
+    testcase.assertEqual(rc, 0, err)
+    return raiz
+
+
+def modelo(projetos, **mudancas):
+    base = next(p for p in projetos if p["slug"] == "heisuca")
+    return dict(base, **mudancas)
+
+
+class TestRascunhoNoindex(unittest.TestCase):
+    def test_rascunho_noindex_e_fora_do_sitemap_e_publicado_nao(self):
+        raiz = gerar_copia(self, lambda ps: ps + [
+            modelo(ps, slug="pronto", nome="Pronto", rascunho=False),
+            modelo(ps, slug="esboco", nome="Esboco", rascunho=True)])
+        mapa = ler(raiz / "sitemap.xml")
+        noindex = '<meta name="robots" content="noindex">'
+        self.assertIn(noindex, ler(raiz / "projetos/esboco/index.html"))
+        self.assertNotIn("/projetos/esboco/", mapa)
+        self.assertNotIn(noindex, ler(raiz / "projetos/pronto/index.html"))
+        self.assertIn("/projetos/pronto/", mapa)
+        self.assertNotIn(noindex, ler(raiz / "index.html"))
+
+    def test_rascunhos_reais_noindex_fora_do_sitemap(self):
+        raiz = gerar_copia(self, lambda ps: ps)
+        mapa = ler(raiz / "sitemap.xml")
+        for slug in ("prosup", "fakly", "sendany", "heisuca"):
+            self.assertIn('name="robots" content="noindex"', ler(raiz / "projetos" / slug / "index.html"))
+            self.assertNotIn(f"/projetos/{slug}/", mapa)
+
+
+class TestAno(unittest.TestCase):
+    def test_ano_null_some_da_linha_mono_e_do_json_ld(self):
+        raiz = gerar_copia(self, lambda ps: ps + [
+            modelo(ps, slug="sem-ano", nome="Sem Ano", ano=None, rascunho=False),
+            modelo(ps, slug="com-ano", nome="Com Ano", ano=2031, rascunho=False)])
+        txt = ler(raiz / "projetos/sem-ano/index.html")
+        self.assertIn("app · Caio Guerras · no ar", txt)
+        self.assertNotIn("None", txt)
+        self.assertNotIn("· 2026", txt)
+        com = ler(raiz / "projetos/com-ano/index.html")
+        self.assertIn("app · 2031 · Caio Guerras · no ar", com)
+        ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', txt, re.S).group(1)
+        self.assertNotRegex(ld, r"\b(19|20)\d\d\b")
+        self.assertNotIn("None", ler(raiz / "projetos/index.html"))
+        self.assertIn("app · 2031<", ler(raiz / "projetos/index.html"))
+
+    def test_proprios_sem_ano(self):
+        dados = D.carregar(REPO)
+        por = {p.slug: p for p in dados.projetos}
+        for s in ("prosup", "fakly", "sendany"):
+            self.assertIsNone(por[s].ano)
+        self.assertEqual(por["heisuca"].ano, 2026)
+
+
+class TestControlesPositivos(unittest.TestCase):
+    def test_resultado_preenchido_aparece(self):
+        raiz = gerar_copia(self, lambda ps: ps + [
+            modelo(ps, slug="com-resultado", nome="Com Resultado", resultado="12 lojas atendidas", rascunho=False),
+            modelo(ps, slug="sem-resultado", nome="Sem Resultado", resultado=None, rascunho=False)])
+        com = ler(raiz / "projetos/com-resultado/index.html")
+        self.assertIn("<h2>Resultado</h2>", com)
+        self.assertIn("12 lojas atendidas", com)
+        self.assertNotIn("Resultado</h2>", ler(raiz / "projetos/sem-resultado/index.html"))
+
+    def test_destaque_false_fora_da_home_mas_no_portfolio(self):
+        raiz = gerar_copia(self, lambda ps: ps + [
+            modelo(ps, slug="discreto", nome="Discreto", destaque=False, rascunho=False),
+            modelo(ps, slug="vitrine", nome="Vitrine", destaque=True, rascunho=False)])
+        home = ler(raiz / "index.html")
+        self.assertIn('data-slug="vitrine"', home)
+        self.assertNotIn("/projetos/discreto/", home)
+        port = ler(raiz / "projetos/index.html")
+        self.assertIn('data-slug="discreto"', port)
+        self.assertIn('data-slug="vitrine"', port)
+
+
+class TestPerfilConteudo(Base):
+    def test_faz_com_tres_itens_nos_dois_perfis(self):
+        for slug in ("caio", "rosiel"):
+            txt = ler(self.saida / slug / "index.html")
+            m = re.search(r'<section[^>]*data-secao="faz".*?</section>', txt, re.S)
+            self.assertIsNotNone(m, slug)
+            self.assertIn("O que eu faço", m.group(0))
+            self.assertEqual(len(re.findall(r"<li>", m.group(0))), 3, slug)
+
+    def test_link_para_historia_so_no_rosiel(self):
+        self.assertIn('class="link-seta perfil-historia" href="/historia.html"',
+                      ler(self.saida / "rosiel/index.html"))
+        self.assertNotIn("perfil-historia", ler(self.saida / "caio/index.html"))
+
+    def test_dados_exigem_exatamente_tres_faz(self):
+        from dataclasses import replace
+        d = D.carregar(REPO)
+        ruim = replace(d, pessoas=(replace(d.pessoas[0], faz=("a", "b")), *d.pessoas[1:]))
+        erros = D.validar(ruim, REPO)[0]
+        self.assertTrue([e for e in erros if "faz" in e and "3" in e], erros)
 
 
 class TestAvisos(unittest.TestCase):

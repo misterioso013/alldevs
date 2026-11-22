@@ -37,6 +37,8 @@ class Pessoa:
     links: tuple
     cor: str
     atualizado: str
+    faz: tuple = ()
+    link_historia: bool = False
 
 
 @dataclass(frozen=True)
@@ -46,7 +48,7 @@ class Projeto:
     autores: tuple
     tipo: str
     situacao: str
-    ano: int
+    ano: "int | None"
     resumo: str
     problema: str
     fizemos: tuple
@@ -168,6 +170,10 @@ def validar(dados: Dados, raiz: Path):
         if p.cor not in CORES:
             e(f"{rot}: cor inválida: {p.cor!r}")
         data(rot, p.atualizado)
+        if len(p.faz) != 3 or not all(isinstance(x, str) and x for x in p.faz):
+            e(f"{rot}: faz deve ter exatamente 3 textos (veio {len(p.faz)})")
+        if not isinstance(p.link_historia, bool):
+            e(f"{rot}: link_historia deve ser booleano")
         if not (raiz / p.foto).is_file():
             e(f"{rot}: foto inexistente: {p.foto}")
         for l in p.links:
@@ -181,8 +187,8 @@ def validar(dados: Dados, raiz: Path):
             e(f"{rot}: tipo inválido: {p.tipo!r}")
         if p.situacao not in SITUACOES:
             e(f"{rot}: situacao inválida: {p.situacao!r}")
-        if not isinstance(p.ano, int) or isinstance(p.ano, bool):
-            e(f"{rot}: ano deve ser inteiro")
+        if p.ano is not None and (not isinstance(p.ano, int) or isinstance(p.ano, bool)):
+            e(f"{rot}: ano deve ser inteiro ou null")
         data(rot, p.atualizado)
         for campo in ("visivel", "destaque", "rascunho"):
             if not isinstance(getattr(p, campo), bool):

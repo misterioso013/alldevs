@@ -86,7 +86,7 @@ def sitemap(paginas) -> str:
     linhas = ['<?xml version="1.0" encoding="UTF-8"?>',
               "<!-- gerado por fonte/gerar.py — não editar -->",
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for p in paginas:
+    for p in (p for p in paginas if p.indexar):
         linhas += ["  <url>",
                    f"    <loc>{escape(url_publica(p.caminho))}</loc>",
                    f"    <lastmod>{escape(p.atualizado)}</lastmod>",

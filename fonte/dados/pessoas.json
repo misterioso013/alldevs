@@ -8,7 +8,13 @@
     "foto": "assets/images/caio.jpeg",
     "links": [],
     "cor": "roxo",
-    "atualizado": "2026-11-22"
+    "atualizado": "2026-11-22",
+    "faz": [
+      "Infraestrutura que fica no ar",
+      "Mídia: players e fluxo de conteúdo",
+      "Apps para Android, TV e web"
+    ],
+    "link_historia": false
   },
   {
     "slug": "rosiel",
@@ -19,6 +25,12 @@
     "foto": "assets/images/rosiel.jpg",
     "links": [],
     "cor": "laranja",
-    "atualizado": "2026-11-22"
+    "atualizado": "2026-11-22",
+    "faz": [
+      "Produtos próprios, da ideia ao ar",
+      "Sites e aplicações web",
+      "Automações, bots e integrações por API"
+    ],
+    "link_historia": true
   }
 ]
