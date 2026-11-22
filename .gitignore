@@ -1,1 +1,5 @@
 __pycache__/
+
+dist-previa/
+bancada/node_modules/
+bancada/relatorios/*/*.png
