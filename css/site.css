@@ -233,8 +233,11 @@ main > .breadcrumb + section { border-top: 0; }
 }
 
 /* Inspetor do hero (js/inspetor.js): janela com uma tela real e caixas por cima.
-   Sem transform: as caixas andam por left/top/width/height; sem JS fica só a imagem. */
-.hero-janela { position: relative; }
+   As caixas não andam: nascem no lugar (left/top/width/height postos uma vez, sem transição) e o percurso
+   só acende e apaga por opacidade, então não há mudança de layout. Sem JS fica só a imagem.
+   --proximo: largura do botão "próxima tela", um segmento da barra no canto direito. */
+.hero-janela { position: relative; --proximo: 136px; }
+@media (max-width: 479px) { .hero-janela { --proximo: 44px; } }
 .inspetor {
   --cor-autor: var(--caio);
   --cor-autor-texto: var(--caio-texto);
@@ -247,8 +250,8 @@ main > .breadcrumb + section { border-top: 0; }
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 44px;
-  padding: 8px 12px;
+  min-height: 45px;
+  padding: 8px calc(var(--proximo) + 12px) 8px 12px;
   border-bottom: 1px solid var(--grade);
   font-family: var(--fonte-mono);
   font-size: 0.75rem;
@@ -265,6 +268,9 @@ main > .breadcrumb + section { border-top: 0; }
   border-radius: 999px;
   color: var(--cor-autor-texto);
   white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .inspetor-palco {
   position: relative;
@@ -304,9 +310,10 @@ main > .breadcrumb + section { border-top: 0; }
   border-image: repeating-linear-gradient(-45deg, var(--cor-autor) 0 1px, transparent 1px 4px) 4;
   outline: 1px solid var(--cor-autor);
   pointer-events: none;
-  transition: left var(--t-medio) var(--curva), top var(--t-medio) var(--curva),
-    width var(--t-medio) var(--curva), height var(--t-medio) var(--curva), opacity var(--t-curto) var(--curva);
+  opacity: 0;
+  transition: opacity var(--t-curto) var(--curva);
 }
+.inspetor-caixa.aceso { opacity: 1; }
 .inspetor-caixa::before,
 .inspetor-caixa::after {
   content: "";
@@ -357,21 +364,29 @@ main > .breadcrumb + section { border-top: 0; }
 .inspetor:not(.ativo) .inspetor-codigo code { visibility: hidden; }
 .inspetor-proximo {
   position: absolute;
-  top: 6px;
-  right: 8px;
-  min-height: 32px;
-  padding: 4px 12px;
-  border: 1px solid var(--grade);
-  border-radius: 4px;
+  top: 1px;
+  right: 1px;
+  width: var(--proximo);
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-left: 1px solid var(--grade);
+  border-radius: 0 3px 0 0;
   background: var(--fundo);
   color: var(--claro);
   font: 0.75rem / 1 var(--fonte-mono);
+  white-space: nowrap;
   cursor: pointer;
-  transition: border-color var(--t-curto) var(--curva);
+  transition: color var(--t-curto) var(--curva), background-color var(--t-curto) var(--curva);
 }
 .inspetor-proximo:hover,
-.inspetor-proximo:focus-visible { border-color: var(--claro); }
+.inspetor-proximo:focus-visible { background: var(--grade); }
 .inspetor-proximo::after { content: " →"; }
+/* Na tela estreita fica só a seta; o nome do botão vem do aria-label. */
+@media (max-width: 479px) {
+  .inspetor-proximo { padding: 0; }
+  .inspetor-proximo-texto { display: none; }
+}
 
 /* ---------- Cartões ---------- */
 .cartao-pessoa,

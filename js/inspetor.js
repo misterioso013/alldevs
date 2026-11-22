@@ -1,5 +1,6 @@
 /* Inspetor do hero: percorre as caixas da tela (~1,2 s cada) e troca de tela (~8 s), na ordem de
-   estudio.inspetor. Sem dependência e sem transform (as caixas andam por left/top/width/height).
+   estudio.inspetor. Sem dependência. As caixas não andam: cada tela ganha um alvo novo com uma caixa por item, já no lugar,
+   e o percurso só acende e apaga (opacidade); a caixa salta, nada desliza, sem CLS.
    Para fora da tela e com a aba escondida. Com reduced-motion: 2 caixas acesas e paradas.
    A troca de tela só começa depois do 1º gesto do visitante (toque, clique, tecla, roda): uma imagem nova
    pintada antes disso viraria um LCP tardio (~9 s) para quem só olha; depois do gesto o LCP já fechou.
@@ -25,7 +26,7 @@
   var calmo = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   var PASSO = 1200, POR_TELA = 8000;
   var atual = 0, indice = 0, tempo = 0, visivel = false, mouse = false, trocando = false, mexeu = false;
-  var timer = null, caixas = [], carregadas = {};
+  var timer = null, alvo = null, caixas = [], carregadas = {};
   carregadas[telas[0].imagem] = true;
 
   // Mesmo token de movimento do resto do site (css/tokens.css).
@@ -35,42 +36,37 @@
     return isFinite(v) ? v : 450;
   }
 
-  function proporcao(t) {
+  // Alvo da tela t: mesma proporção da imagem, na mesma célula da grade (ver css/site.css), com todas as
+  // caixas já posicionadas e apagadas. Trocar o alvo inteiro (nó novo) não conta como mudança de layout.
+  function montaAlvo(t) {
+    if (alvo) tela.removeChild(alvo);
+    alvo = doc.createElement("div");
+    alvo.className = "inspetor-alvo";
     alvo.style.setProperty("--w", t.w);
     alvo.style.setProperty("--h", t.h);
+    caixas = [];
+    for (var i = 0; i < t.caixas.length; i++) {
+      var c = t.caixas[i], el = doc.createElement("div"), rot = doc.createElement("span");
+      el.className = "inspetor-caixa" + (c.y < 8 ? " embaixo" : "") + (c.x > 50 ? " direita" : "");
+      el.style.left = c.x + "%";
+      el.style.top = c.y + "%";
+      el.style.width = c.w + "%";
+      el.style.height = c.h + "%";
+      rot.className = "inspetor-rotulo";
+      rot.textContent = c.tag + "." + c.classe + " · " + c.medida;
+      el.appendChild(rot);
+      alvo.appendChild(el);
+      caixas.push(el);
+    }
+    tela.appendChild(alvo);
   }
 
-  function criaCaixa() {
-    var el = doc.createElement("div");
-    el.className = "inspetor-caixa";
-    var rot = doc.createElement("span");
-    rot.className = "inspetor-rotulo";
-    el.appendChild(rot);
-    alvo.appendChild(el);
-    return el;
-  }
-
-  function poe(el, c) {
-    el.style.left = c.x + "%";
-    el.style.top = c.y + "%";
-    el.style.width = c.w + "%";
-    el.style.height = c.h + "%";
-    el.classList.toggle("embaixo", c.y < 8);
-    el.classList.toggle("direita", c.x > 50);
-    el.firstChild.textContent = c.tag + "." + c.classe + " · " + c.medida;
-  }
-
+  // Acende a caixa i (e, no modo calmo, também a 1) e apaga as outras.
   function mostra(i) {
     var lista = telas[atual].caixas;
     indice = (i + lista.length) % lista.length;
-    poe(caixas[0], lista[indice]);
+    for (var j = 0; j < caixas.length; j++) caixas[j].classList.toggle("aceso", j === indice || (calmo && j === 1));
     codigo.textContent = lista[indice].codigo;
-  }
-
-  function inicio() {
-    var lista = telas[atual].caixas;
-    mostra(0);
-    if (calmo && caixas[1] && lista.length > 1) poe(caixas[1], lista[1]);
   }
 
   function carrega(n, pronto) {
@@ -92,7 +88,7 @@
     var prox = (n + telas.length) % telas.length;
     trocando = true;
     carrega(prox, function (ok) {
-      if (!ok) { trocando = false; return; }
+      if (!ok) { trocando = false; tempo = 0; return; }
       tela.classList.add("trocando");
       setTimeout(function () {
         var t = telas[prox];
@@ -101,13 +97,15 @@
         img.alt = "Tela do " + t.nome;
         img.width = t.w;
         img.height = t.h;
-        proporcao(t);
+        montaAlvo(t);
         raiz.className = "inspetor ativo inspetor-" + t.cor;
         if (selo) selo.textContent = t.nome + " · " + t.autor;
-        inicio();
+        mostra(0);
         tela.classList.remove("trocando");
         trocando = false;
         tempo = 0;
+        para(); // a caixa 0 da tela nova fica um passo inteiro
+        agenda();
         // Já busca a seguinte enquanto esta fica no ar.
         carrega((prox + 1) % telas.length);
       }, duracao());
@@ -121,12 +119,10 @@
     timer = null;
     if (!rodando()) return;
     if (!mouse && !trocando) {
-      tempo += PASSO;
+      // Sem gesto, o tempo fica preso em POR_TELA: o 1º gesto depois dos 8 s troca já no próximo tique.
+      tempo = Math.min(tempo + PASSO, POR_TELA);
       if (tempo >= POR_TELA && mexeu) vaiTela(atual + 1);
-      else {
-        if (tempo >= POR_TELA) tempo = 0; // ninguém mexeu: segue nas caixas desta tela
-        mostra(indice + 1);
-      }
+      else mostra(indice + 1);
     }
     agenda();
   }
@@ -148,7 +144,7 @@
   }
 
   palco.addEventListener("pointermove", function (ev) {
-    if (ev.pointerType !== "mouse" || trocando) return;
+    if (calmo || ev.pointerType !== "mouse" || trocando) return;
     mouse = true;
     var i = sob(ev);
     if (i >= 0 && i !== indice) mostra(i);
@@ -158,7 +154,7 @@
   });
   // Toque (ou clique) inspeciona a caixa; não chama preventDefault, então não prende a rolagem.
   palco.addEventListener("click", function (ev) {
-    if (trocando) return;
+    if (calmo || trocando) return;
     var i = sob(ev);
     if (i < 0) return;
     mostra(i);
@@ -175,15 +171,10 @@
     });
   }
 
-  // Alvo das caixas: mesma proporção da imagem, na mesma célula da grade (ver css/site.css).
-  var alvo = doc.createElement("div");
-  alvo.className = "inspetor-alvo";
-  tela.appendChild(alvo);
-  proporcao(telas[0]);
-  caixas.push(criaCaixa());
-  if (calmo) caixas.push(criaCaixa());
+  // Modo calmo: 2 caixas acesas e paradas (hover e clique não as movem; o botão ainda troca a tela).
+  montaAlvo(telas[0]);
   raiz.classList.add("ativo");
-  inicio();
+  mostra(0);
 
   var GESTOS = ["pointerdown", "keydown", "wheel", "touchstart"];
   function acorda() {

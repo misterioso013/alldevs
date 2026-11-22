@@ -21,6 +21,11 @@ Aviso: não gere a prévia dentro do repo (`dist-previa/`): `checar.py` varre o 
 Gera `RELATORIO.md` (resumo + uma tabela por meta) e as capturas PNG (ignoradas pelo git). Sai com rc 1 se alguma meta falhar.
 Páginas medidas: as do `sitemap.xml` mais os links internos `.html`/diretório achados nelas (um nível).
 
+Só o caso do inspetor do hero (~45 s, os cenários rodam em paralelo), com a mesma prévia e o mesmo servidor:
+```
+node bancada/inspetor.mjs --url http://127.0.0.1:8765/     # uma linha por cenário; rc 1 se algum falhar
+```
+
 ## Metas
 - **Capturas**: página em 430 e 1440 px.
 - **axe**: zero problemas `serious` ou `critical`, em 430 e em 1440 px.
@@ -30,6 +35,12 @@ Toda página precisa responder 200; página sem medição numa meta conta como F
 - **Links**: links internos respondem 200 sem redirecionamento (diretório sem barra final dá 301 e conta como falha).
 - **Movimento**: com `reducedMotion: reduce`, nenhum elemento com `transform` diferente de `none` após 1 s.
 - **Lighthouse**: predefinição móvel (4G simulado), LCP < 2500 ms e CLS < 0,05.
+- **Inspetor** (`bancada/inspetor.mjs`, só nas páginas com `class="inspetor "`; as outras passam como "sem inspetor"):
+  CLS = maior janela de sessão (1 s entre mudanças, 5 s no máximo) sem as mudanças com `hadRecentInput`.
+  - 360, 430 e 1440 px, 12 s sem gesto: CLS < 0,05, o percurso anda (≥ 3 textos de código), a tela NÃO troca e todo LCP é o `<h1>`;
+  - 360, 430 e 1440 px, tecla aos 0,5 s e 40 s abertos, mouse passando no palco a cada 5 s: CLS < 0,05 e ≥ 2 trocas de tela;
+  - `reducedMotion: reduce`: 2 caixas acesas em lugares diferentes, paradas depois de hover e clique nelas;
+  - 360, 412, 430 e 1440 px: botão "próxima tela" com altura ≥ 44 px e sem sobrepor o selo do autor.
 
 ## Máquina sem as libs do Chrome (Whatbox)
 Faltam `libgbm`, `libxkbcommon` etc. Baixe os .deb do Debian bookworm (libgbm1, libdrm2, libwayland-server0, libxkbcommon0),

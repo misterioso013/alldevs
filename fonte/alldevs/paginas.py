@@ -135,12 +135,18 @@ def _cartao_projeto(proj, dados: Dados, classe: str, com_autores: bool, nivel: i
 def _tamanho_webp(arq: Path) -> tuple:
     """(largura, altura) de um WebP pelo cabeçalho RIFF (VP8, VP8L ou VP8X), sem dependência."""
     b = arq.read_bytes()[:30]
+    if len(b) < 30:
+        raise ValueError(f"{arq}: WebP curto demais")
     if b[:4] != b"RIFF" or b[8:12] != b"WEBP":
         raise ValueError(f"{arq}: não é WebP")
     tipo = b[12:16]
     if tipo == b"VP8 ":
+        if b[23:26] != b"\x9d\x01\x2a":  # código de início do quadro-chave VP8
+            raise ValueError(f"{arq}: VP8 sem assinatura de quadro-chave")
         return int.from_bytes(b[26:28], "little") & 0x3FFF, int.from_bytes(b[28:30], "little") & 0x3FFF
     if tipo == b"VP8L":
+        if b[20] != 0x2F:  # assinatura do VP8L sem perda
+            raise ValueError(f"{arq}: VP8L sem assinatura 0x2f")
         v = int.from_bytes(b[21:25], "little")
         return (v & 0x3FFF) + 1, ((v >> 14) & 0x3FFF) + 1
     if tipo == b"VP8X":
@@ -185,7 +191,7 @@ def _inspetor(dados: Dados, raiz: Path) -> Seguro:
         f'    <p class="inspetor-codigo"><code>/* {esc(t["slug"])}.webp · {t["w"]}×{t["h"]} */</code></p>\n'
         f'  </div><!-- /inspetor -->\n'
         f'  <button type="button" class="inspetor-proximo" aria-label="Mostrar a próxima tela de produto" hidden>'
-        f'próxima tela</button>\n'
+        f'<span class="inspetor-proximo-texto">próxima tela</span></button>\n'
         f'  <script type="application/json" id="inspecao">{bloco}</script>\n'
         f'  <script src="/js/inspetor.js" defer></script>'
     )

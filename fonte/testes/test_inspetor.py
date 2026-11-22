@@ -2,6 +2,7 @@
 import json
 import re
 import struct
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -14,25 +15,7 @@ PASTA_IMG = REPO / "assets" / "inspetor"
 CAMPOS = ("x", "y", "w", "h", "tag", "classe", "medida", "codigo")
 
 
-def tamanho_webp(caminho: Path):
-    """(largura, altura) de um WebP lendo só o cabeçalho RIFF (VP8, VP8L ou VP8X)."""
-    b = caminho.read_bytes()[:40]
-    if b[:4] != b"RIFF" or b[8:12] != b"WEBP":
-        raise ValueError(f"{caminho}: não é WebP")
-    tipo = b[12:16]
-    if tipo == b"VP8 ":
-        if b[23:26] != b"\x9d\x01\x2a":
-            raise ValueError(f"{caminho}: VP8 sem assinatura de quadro")
-        w, h = struct.unpack("<HH", b[26:30])
-        return w & 0x3FFF, h & 0x3FFF
-    if tipo == b"VP8L":
-        if b[20] != 0x2F:
-            raise ValueError(f"{caminho}: VP8L sem assinatura")
-        v = int.from_bytes(b[21:25], "little")
-        return (v & 0x3FFF) + 1, ((v >> 14) & 0x3FFF) + 1
-    if tipo == b"VP8X":
-        return int.from_bytes(b[24:27], "little") + 1, int.from_bytes(b[27:30], "little") + 1
-    raise ValueError(f"{caminho}: bloco WebP desconhecido {tipo!r}")
+tamanho_webp = paginas._tamanho_webp  # leitor único (o do gerador)
 
 
 def telas():
@@ -106,12 +89,50 @@ class TestScript(unittest.TestCase):
         self.assertNotIn("gsap", js.lower())
         self.assertNotIn("getContext", js)  # sem canvas/WebGL
 
-    def test_troca_de_tela_espera_gesto(self):
-        # Imagem nova pintada antes do 1º gesto vira LCP tardio; a troca automática espera o visitante mexer.
-        js = (REPO / "js" / "inspetor.js").read_text(encoding="utf-8")
-        for gesto in ("pointerdown", "keydown"):
-            self.assertIn(f'"{gesto}"', js)
-        self.assertIn("tempo >= POR_TELA && mexeu", js)
+    def test_caixas_sem_transicao_de_geometria(self):
+        # A caixa pula (spec §7): nenhuma regra do inspetor anima left/top/width/height/inset (CLS em runtime).
+        # O comportamento (gesto -> troca, reduced-motion, CLS) é medido na bancada: bancada/inspetor.mjs.
+        css = (REPO / "css" / "site.css").read_text(encoding="utf-8")
+        regras = re.findall(r"([^{}]*\.inspetor[^{}]*)\{([^{}]*)\}", css)
+        self.assertTrue(regras)
+        for sel, corpo in regras:
+            for m in re.finditer(r"transition(?:-property)?\s*:([^;]*)", corpo):
+                for prop in ("left", "top", "width", "height", "inset", "right", "bottom", "all"):
+                    self.assertNotRegex(m.group(1), rf"(^|[\s,]){prop}(\s|,|$)", f"{sel.strip()}: transição de {prop}")
+            self.assertNotIn("transform", corpo, f"{sel.strip()}: sem transform no inspetor")
+
+    def test_botao_proximo_44px(self):
+        css = (REPO / "css" / "site.css").read_text(encoding="utf-8")
+        m = re.search(r"\n\.inspetor-proximo\s*\{([^}]*)\}", css)
+        self.assertIsNotNone(m)
+        self.assertRegex(m.group(1), r"min-height:\s*44px")
+
+
+class TestLeitorWebp(unittest.TestCase):
+    def _arq(self, conteudo: bytes) -> Path:
+        d = tempfile.mkdtemp()
+        f = Path(d) / "x.webp"
+        f.write_bytes(conteudo)
+        return f
+
+    def test_vp8_exige_assinatura(self):
+        cab = b"RIFF" + b"\0" * 4 + b"WEBP" + b"VP8 " + b"\0" * 4 + b"\0" * 3
+        bom = cab + b"\x9d\x01\x2a" + struct.pack("<HH", 480, 384) + b"\0" * 10
+        self.assertEqual(paginas._tamanho_webp(self._arq(bom)), (480, 384))
+        ruim = cab + b"\0\0\0" + struct.pack("<HH", 480, 384) + b"\0" * 10
+        with self.assertRaises(ValueError):
+            paginas._tamanho_webp(self._arq(ruim))
+
+    def test_vp8l_exige_assinatura(self):
+        v = (480 - 1) | ((384 - 1) << 14)
+        cab = b"RIFF" + b"\0" * 4 + b"WEBP" + b"VP8L" + b"\0" * 4
+        bom = cab + b"\x2f" + v.to_bytes(4, "little") + b"\0" * 15
+        self.assertEqual(paginas._tamanho_webp(self._arq(bom)), (480, 384))
+        with self.assertRaises(ValueError):
+            paginas._tamanho_webp(self._arq(cab + b"\x00" + v.to_bytes(4, "little") + b"\0" * 15))
+
+    def test_teste_usa_o_leitor_do_gerador(self):
+        self.assertIs(tamanho_webp, paginas._tamanho_webp)
 
 
 class TestHero(unittest.TestCase):
