@@ -1,0 +1,13 @@
+[
+  {
+    "slug": "site",
+    "nome": "Site",
+    "titulo": "Site — Teste",
+    "descricao": "Descrição de serviço com o tamanho certo para o resultado de busca: nem curta nem longa demais, ajustada para caber entre 140 e 160 letras, sem nenhuma sobra.",
+    "resumo": "Resumo do serviço.",
+    "quem_toca": [
+      "ana"
+    ],
+    "atualizado": "2026-11-21"
+  }
+]
