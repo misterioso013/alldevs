@@ -2,7 +2,7 @@
 //  a) 1440 px, teclado: sem pedido do paleta.json na carga; Ctrl K abre (foco no campo, 1 pedido, todos os itens);
 //     seta muda a opção (aria-activedescendant), a busca ignora acento, Enter navega até o destino da opção;
 //     Esc devolve o foco a quem o tinha (o logo); ⌘K (Meta+K) também abre; axe com a paleta aberta (0 serious/critical);
-//  b) 412 px, toque: a pílula "> ir para…" tem >= 44 px, não há barra fixa embaixo (fora a .barra-wa e o .preloader do v2), o toque abre, as opções têm
+//  b) 412 px, toque: a pílula "> ir para…" tem >= 44 px, não há barra fixa embaixo (fora a .barra-wa do v2; o .preloader conta, por isso se espera ele sair), o toque abre, as opções têm
 //     >= 44 px, Esc devolve o foco à pílula, tocar numa opção navega, axe com a paleta aberta;
 //  c) reducedMotion: aberta, nenhum elemento com transform após 1 s e o diálogo termina opaco;
 //  d) 412 px com o paleta.json bloqueado: a pílula segue como link e leva a /projetos/;
@@ -18,6 +18,10 @@ const ABERTA = 'dialog.paleta[open]';
 const ESPERA = { timeout: 6000 };
 
 const contexto = (nav, w, extra = {}) => nav.newContext({ viewport: { width: w, height: 900 }, ...extra });
+
+// Na 1ª visita o overlay do preloader cobre a página por até ~1 s: o axe e as medições só valem depois que ele saiu.
+// 'hidden' também vale para quem nunca o mostrou (2ª visita, reduced-motion, sem storage): o elemento fica com display: none.
+export const esperaPreloader = (p) => p.waitForSelector('.preloader', { state: 'hidden', timeout: 4000 });
 
 const estado = (p) => p.evaluate(() => {
   const d = document.querySelector('dialog.paleta');
@@ -56,6 +60,7 @@ async function teclado(nav, url, total) {
     const pedidos = [];
     p.on('request', (r) => { if (new URL(r.url()).pathname === ARQ) pedidos.push(r.url()); });
     await p.goto(url, { waitUntil: 'networkidle' });
+    await esperaPreloader(p);
     if (pedidos.length) falhas.push(`paleta.json buscado na carga (${pedidos.length})`);
     const pilulaVisivel = await p.locator('.paleta-gatilho').first().isVisible();
     if (pilulaVisivel) falhas.push('a pílula aparece a 1440 px');
@@ -93,6 +98,7 @@ async function teclado(nav, url, total) {
 
     // Esc devolve o foco a quem o tinha; ⌘K (Meta+K) também abre
     await p.goto(url, { waitUntil: 'networkidle' });
+    await esperaPreloader(p);
     await p.focus('a.nav-logo');
     await p.keyboard.press('Control+k');
     await p.waitForSelector(`${ABERTA} [role="option"]`, ESPERA);
@@ -117,11 +123,12 @@ async function toque(nav, url, total) {
   try {
     const p = await ctx.newPage();
     await p.goto(url, { waitUntil: 'networkidle' });
+    await esperaPreloader(p);
     const pilula = p.locator('.paleta-gatilho').first();
     const alt = (await pilula.boundingBox() || { height: 0 }).height;
     if (!(await pilula.isVisible()) || alt < 44) falhas.push(`pílula a 412 px: visível ${await pilula.isVisible()}, ${alt.toFixed(0)} px de altura`);
     const fixas = await p.evaluate(() => [...document.querySelectorAll('body *')]
-      .filter((el) => !el.closest('.barra-wa, .preloader') && getComputedStyle(el).position === 'fixed' && el.getBoundingClientRect().bottom >= innerHeight - 1 && el.getBoundingClientRect().height > 0)
+      .filter((el) => !el.closest('.barra-wa') && getComputedStyle(el).position === 'fixed' && el.getBoundingClientRect().bottom >= innerHeight - 1 && el.getBoundingClientRect().height > 0)
       .map((el) => el.tagName.toLowerCase() + [...el.classList].map((c) => '.' + c).join('')));
     if (fixas.length) falhas.push('barra fixa embaixo: ' + fixas.join(', '));
 
@@ -154,6 +161,7 @@ async function calmo(nav, url) {
   try {
     const p = await ctx.newPage();
     await p.goto(url, { waitUntil: 'networkidle' });
+    await esperaPreloader(p);
     await p.keyboard.press('Control+k');
     await p.waitForSelector(`${ABERTA} [role="option"]`, ESPERA);
     await p.waitForTimeout(1000);
@@ -175,6 +183,7 @@ async function semRede(nav, url) {
     const p = await ctx.newPage();
     await p.route('**' + ARQ, (r) => r.abort());
     await p.goto(url, { waitUntil: 'networkidle' });
+    await esperaPreloader(p);
     const foi = await marcaEEsperaTrocar(p, () => p.locator('.paleta-gatilho').first().tap());
     const caminho = new URL(p.url()).pathname;
     if (!foi) falhas.push('sem o paleta.json a pílula não navegou');
@@ -189,6 +198,7 @@ async function semFoco(nav, url) {
   try {
     const p = await ctx.newPage();
     await p.goto(url, { waitUntil: 'networkidle' });
+    await esperaPreloader(p);
     // click() por script não dá foco ao <a>, como o toque do Safari; o tap()/click() do Playwright daria (Chromium)
     const antes = await p.evaluate(() => {
       document.activeElement && document.activeElement.blur();
@@ -208,9 +218,51 @@ async function semFoco(nav, url) {
   } finally { await ctx.close(); }
 }
 
+// Preloader: na 1ª visita some em <= 1000 ms desde a navegação (medido na página, a partir do navigationStart); na 2ª visita, na mesma
+// sessão, nem aparece. O <h1> existe e está pintado por baixo desde o início.
+async function preloader(nav, url) {
+  const falhas = [];
+  const ctx = await contexto(nav, 1440);
+  try {
+    const p = await ctx.newPage();
+    await p.addInitScript(() => {
+      window.__pre = { visto: false, saiu: null, h1: null };
+      const olha = () => {
+        const el = document.querySelector('.preloader');
+        if (el && getComputedStyle(el).display !== 'none') window.__pre.visto = true;
+        if (window.__pre.visto && !el && window.__pre.saiu === null) window.__pre.saiu = performance.now();
+        const h1 = document.querySelector('h1');
+        if (h1 && window.__pre.h1 === null) window.__pre.h1 = getComputedStyle(h1).visibility;
+      };
+      new MutationObserver(olha).observe(document, { childList: true, subtree: true, attributes: true });
+      document.addEventListener('animationstart', olha, true);
+      // Some para quem olha quando a animação de saída termina (opacidade 0), mesmo que o JS só remova o nó depois.
+      document.addEventListener('animationend', (e) => {
+        if (e.target.classList && e.target.classList.contains('preloader') && window.__pre.saiu === null) window.__pre.saiu = performance.now();
+      }, true);
+      document.addEventListener('DOMContentLoaded', olha);
+    });
+    await p.goto(url, { waitUntil: 'load' });
+    await p.waitForSelector('.preloader', { state: 'detached', timeout: 4000 }).catch(() => {});
+    const a = await p.evaluate(() => window.__pre);
+    if (!a.visto) falhas.push('1ª visita: o preloader não apareceu');
+    else if (a.saiu === null || a.saiu > 1000) falhas.push(`1ª visita: o preloader saiu em ${a.saiu === null ? 'nunca' : a.saiu.toFixed(0) + ' ms'} (> 1000 ms)`);
+    if (a.h1 === 'hidden') falhas.push('1ª visita: o h1 está com visibility: hidden');
+    const h1pintado = await p.evaluate(() => { const h = document.querySelector('h1'); return !!h && h.getBoundingClientRect().height > 0 && getComputedStyle(h).opacity === '1'; });
+    if (!h1pintado) falhas.push('1ª visita: o h1 não está no DOM com altura e opacidade 1');
+    await p.goto(new URL('/historia.html', url).href, { waitUntil: 'domcontentloaded' });
+    const b = await p.evaluate(() => {
+      const el = document.querySelector('.preloader');
+      return { classe: document.documentElement.classList.contains('pre-1a'), display: el ? getComputedStyle(el).display : 'ausente' };
+    });
+    if (b.classe || (b.display !== 'none' && b.display !== 'ausente')) falhas.push(`2ª visita (mesma sessão): preloader apareceu (pre-1a ${b.classe}, display ${b.display})`);
+    return { falhas, det: `preloader: 1ª visita some em ${a.saiu === null ? '?' : a.saiu.toFixed(0)} ms (<= 1000), 2ª visita sem overlay` };
+  } finally { await ctx.close(); }
+}
+
 export async function medePaleta(nav, url) {
   const total = (await (await fetch(new URL(ARQ, url))).json()).length;
-  const casos = await Promise.all([teclado(nav, url, total), toque(nav, url, total), calmo(nav, url), semRede(nav, url), semFoco(nav, url)]
+  const casos = await Promise.all([teclado(nav, url, total), toque(nav, url, total), calmo(nav, url), semRede(nav, url), semFoco(nav, url), preloader(nav, url)]
     .map((c) => c.catch((e) => ({ falhas: [String(e && e.message || e).split('\n')[0]], det: '' }))));
   const falhas = casos.flatMap((c) => c.falhas);
   return { passou: falhas.length === 0, det: falhas.length ? falhas.join('; ') : casos.map((c) => c.det).join('; '), casos };

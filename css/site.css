@@ -228,7 +228,9 @@ main > .breadcrumb + section { border-top: 0; }
     transform var(--dur-curta) var(--curva-saida);
 }
 .btn svg { flex: none; width: 16px; height: 16px; }
-.btn:active { transform: scale(0.98); }
+@media (prefers-reduced-motion: no-preference) {
+  .btn:active { transform: scale(0.98); }
+}
 .btn-cheio { background: var(--roxo); color: var(--texto); border-color: var(--roxo); }
 .btn-cheio:hover,
 .btn-cheio:focus-visible { background: var(--roxo-claro); border-color: var(--roxo-claro); color: var(--fundo); }
@@ -269,60 +271,73 @@ main > .breadcrumb + section { border-top: 0; }
   body { padding-bottom: 72px; }
 }
 
-/* ---------- Cursor próprio (só mouse; o cursor nativo continua, a bolinha só acompanha) ---------- */
+/* ---------- Cursor próprio (só mouse; o cursor nativo continua, o anel só acompanha) ----------
+   .cursor leva só a posição (translate3d pelo JS, sem transição, para seguir o mouse). O anel (.cursor-anel) cresce por
+   transform: scale; o texto é irmão do anel, não filho, então não escala junto e continua legível. */
 .cursor { display: none; }
 @media (pointer: fine) {
   .cursor {
-    display: grid;
-    place-items: center;
+    display: block;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 95;
-    width: 14px;
-    height: 14px;
-    margin: -7px 0 0 -7px;
-    border: 1px solid var(--laranja-claro);
-    border-radius: 50%;
+    width: 0;
+    height: 0;
     pointer-events: none;
     opacity: 0;
     transition: opacity var(--dur-curta) var(--curva-saida);
   }
   .cursor.cursor-ativo { opacity: 1; }
+  .cursor-anel {
+    position: absolute;
+    left: -7px;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--laranja-claro);
+    border-radius: 50%;
+    transition: transform var(--dur-media) var(--curva-saida), background-color var(--dur-curta) var(--curva-saida);
+  }
+  .cursor.cursor-com-texto .cursor-anel { transform: scale(5.14); background: var(--laranja-claro); }
   .cursor-texto {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
     font-family: var(--fonte-mono);
     font-size: 0.7rem;
     line-height: 1;
     white-space: nowrap;
     color: var(--fundo);
     opacity: 0;
+    transition: opacity var(--dur-curta) var(--curva-saida);
   }
-  .cursor.cursor-com-texto { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: var(--laranja-claro); }
   .cursor.cursor-com-texto .cursor-texto { opacity: 1; }
 }
 
-/* ---------- Preloader (só na 1ª visita da sessão, ≤ 1 s; é sobreposição, o h1 já está pintado embaixo) ---------- */
-.preloader {
+/* ---------- Preloader (1ª visita da sessão, ≤ 1 s) ----------
+   Quem decide é o script inline do <head> (classe pre-1a no <html>), antes da 1ª pintura. O overlay já está no HTML e
+   cobre o h1, que existe e está pintado por baixo (conta para o LCP). Sai só por opacity, com os tempos dos tokens:
+   fica parado --dur-curta e some em --dur-media (600 ms no total, com folga para o 1000 ms). Sem a classe, nem aparece. */
+.preloader { display: none; }
+html.pre-1a .preloader {
+  display: grid;
+  place-items: center;
   position: fixed;
   inset: 0;
   z-index: 100;
-  display: grid;
-  place-items: center;
   background: var(--fundo);
   pointer-events: none;
-  /* Sai esvaziando o fundo e recortando o texto, sem baixar a opacity do texto: o axe lê o contraste a meio da saída. */
-  transition: background-color var(--dur-media) var(--curva-entrada);
+  animation: pre-sai var(--dur-media) var(--curva-entrada) var(--dur-curta) forwards;
 }
-.preloader.preloader-saindo { background-color: transparent; }
-.preloader.preloader-saindo span { clip-path: inset(0 0 100% 0); }
-.preloader span {
+html.pre-1a .preloader span {
   font-family: var(--fonte-titulo);
   font-weight: 800;
   font-size: 1.1rem;
   color: var(--texto);
-  clip-path: inset(0);
-  transition: clip-path var(--dur-media) var(--curva-entrada);
 }
+@keyframes pre-sai { to { opacity: 0; } }
 
 /* ---------- Páginas atuais (transição até as Tasks 4 a 8) ---------- */
 /* ---------- Hero ---------- */
@@ -716,5 +731,9 @@ html.lenis body { height: auto; }
   html { scroll-behavior: auto; }
   *,
   *::before,
-  *::after { transition-duration: 0.01ms !important; }
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

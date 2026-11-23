@@ -6,7 +6,7 @@ import lighthouse from 'lighthouse';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { medePaleta } from './paleta.mjs';
+import { medePaleta, esperaPreloader } from './paleta.mjs';
 
 const arg = (n) => { const i = process.argv.indexOf('--' + n); return i > 0 ? process.argv[i + 1] : null; };
 const base = (arg('url') || '').replace(/\/+$/, '');
@@ -90,6 +90,7 @@ try {
         await comCtx({ viewport: { width: w, height: h } }, async (p) => {
           const e = status(await p.goto(url, { waitUntil: 'networkidle' }));
           if (e) throw new Error(e);
+          await esperaPreloader(p); // o overlay da 1ª visita cobre a página por ~0,8 s
           await p.screenshot({ path: path.join(saida, `${n}-${w}.png`), fullPage: true });
           if (w === 430) {
             const [sw, cw] = await p.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);

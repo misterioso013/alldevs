@@ -51,7 +51,8 @@
 }
 
 /* Reservas com métrica: a fonte local (Arial) ajustada ao tamanho da web font,
-   para a troca do font-display: swap não empurrar o layout (CLS). Valores da capsize. */
+   para a troca do font-display: swap não empurrar o layout (CLS). DM Sans: valores da capsize. Syne: um bloco por peso (600, 700, 800), size-adjust medido no Chromium
+   contra o Arial Bold (mesmo texto de amostra para os três); ascent e descent são os da Syne divididos pelo size-adjust. */
 @font-face {
   font-family: "DM Sans Reserva";
   font-style: normal;
@@ -85,11 +86,31 @@
 @font-face {
   font-family: "Syne Reserva";
   font-style: normal;
-  font-weight: 600 800;
+  font-weight: 600;
   src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Arimo Bold");
-  size-adjust: 166.55%;
-  ascent-override: 55.54%;
-  descent-override: 16.51%;
+  size-adjust: 105.55%;
+  ascent-override: 87.64%;
+  descent-override: 26.05%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Syne Reserva";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Arimo Bold");
+  size-adjust: 113.92%;
+  ascent-override: 81.20%;
+  descent-override: 24.14%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Syne Reserva";
+  font-style: normal;
+  font-weight: 800;
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Arimo Bold");
+  size-adjust: 165.81%;
+  ascent-override: 55.79%;
+  descent-override: 16.59%;
   line-gap-override: 0%;
 }
 

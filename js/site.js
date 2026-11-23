@@ -90,34 +90,47 @@
     umaVez(reveladas, function (el) { el.classList.add("revela-vista"); });
   }
 
-  /* ---------- Preloader: só na 1ª visita da sessão, ≤ 1 s. Sobreposição com opacity sobre a página já pintada,
-     então o h1 do LCP nunca fica escondido do navegador. ---------- */
-  var primeiraVisita = function () {
-    try {
-      if (window.sessionStorage.getItem("alldev-visto")) return false;
-      window.sessionStorage.setItem("alldev-visto", "1");
-      return true;
-    } catch (erro) {
-      return false; // sem storage: nunca mostra, para não repetir a cada página
+  /* ---------- Preloader: quem decide é o script inline do <head> (classe pre-1a no <html>); o overlay e a animação de saída
+     são do CSS, com os tempos dos tokens. Aqui só: grava a flag da sessão e remove o overlay quando a saída termina. ---------- */
+  var DUR_MEDIA = tempo("--dur-media", 0.4);
+  var noPreloader = raiz.classList.contains("pre-1a");
+  var animPre = null;
+  if (noPreloader) {
+    try { window.sessionStorage.setItem("alldev-visto", "1"); } catch (erro) { /* sem storage: o inline já não mostrou */ }
+    var pre = doc.querySelector(".preloader");
+    var tirar = function () {
+      raiz.classList.remove("pre-1a");
+      if (pre && pre.parentNode) pre.parentNode.removeChild(pre);
+    };
+    if (pre) {
+      // O CSS pode ter terminado antes deste script rodar (defer): getAnimations().finished já vem resolvido nesse caso.
+      var anims = pre.getAnimations ? pre.getAnimations() : [];
+      animPre = anims[0] || null;
+      if (anims.length) Promise.all(anims.map(function (a) { return a.finished; })).then(tirar, tirar);
+      else window.setTimeout(tirar, (DUR_MEDIA + 2 * DUR_CURTA) * 1000); // navegador sem getAnimations
+    } else {
+      tirar();
     }
-  };
-  if (!reduz && primeiraVisita()) {
-    var pre = doc.createElement("div");
-    pre.className = "preloader";
-    pre.setAttribute("aria-hidden", "true");
-    pre.innerHTML = "<span>all.dev</span>";
-    doc.body.appendChild(pre);
-    window.setTimeout(function () { pre.classList.add("preloader-saindo"); }, 500);
-    window.setTimeout(function () { if (pre.parentNode) pre.parentNode.removeChild(pre); }, 500 + DUR_CURTA * 2000);
   }
+  /* Ms até o overlay começar a sumir (zero se já começou): o que estiver sob ele ainda está coberto. */
+  var aindaCoberto = function () {
+    if (!noPreloader) return -1;
+    if (animPre && animPre.startTime !== null && doc.timeline) {
+      return Math.max(0, animPre.startTime + animPre.effect.getTiming().delay - doc.timeline.currentTime);
+    }
+    return Math.max(0, DUR_CURTA * 1000 - window.performance.now());
+  };
 
-  /* ---------- Cursor próprio: só com mouse. O nativo continua; a bolinha acompanha e mostra o data-cursor ---------- */
+  /* ---------- Cursor próprio: só com mouse. O nativo continua; o anel acompanha e mostra o data-cursor ---------- */
   if (mq("(pointer: fine)") && !reduz) {
     var cursor = doc.createElement("div");
     cursor.className = "cursor";
     cursor.setAttribute("aria-hidden", "true");
+    var anel = doc.createElement("span");
+    anel.className = "cursor-anel";
     var rotulo = doc.createElement("span");
     rotulo.className = "cursor-texto";
+    cursor.appendChild(anel);
     cursor.appendChild(rotulo);
     doc.body.appendChild(cursor);
     var alvoX = 0, alvoY = 0, quadro = 0;
@@ -125,25 +138,42 @@
       quadro = 0;
       cursor.style.transform = "translate3d(" + alvoX + "px," + alvoY + "px,0)";
     };
+    var esconde = function () {
+      cursor.classList.remove("cursor-ativo");
+      cursor.classList.remove("cursor-com-texto");
+    };
+    var ehMouse = function (e) { return !e.pointerType || e.pointerType === "mouse"; };
     doc.addEventListener("pointermove", function (e) {
-      if (e.pointerType && e.pointerType !== "mouse") return;
+      if (!ehMouse(e)) return;
       alvoX = e.clientX;
       alvoY = e.clientY;
       cursor.classList.add("cursor-ativo");
       if (!quadro) quadro = window.requestAnimationFrame(desenha);
     });
     doc.addEventListener("pointerover", function (e) {
+      if (!ehMouse(e)) return;
       var el = e.target.closest ? e.target.closest("[data-cursor]") : null;
       var texto = el ? el.getAttribute("data-cursor") : "";
       rotulo.textContent = texto || "";
       cursor.classList.toggle("cursor-com-texto", !!texto);
     });
-    doc.documentElement.addEventListener("pointerleave", function () { cursor.classList.remove("cursor-ativo"); });
+    doc.addEventListener("pointerout", function (e) {
+      if (!ehMouse(e)) return;
+      if (!e.relatedTarget) { esconde(); return; } // saiu da janela
+      cursor.classList.remove("cursor-com-texto");
+    });
+    doc.addEventListener("pointerdown", function (e) {
+      if (!ehMouse(e)) esconde(); // um toque: some o anel, que é coisa de mouse
+    });
+    doc.documentElement.addEventListener("pointerleave", esconde);
   }
 
   var gsap = window.gsap;
 
-  /* ---------- .titulo-revela: linhas com overflow: hidden, sobem em sequência (0,05 s) ---------- */
+  /* ---------- .titulo-revela: linhas com overflow: hidden, sobem em sequência (0,05 s) ----------
+     Só esconde o que ainda não foi visto: título já na tela ao carregar fica como está; sob o preloader, esconde enquanto o
+     overlay ainda cobre e a subida começa quando ele sai; fora da tela, sobe ao entrar (IntersectionObserver).
+     As linhas se refazem quando a largura muda (autoSplit). Com reduced-motion, nada de split. */
   var titulos = doc.querySelectorAll(".titulo-revela");
   if (!reduz && titulos.length && gsap && window.SplitText) {
     gsap.registerPlugin(window.SplitText);
@@ -153,17 +183,31 @@
       titulos.forEach(function (titulo) {
         // Título com link ou botão fica inteiro: dividido, o link perderia o nome acessível.
         if (titulo.querySelector("a, button")) return;
+        var coberto = aindaCoberto();
+        var esconder = coberto >= 0 ? naTela(titulo) && coberto > 0 : !naTela(titulo);
+        var revelado = !esconder;
+        var linhas = [];
+        var anim = null;
+        var revela = function (atraso) {
+          anim = gsap.to(linhas, { yPercent: 0, duration: DUR_LONGA, delay: atraso, stagger: STAGGER, ease: saida,
+            onComplete: function () { revelado = true; } });
+        };
         try {
           var lido = (titulo.innerText || titulo.textContent).replace(/\s+/g, " ").trim();
-          var partes = window.SplitText.create(titulo, {
-            type: "lines", linesClass: "linha-revela", mask: "lines", aria: "auto"
+          window.SplitText.create(titulo, {
+            type: "lines", linesClass: "linha-revela", mask: "lines", aria: "auto", autoSplit: true,
+            onSplit: function (self) {
+              if (titulo.hasAttribute("aria-label")) titulo.setAttribute("aria-label", lido);
+              self.masks.forEach(function (m) { m.classList.add("linha-mascara"); });
+              linhas = self.lines;
+              if (anim) { anim.kill(); anim = null; revelado = true; } // largura mudou no meio da subida: mostra tudo
+              if (!revelado) gsap.set(linhas, { yPercent: 110 });
+            }
           });
-          if (titulo.hasAttribute("aria-label")) titulo.setAttribute("aria-label", lido);
-          partes.masks.forEach(function (m) { m.classList.add("linha-mascara"); });
-          gsap.set(partes.lines, { yPercent: 110 });
-          umaVez([titulo], function () {
-            gsap.to(partes.lines, { yPercent: 0, duration: DUR_LONGA, stagger: STAGGER, ease: saida });
-          });
+          if (esconder) {
+            if (coberto >= 0 && naTela(titulo)) revela(coberto / 1000);
+            else umaVez([titulo], function () { revela(0); });
+          }
         } catch (erro) {
           if (window.console) console.warn("titulo-revela falhou em", titulo, erro);
         }
@@ -172,7 +216,8 @@
   }
 
   /* ---------- Lenis: só com mouse, tela larga e sem reduced-motion ---------- */
-  if (!reduz && mq("(pointer: fine) and (min-width: 1024px)") && typeof window.Lenis === "function" && gsap) {
+  function ligarLenis() {
+    if (typeof window.Lenis !== "function" || !gsap) return;
     var lenis = new window.Lenis({ anchors: true, autoRaf: false });
     if (window.ScrollTrigger) {
       gsap.registerPlugin(window.ScrollTrigger);
@@ -181,4 +226,5 @@
     gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
     gsap.ticker.lagSmoothing(0);
   }
+  if (!reduz && mq("(pointer: fine) and (min-width: 1024px)")) ligarLenis();
 })();
