@@ -1,0 +1,55 @@
+{
+  "imagem": "assets/inspetor/sendany.webp",
+  "caixas": [
+    {
+      "x": 41.67,
+      "y": 23.43,
+      "w": 16.56,
+      "h": 9.76,
+      "tag": "h1",
+      "classe": "font-light",
+      "medida": "159×45",
+      "codigo": "width: 159px; height: 45px"
+    },
+    {
+      "x": 40.52,
+      "y": 35.57,
+      "w": 18.85,
+      "h": 8.24,
+      "tag": "p",
+      "classe": "text-muted-foreground",
+      "medida": "181×38",
+      "codigo": "width: 181px; height: 38px"
+    },
+    {
+      "x": 44.38,
+      "y": 49.02,
+      "w": 11.15,
+      "h": 7.59,
+      "tag": "button",
+      "classe": "bg-foreground",
+      "medida": "107×35",
+      "codigo": "width: 107px; height: 35px"
+    },
+    {
+      "x": 38.33,
+      "y": 90.02,
+      "w": 23.12,
+      "h": 4.99,
+      "tag": "h2",
+      "classe": "font-light",
+      "medida": "222×23",
+      "codigo": "width: 222px; height: 23px"
+    },
+    {
+      "x": 85.62,
+      "y": 3.9,
+      "w": 5.31,
+      "h": 5.86,
+      "tag": "button",
+      "classe": "peer",
+      "medida": "51×27",
+      "codigo": "width: 51px; height: 27px"
+    }
+  ]
+}

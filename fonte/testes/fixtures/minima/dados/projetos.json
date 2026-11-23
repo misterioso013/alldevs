@@ -1,0 +1,55 @@
+[
+  {
+    "slug": "beta",
+    "nome": "Beta",
+    "autores": [
+      "ana",
+      "bia"
+    ],
+    "tipo": "site",
+    "situacao": "beta",
+    "ano": 2026,
+    "resumo": "Resumo beta.",
+    "problema": "Problema beta.",
+    "fizemos": [
+      "Fizemos B"
+    ],
+    "resultado": null,
+    "stack": [
+      "Python"
+    ],
+    "link": "https://beta.exemplo.test",
+    "imagens": [
+      "assets/projetos/beta/1.png"
+    ],
+    "destaque": false,
+    "visivel": false,
+    "atualizado": "2026-11-21"
+  },
+  {
+    "slug": "alfa",
+    "nome": "Alfa",
+    "autores": [
+      "ana"
+    ],
+    "tipo": "app",
+    "situacao": "no ar",
+    "ano": 2025,
+    "resumo": "Resumo alfa.",
+    "problema": "Problema alfa.",
+    "fizemos": [
+      "Fizemos A"
+    ],
+    "resultado": "Resultado alfa.",
+    "stack": [
+      "Flutter"
+    ],
+    "link": "https://alfa.exemplo.test",
+    "imagens": [
+      "assets/projetos/alfa/1.png"
+    ],
+    "destaque": true,
+    "visivel": true,
+    "atualizado": "2026-11-21"
+  }
+]

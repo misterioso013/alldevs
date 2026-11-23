@@ -1,0 +1,83 @@
+[
+  {
+    "rotulo": "Fakly",
+    "tipo": "projeto",
+    "url": "/projetos/fakly/"
+  },
+  {
+    "rotulo": "Heisuca",
+    "tipo": "projeto",
+    "url": "/projetos/heisuca/"
+  },
+  {
+    "rotulo": "ProsUp",
+    "tipo": "projeto",
+    "url": "/projetos/prosup/"
+  },
+  {
+    "rotulo": "SendAny",
+    "tipo": "projeto",
+    "url": "/projetos/sendany/"
+  },
+  {
+    "rotulo": "Aplicativo mobile",
+    "tipo": "servico",
+    "url": "/servicos/aplicativo-mobile-react-native/"
+  },
+  {
+    "rotulo": "Automações e APIs",
+    "tipo": "servico",
+    "url": "/servicos/automacoes-integracoes-api/"
+  },
+  {
+    "rotulo": "Bots e atendimento",
+    "tipo": "servico",
+    "url": "/servicos/bots-whatsapp-automacao/"
+  },
+  {
+    "rotulo": "Site institucional",
+    "tipo": "servico",
+    "url": "/servicos/criacao-de-sites-institucionais/"
+  },
+  {
+    "rotulo": "MVP para startups",
+    "tipo": "servico",
+    "url": "/servicos/desenvolvimento-mvp-startups/"
+  },
+  {
+    "rotulo": "Landing page",
+    "tipo": "servico",
+    "url": "/servicos/landing-page-conversao/"
+  },
+  {
+    "rotulo": "Caio Guerras",
+    "tipo": "pessoa",
+    "url": "/caio/"
+  },
+  {
+    "rotulo": "Rosiel Victor",
+    "tipo": "pessoa",
+    "url": "/rosiel/"
+  },
+  {
+    "rotulo": "Pedir orçamento",
+    "tipo": "contato",
+    "url": "/#contato"
+  },
+  {
+    "rotulo": "WhatsApp",
+    "tipo": "contato",
+    "url": "https://wa.me/558189477459?text=Ol%C3%A1%2C%20AllDevs%21%20Vim%20pelo%20site%20e%20quero%20conversar%20sobre%20um%20projeto.%20%5Bsite%C2%B7home%5D"
+  },
+  {
+    "rotulo": "Telegram",
+    "tipo": "contato",
+    "url": "https://t.me/m/PYdcFSXtNjZh"
+  },
+  {
+    "rotulo": "E-mail",
+    "termos": "email",
+    "tipo": "contato",
+    "url": "mailto:rosielvictor.dev@gmail.com?subject=Or%C3%A7amento%20%5Bsite%C2%B7home%5D"
+  }
+]

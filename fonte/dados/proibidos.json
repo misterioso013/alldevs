@@ -1,0 +1,7 @@
+[
+  {"padrao": "Playfair|Bodoni|Didot|DM Serif|Cormorant", "motivo": "fonte serifada vetada"},
+  {"padrao": "preloader", "motivo": "preloader vetado"},
+  {"padrao": "cursor:\\s*none", "motivo": "cursor escondido vetado"},
+  {"padrao": "#f5f0e6|#faf6ef", "motivo": "creme vetado"},
+  {"padrao": "#c9a227|#d4af37", "motivo": "dourado vetado"}
+]

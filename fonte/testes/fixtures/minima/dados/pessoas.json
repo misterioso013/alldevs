@@ -1,0 +1,39 @@
+[
+  {
+    "slug": "bia",
+    "nome": "Bia",
+    "papel": "Design",
+    "papel_mono": "design",
+    "frase": "Frase da Bia.",
+    "foto": "assets/pessoas/bia.webp",
+    "links": [],
+    "cor": "laranja",
+    "atualizado": "2026-11-21",
+    "faz": [
+      "a",
+      "b",
+      "c"
+    ]
+  },
+  {
+    "slug": "ana",
+    "nome": "Ana",
+    "papel": "Código",
+    "papel_mono": "codigo",
+    "frase": "Frase da Ana.",
+    "foto": "assets/pessoas/ana.webp",
+    "links": [
+      {
+        "rotulo": "GitHub",
+        "url": "https://github.com/ana"
+      }
+    ],
+    "cor": "roxo",
+    "atualizado": "2026-11-21",
+    "faz": [
+      "a",
+      "b",
+      "c"
+    ]
+  }
+]

@@ -1,0 +1,143 @@
+[
+  {
+    "slug": "prosup",
+    "nome": "ProsUp",
+    "autores": [
+      "rosiel"
+    ],
+    "tipo": "app",
+    "situacao": "no ar",
+    "ano": 2026,
+    "resumo": "App que acompanha preços e monta, no automático, os posts de ofertas com link de afiliado para Telegram e WhatsApp.",
+    "problema": "Quem divulga ofertas perde tempo copiando link, escrevendo legenda e postando em cada grupo, e quem compra não sabe se o desconto é real.",
+    "fizemos": [
+      "App Android (Google Play) que gera o link de afiliado e a legenda por template e publica no Telegram e no WhatsApp.",
+      "Histórico de preço com alerta de queda, para mostrar se o desconto é de verdade.",
+      "Fila e agendamento de posts, listas de produtos para compartilhar e extensão do Chrome que mostra a comissão na página do produto.",
+      "Planos Free, Lite e Pro, com robô para grupos do WhatsApp (beta) no Pro.",
+      "Documentação própria em docs.prosup.app."
+    ],
+    "resultado": null,
+    "stack": [
+      "React Native",
+      "TypeScript",
+      "Node.js",
+      "AWS Lambda",
+      "DynamoDB",
+      "API Gateway",
+      "Cognito",
+      "SNS",
+      "S3",
+      "Secrets Manager"
+    ],
+    "link": "https://prosup.app",
+    "imagens": [
+      "assets/images/prosup-1.webp",
+      "assets/images/prosup-2.webp",
+      "assets/images/prosup-3.webp",
+      "assets/images/prosup-4.webp"
+    ],
+    "destaque": true,
+    "visivel": true,
+    "rascunho": false,
+    "atualizado": "2026-11-23"
+  },
+  {
+    "slug": "fakly",
+    "nome": "Fakly",
+    "autores": [
+      "rosiel"
+    ],
+    "tipo": "ferramenta",
+    "situacao": "no ar",
+    "ano": 2025,
+    "resumo": "Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.",
+    "problema": "Montar uma seção de perguntas frequentes bem acabada e legível pelo Google dá trabalho de interface e de SEO.",
+    "fizemos": [
+      "Editor com pré-visualização em tempo real: escreve as perguntas e copia o código para colar no site.",
+      "Widget que já gera o schema FAQPage (JSON-LD), para as perguntas poderem aparecer no Google.",
+      "Interface responsiva e acessível, com navegação por teclado e atributos ARIA.",
+      "Salvamento automático no navegador, sem cadastro."
+    ],
+    "resultado": null,
+    "stack": [
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "link": "https://misterioso013.github.io/fakly/",
+    "imagens": [
+      "assets/images/fakly.png"
+    ],
+    "destaque": true,
+    "visivel": true,
+    "rascunho": false,
+    "atualizado": "2026-11-23"
+  },
+  {
+    "slug": "sendany",
+    "nome": "SendAny",
+    "autores": [
+      "rosiel"
+    ],
+    "tipo": "produto",
+    "situacao": "no ar",
+    "ano": 2025,
+    "resumo": "Plataforma para compartilhar texto, código e arquivos num só lugar, na linha do Gist, do Pastebin e do Drive.",
+    "problema": "Compartilhar um trecho de código, uma nota e um arquivo costuma exigir serviços separados, com links espalhados.",
+    "fizemos": [
+      "Workspaces com vários arquivos, no estilo do Gist, com editor de código com destaque de sintaxe e suporte a Markdown.",
+      "Envio de qualquer tipo de arquivo, com controle de privacidade (público ou privado).",
+      "Proteção por senha e expiração automática dos links.",
+      "Login com Stack Auth e banco PostgreSQL (Neon)."
+    ],
+    "resultado": null,
+    "stack": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "PostgreSQL",
+      "Tailwind CSS"
+    ],
+    "link": "https://sendany.all.dev.br",
+    "imagens": [
+      "assets/images/sendany.png"
+    ],
+    "destaque": true,
+    "visivel": true,
+    "rascunho": false,
+    "atualizado": "2026-11-23"
+  },
+  {
+    "slug": "heisuca",
+    "nome": "Heisuca",
+    "autores": [
+      "caio"
+    ],
+    "tipo": "app",
+    "situacao": "no ar",
+    "ano": 2026,
+    "resumo": "Suíte multiplataforma de players de mídia para Android, TV, desktop e web com sistema unificado de design tokens.",
+    "problema": "Reproduzir mídia em celulares, TVs e navegadores exige interfaces adaptadas a cada tela sem perder fluidez em aparelhos mais simples. Além disso, manter consistência visual e atualizações seguras entre diferentes plataformas requer uma base técnica unificada.",
+    "fizemos": [
+      "Desenvolvemos aplicativos dedicados em Flutter (app completo), Kotlin (Android Lite) e web (TV e navegador).",
+      "Centralizamos a identidade em design tokens que geram temas para mobile, web e TV, com player sempre escuro e contraste calibrado para telas grandes.",
+      "Criamos transparência adaptativa em dois níveis para manter alta fluidez tanto em aparelhos potentes quanto em TVs e celulares mais modestos.",
+      "Estruturamos atualização atômica dentro do app com verificação de assinatura e hash, separando canais de teste e estável."
+    ],
+    "resultado": null,
+    "stack": [
+      "Flutter",
+      "Dart",
+      "Kotlin",
+      "CSS",
+      "Tizen"
+    ],
+    "link": "",
+    "imagens": [],
+    "destaque": true,
+    "visivel": true,
+    "rascunho": true,
+    "atualizado": "2026-11-22"
+  }
+]

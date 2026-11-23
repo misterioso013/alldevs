@@ -1,0 +1,19 @@
+{
+  "nome": "AllDevs",
+  "whatsapp": "558189477459",
+  "email": "rosielvictor.dev@gmail.com",
+  "telegram": "https://t.me/m/PYdcFSXtNjZh",
+  "mensagens": {
+    "home": "Olá, AllDevs! Vim pelo site e quero conversar sobre um projeto. [{codigo}]",
+    "servico": "Olá, AllDevs! Tenho interesse em *{alvo}*. [{codigo}]",
+    "case": "Olá, AllDevs! Vi o case do *{alvo}* e quero algo parecido. [{codigo}]",
+    "perfil": "Olá, AllDevs! Vim pela página do {alvo}. [{codigo}]"
+  },
+  "redes": [],
+  "inspetor": [
+    "prosup",
+    "fakly",
+    "sendany"
+  ],
+  "atualizado": "2026-11-23"
+}

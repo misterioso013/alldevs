@@ -1,0 +1,57 @@
+import unittest
+from pathlib import Path
+
+from alldevs.modelos import Seguro, esc, render
+
+RAIZ_FONTE = Path(__file__).resolve().parent.parent
+SLUGS = [
+    "aplicativo-mobile-react-native",
+    "automacoes-integracoes-api",
+    "bots-whatsapp-automacao",
+    "criacao-de-sites-institucionais",
+    "desenvolvimento-mvp-startups",
+    "landing-page-conversao",
+]
+
+
+class TestModelos(unittest.TestCase):
+    def test_render_escapa_texto(self):
+        out = render("base", titulo="<b>x</b>", descricao="d", canonical="c", og_imagem="o", corpo=Seguro(""),
+                     json_ld=Seguro(""), robots_meta=Seguro(""))
+        self.assertIn("&lt;b&gt;x&lt;/b&gt;", out)
+        self.assertNotIn("<b>x</b>", out)
+
+    def test_render_mantem_seguro(self):
+        out = render("base", titulo="t", descricao="d", canonical="c", og_imagem="o", corpo=Seguro("<p>oi</p>"),
+                 json_ld=Seguro(""), robots_meta=Seguro(""))
+        self.assertIn("<p>oi</p>", out)
+        self.assertIsInstance(out, Seguro)
+        self.assertIs(esc(Seguro("<i>")).__class__, Seguro)
+        self.assertEqual(esc("<i>"), "&lt;i&gt;")
+
+    def test_campo_faltando_e_erro(self):
+        with self.assertRaises(KeyError):
+            render("base", titulo="t")
+
+    def test_conteudo_migrado_existe(self):
+        for slug in SLUGS:
+            p = RAIZ_FONTE / "conteudo" / "servicos" / f"{slug}.html"
+            self.assertTrue(p.is_file(), slug)
+            self.assertTrue(p.read_text(encoding="utf-8").strip(), slug)
+        h = RAIZ_FONTE / "conteudo" / "historia.html"
+        self.assertTrue(h.read_text(encoding="utf-8").strip())
+
+    def test_render_moldes_servico_e_historia(self):
+        c = RAIZ_FONTE / "conteudo"
+        s = render("servico", cabecalho=Seguro(""), rodape=Seguro(""), nome="Landing page", quem_toca=Seguro("<i>q</i>"),
+                   conteudo=Seguro((c / "servicos" / "landing-page-conversao.html").read_text(encoding="utf-8")),
+                   contato=Seguro("<!--contato-->"))
+        self.assertIn("<!--contato-->", s)
+        self.assertNotIn("$", s.replace("R$", ""))
+        h = render("historia", cabecalho=Seguro(""), rodape=Seguro(""), conteudo=Seguro((c / "historia.html").read_text(encoding="utf-8")),
+                   contato=Seguro("<!--contato-->"))
+        self.assertIn("<!--contato-->", h)
+
+
+if __name__ == "__main__":
+    unittest.main()

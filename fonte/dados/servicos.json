@@ -1,0 +1,74 @@
+[
+  {
+    "slug": "aplicativo-mobile-react-native",
+    "nome": "Aplicativo mobile",
+    "titulo": "Desenvolvimento de Aplicativo Mobile iOS e Android | React Native — AllDevs",
+    "descricao": "Crie um aplicativo mobile para iOS e Android com React Native. MVP funcional com autenticação e backend a partir de R$ 2.500. Do zero à App Store.",
+    "resumo": "Apps para iOS e Android em React Native, da ideia à loja.",
+    "quem_toca": [
+      "caio",
+      "rosiel"
+    ],
+    "atualizado": "2026-11-22"
+  },
+  {
+    "slug": "automacoes-integracoes-api",
+    "nome": "Automações e APIs",
+    "titulo": "Automação de Processos e Integração de Sistemas via API | Webhook — AllDevs",
+    "descricao": "Automatize processos repetitivos e integre seus sistemas via API, webhook e scripts. Economize horas diárias a partir de R$ 400. Python, Node.js e n8n.",
+    "resumo": "Integrações por API, webhook e scripts que tiram o trabalho braçal da equipe.",
+    "quem_toca": [
+      "caio",
+      "rosiel"
+    ],
+    "atualizado": "2026-11-23"
+  },
+  {
+    "slug": "bots-whatsapp-automacao",
+    "nome": "Bots e atendimento",
+    "titulo": "Bot para WhatsApp, Discord e Telegram | Automação de Atendimento 24h — AllDevs",
+    "descricao": "Crie um bot para WhatsApp, Discord ou Telegram com atendimento automático 24h. Automações, tickets e comandos customizados a partir de R$ 500.",
+    "resumo": "Bots de WhatsApp, Discord e Telegram para atender 24 horas.",
+    "quem_toca": [
+      "caio",
+      "rosiel"
+    ],
+    "atualizado": "2026-11-22"
+  },
+  {
+    "slug": "criacao-de-sites-institucionais",
+    "nome": "Site institucional",
+    "titulo": "Criação de Site Institucional Profissional | A partir de R$ 800 — AllDevs",
+    "descricao": "Site institucional profissional, responsivo e otimizado para o Google. Entrega em 7 dias, a partir de R$ 800. Feito por uma equipe qualificada.",
+    "resumo": "Sites institucionais rápidos, responsivos e prontos para o Google.",
+    "quem_toca": [
+      "caio",
+      "rosiel"
+    ],
+    "atualizado": "2026-11-23"
+  },
+  {
+    "slug": "desenvolvimento-mvp-startups",
+    "nome": "MVP para startups",
+    "titulo": "Desenvolvimento de MVP para Startups Web | Next.js — AllDevs",
+    "descricao": "Transforme sua ideia em um MVP web funcional com Next.js e backend robusto. Do zero ao ar em semanas. Feito por uma equipe full stack para startups.",
+    "resumo": "MVP web com Next.js e backend, do zero ao ar em semanas.",
+    "quem_toca": [
+      "caio",
+      "rosiel"
+    ],
+    "atualizado": "2026-11-23"
+  },
+  {
+    "slug": "landing-page-conversao",
+    "nome": "Landing page",
+    "titulo": "Landing Page de Alta Conversão com WhatsApp | Entrega em 3 Dias — AllDevs",
+    "descricao": "Landing page profissional focada em conversão, com WhatsApp e formulários. Entrega em 3 dias, a partir de R$ 600. Ideal para capturar leads e vender mais.",
+    "resumo": "Landing pages focadas em conversão, com WhatsApp, em 3 dias.",
+    "quem_toca": [
+      "caio",
+      "rosiel"
+    ],
+    "atualizado": "2026-11-23"
+  }
+]

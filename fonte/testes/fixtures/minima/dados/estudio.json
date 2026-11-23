@@ -1,0 +1,17 @@
+{
+  "nome": "Estúdio Teste",
+  "whatsapp": "5500000000000",
+  "email": "oi@exemplo.test",
+  "telegram": "https://t.me/exemplo",
+  "mensagens": {
+    "home": "Olá! Vim pelo site. [{codigo}]"
+  },
+  "redes": [
+    {
+      "rotulo": "GitHub",
+      "url": "https://github.com/exemplo"
+    }
+  ],
+  "inspetor": [],
+  "atualizado": "2026-11-21"
+}
