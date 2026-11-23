@@ -183,6 +183,59 @@ class TestDados(Base):
         self.pt(texto="x" * 73 + "\n")
         self.assertTrue(any("72 colunas" in e for e in self.validar()[0]))
 
+    def test_loja_exige_id_do_pacote(self):
+        base = "https://play.google.com/store/apps/details?id="
+        for loja, bom in ((base, False), (base + "br", False), (base + "1abc.x", False), (base + "br.com.alfa", True),
+                          (base + "br.com.alfa&hl=pt", False), (base + "br.com.alfa/x", False)):
+            with self.subTest(loja=loja):
+                self.editar("projetos.json", lambda o, l=loja: o[1].__setitem__("loja", l))
+                self.assertEqual(self.validar()[0] == [], bom, self.validar()[0])
+
+    def test_por_tras_campo_so_com_espacos_e_um_erro_por_campo(self):
+        self.pt()
+        for campo in ("tipo", "cor", "origem", "frase"):
+            with self.subTest(campo=campo):
+                self.editar("projetos.json", lambda o, c=campo: o[1]["por_tras"].__setitem__(c, "   "))
+                erros = [e for e in self.validar()[0] if "por_tras" in e]
+                self.assertEqual(len(erros), 1, erros)
+                self.assertIn(f"campo {campo} ausente ou vazio", erros[0])
+                self.pt()
+
+    def test_por_tras_codigo_sem_linha_com_codigo_e_erro(self):
+        for texto in ("", "\n\n", "   \n\t\n"):
+            with self.subTest(texto=texto):
+                self.pt(texto=texto)
+                self.assertTrue(any("sem nenhuma linha" in e for e in self.validar()[0]))
+
+    def test_por_tras_arquivo_em_pasta_ou_extensao_errada_e_erro(self):
+        self.pt()
+        for novo in ("assets/por-tras/alfa.txt", "fonte/conteudo/outra/alfa.txt", "fonte/conteudo/por-tras/alfa.md"):
+            with self.subTest(novo=novo):
+                self.editar("projetos.json", lambda o, n=novo: o[1]["por_tras"].__setitem__("arquivo", n))
+                self.assertTrue(any("arquivo de codigo deve ser" in e for e in self.validar()[0]))
+        self.pt("wireframe")
+        self.editar("projetos.json", lambda o: o[1]["por_tras"].__setitem__("arquivo", "fonte/conteudo/por-tras/alfa.txt"))
+        self.assertTrue(any("arquivo de wireframe deve ser" in e for e in self.validar()[0]))
+
+    def test_por_tras_caminho_com_ponto_ponto_e_erro(self):
+        self.pt()
+        (self.raiz / "fonte" / "conteudo" / "outra").mkdir(parents=True)
+        (self.raiz / "fonte" / "conteudo" / "outra" / "x.txt").write_text("a\n")
+        self.editar("projetos.json", lambda o: o[1]["por_tras"].__setitem__(
+            "arquivo", "fonte/conteudo/por-tras/../outra/x.txt"))
+        self.assertTrue(any("não pode sair" in e for e in self.validar()[0]))
+        self.pt()
+        self.editar("projetos.json", lambda o: o[1]["por_tras"].__setitem__("frente", "assets/frente/../frente/alfa.webp"))
+        self.assertTrue(any("frente" in e for e in self.validar()[0]))
+
+    def test_ordem_de_tecnologias_e_depoimentos_e_a_do_json(self):
+        self.editar("tecnologias.json", lambda o: o.insert(0, {"nome": "Zig", "grupo": "back"}))
+        self.editar("depoimentos.json", lambda o: o.extend(
+            {"nome": n, "papel": "c", "texto": "t", "autorizado": True} for n in ("Zeca", "Ana")))
+        d = D.carregar(self.raiz)
+        self.assertEqual([t.nome for t in d.tecnologias], ["Zig", "Flutter"])
+        self.assertEqual([x.nome for x in d.depoimentos], ["Zeca", "Ana"])
+
     def test_por_tras_arquivo_inexistente_e_erro(self):
         arq = self.pt()
         (self.raiz / arq).unlink()
@@ -247,19 +300,41 @@ class TestDados(Base):
         self.assertEqual([p.slug for p in D.visiveis(d.projetos)], ["alfa"])
 
 
+# Chaves falsas montadas por concatenação para não acionar scanners de segredo.
 SEGREDOS = {
-    "sk-abc123def456ghi789": "chave sk-",
-    "AKIA1234567890ABCDEF": "chave AWS",
-    "ghp_" + "a1B2c3D4e5" * 3 + "a1B2c3": "token GitHub",
+    "sk" + "-abc123def456ghi789": "chave sk-",
+    "x = 'sk" + "-abc123def456ghi789'": "chave sk-",
+    "AK" + "IA1234567890ABCDEF": "chave AWS",
+    "AS" + "IA1234567890ABCDEF": "chave AWS",
+    "gh" + "p_" + "a1B2c3D4e5" * 3 + "a1B2c3": "token GitHub",
+    "gh" + "o_" + "a1B2c3D4e5" * 3 + "a1B2c3": "token GitHub",
+    "github" + "_pat_" + "a1B2c3D4e5" * 3: "token GitHub",
+    "-----BEGIN RSA PRIV" + "ATE KEY-----": "chave privada",
+    "-----BEGIN PRIV" + "ATE KEY-----": "chave privada",
+    "Authorization: Bear" + "er abcdef123456": "Bearer",
     'token = "x"': "credencial",
+    '"token": "x"': "credencial",
+    "'senha': '1'": "credencial",
     "password=": "credencial",
     "senha: abc": "credencial",
+    "API_KEY_PROD = 1": "credencial",
+    "TOKEN_JWT=abc": "credencial",
+    "DB_PASSWORD_1=abc": "credencial",
     "host 143.95.215.156": "IP",
     "host 192.168.0.1": "IP",
     "fale com alguem@exemplo.com": "e-mail",
+    "alguem@sub.exemplo.com.br": "e-mail",
     "http://localhost:8080": "host interno",
     "api.docaio.com.br": "host interno",
 }
+NAO_CASAM = [
+    "import gsap@3.13.0",
+    "gsap@3.13.0",
+    "task-scheduler-worker-pool",
+    "const total = itens.length;",
+    "Bearer token no cabeçalho",
+    "versão 3.13.0",
+]
 
 
 class PorTrasSegredoTest(Base):
@@ -273,6 +348,12 @@ class PorTrasSegredoTest(Base):
                 achou = [e for e in erros if f"{arq}:2" in e and classe in e]
                 self.assertTrue(achou, erros)
                 self.assertFalse(any(linha in e for e in erros), "o erro não pode mostrar o valor")
+
+    def test_linhas_inocentes_nao_casam(self):
+        for linha in NAO_CASAM:
+            with self.subTest(linha=linha):
+                self.pt(texto=f"ok\n{linha}\n")
+                self.assertEqual(self.validar()[0], [])
 
     def test_codigo_limpo_passa(self):
         self.pt(texto="const total = itens.length;\nreturn total;\n")

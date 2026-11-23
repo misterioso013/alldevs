@@ -3,6 +3,7 @@ import io
 import json
 import re
 import shutil
+import struct
 import tempfile
 import unittest
 from pathlib import Path
@@ -201,6 +202,31 @@ class TestCli(Base):
         self.assertEqual(rc, 1)
         self.assertIn("tipo inválido: 'bot'", err)
         self.assertFalse(self.saida.exists())
+
+
+class TestLeitorWebp(unittest.TestCase):
+    def _arq(self, conteudo: bytes) -> Path:
+        d = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d, True)
+        f = Path(d) / "x.webp"
+        f.write_bytes(conteudo)
+        return f
+
+    def test_vp8_exige_assinatura(self):
+        cab = b"RIFF" + b"\0" * 4 + b"WEBP" + b"VP8 " + b"\0" * 4 + b"\0" * 3
+        bom = cab + b"\x9d\x01\x2a" + struct.pack("<HH", 480, 384) + b"\0" * 10
+        self.assertEqual(paginas._tamanho_webp(self._arq(bom)), (480, 384))
+        ruim = cab + b"\0\0\0" + struct.pack("<HH", 480, 384) + b"\0" * 10
+        with self.assertRaises(ValueError):
+            paginas._tamanho_webp(self._arq(ruim))
+
+    def test_vp8l_exige_assinatura(self):
+        v = (480 - 1) | ((384 - 1) << 14)
+        cab = b"RIFF" + b"\0" * 4 + b"WEBP" + b"VP8L" + b"\0" * 4
+        bom = cab + b"\x2f" + v.to_bytes(4, "little") + b"\0" * 15
+        self.assertEqual(paginas._tamanho_webp(self._arq(bom)), (480, 384))
+        with self.assertRaises(ValueError):
+            paginas._tamanho_webp(self._arq(cab + b"\x00" + v.to_bytes(4, "little") + b"\0" * 15))
 
 
 if __name__ == "__main__":

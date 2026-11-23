@@ -172,6 +172,13 @@ class TestPerfis(Base):
         self.assertEqual(links["caio"], links["rosiel"])
         self.assertEqual(links["caio"], {f"/projetos/{p.slug}/" for p in self.visiveis})
 
+    def test_perfil_sem_kicker_por_socio(self):
+        for slug in ("caio", "rosiel"):
+            nome = next(p.nome for p in self.dados.pessoas if p.slug == slug)
+            txt = ler(self.saida / slug / "index.html")
+            self.assertNotRegex(txt, rf"(?i)projetos de\s+{re.escape(nome)}")
+            self.assertNotRegex(txt, rf"(?i)projetos de\s+{re.escape(nome.split()[0])}")
+
     def test_nenhuma_pagina_tem_selo_de_autor(self):
         for arq in self.saida.rglob("*.html"):
             txt = ler(arq)
@@ -539,14 +546,15 @@ class TestCasesReais(Base):
         self.assertIn('<meta name="robots" content="noindex">', ler(self.saida / "projetos/heisuca/index.html"))
         self.assertNotIn("/projetos/heisuca/", mapa)
 
+    @unittest.skipUnless(any(p["slug"] == "amott" for p in json.loads(
+        (REPO / "fonte" / "dados" / "projetos.json").read_text(encoding="utf-8"))), "o case amott chega na Task 2")
     def test_amott_so_como_case(self):
-        if not any(p.slug == "amott" for p in self.dados.projetos):
-            self.skipTest("o case amott chega na Task 2")
-        permitidos = {"index.html", "projetos/index.html", "assets/paleta.json"}
+        permitidos = {"index.html", "projetos/index.html", "assets/paleta.json", "sitemap.xml",
+                      "caio/index.html", "rosiel/index.html"}  # perfis listam todos os projetos; Task 8 soma serviços
         for arq in self.saida.rglob("*"):
             rel = arq.relative_to(self.saida).as_posix()
             if arq.is_file() and arq.suffix in {".html", ".xml", ".txt", ".json"} and "amott" in ler(arq).lower():
-                self.assertTrue(rel in permitidos or rel.startswith("projetos/amott/") or rel == "sitemap.xml", rel)
+                self.assertTrue(rel in permitidos or rel.startswith("projetos/amott/"), rel)
 
 
 class TestImagensDosCases(Base):

@@ -13,14 +13,17 @@ PLAY_STORE = "https://play.google.com/store/apps/details?id="
 POR_TRAS_MAX_LINHAS, POR_TRAS_MAX_COLUNAS, FRASE_MAX = 24, 72, 60
 # Uma classe de segredo por padrão; o erro cita arquivo:linha e a classe, nunca o valor.
 RE_SEGREDO = (
-    ("chave sk-", re.compile(r"sk-[A-Za-z0-9_-]{16,}")),
-    ("chave AWS", re.compile(r"AKIA[0-9A-Z]{16}")),
-    ("token GitHub", re.compile(r"ghp_[A-Za-z0-9]{36}")),
-    ("credencial", re.compile(r"(token|password|passwd|senha|secret|api[_-]?key)\s*[:=]", re.I)),
+    ("chave sk-", re.compile(r"\bsk-[A-Za-z0-9_-]{16,}")),
+    ("chave AWS", re.compile(r"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b")),
+    ("token GitHub", re.compile(r"\bgh[pousr]_[A-Za-z0-9]{36}|\bgithub_pat_[A-Za-z0-9_]{22,}")),
+    ("chave privada", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")),
+    ("Bearer", re.compile(r"\bBearer\s+[A-Za-z0-9._~+/=-]{8,}")),
+    ("credencial", re.compile(r"""(token|password|passwd|senha|secret|api[_-]?key)[\w-]*["']?\s*[:=]""", re.I)),
     ("IP", re.compile(r"\b\d{1,3}(?:\.\d{1,3}){3}\b")),
-    ("e-mail", re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")),
+    ("e-mail", re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[A-Za-z]{2,}\b")),
     ("host interno", re.compile(r"localhost|docaio\.com\.br", re.I)),
 )
+RE_LOJA = re.compile(re.escape(PLAY_STORE) + r"[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+$")
 SITUACOES = {"no ar", "beta", "encerrado"}
 CORES = {"roxo", "laranja"}
 RE_DATA = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -146,11 +149,11 @@ def _lista(cls, raiz_dados, arquivo):
     return tuple(sorted((_montar(cls, o, arquivo) for o in obj), key=lambda x: x.slug))
 
 
-def _simples(cls, raiz_dados, arquivo, chave):
+def _simples(cls, raiz_dados, arquivo):
     obj = _ler(raiz_dados / arquivo)
     if not isinstance(obj, list):
         raise ErroDeDados(f"{arquivo}: esperado uma lista")
-    return tuple(sorted((_montar(cls, o, arquivo) for o in obj), key=lambda x: getattr(x, chave)))
+    return tuple(_montar(cls, o, arquivo) for o in obj)  # ordem editorial: a do JSON
 
 
 def carregar(raiz: Path) -> Dados:
@@ -161,8 +164,8 @@ def carregar(raiz: Path) -> Dados:
         pessoas=_lista(Pessoa, d, "pessoas.json"),
         projetos=_lista(Projeto, d, "projetos.json"),
         servicos=_lista(Servico, d, "servicos.json"),
-        tecnologias=_simples(Tecnologia, d, "tecnologias.json", "nome"),
-        depoimentos=_simples(Depoimento, d, "depoimentos.json", "nome"),
+        tecnologias=_simples(Tecnologia, d, "tecnologias.json"),
+        depoimentos=_simples(Depoimento, d, "depoimentos.json"),
     )
 
 
@@ -183,23 +186,29 @@ def _por_tras(rot, pt, raiz, e):
     if not isinstance(pt, dict):
         e(f"{rot}: deve ser um objeto ou null")
         return
+    ok = set()
     for k in ("tipo", "arquivo", "origem", "frente", "frase", "cor"):
-        if not isinstance(pt.get(k), str) or not pt.get(k):
+        if isinstance(pt.get(k), str) and pt[k].strip():
+            ok.add(k)
+        else:
             e(f"{rot}: campo {k} ausente ou vazio")
     tipo, arq = pt.get("tipo"), pt.get("arquivo")
-    if tipo not in POR_TRAS_TIPOS:
+    if "tipo" in ok and tipo not in POR_TRAS_TIPOS:
         e(f"{rot}: tipo inválido: {tipo!r}")
-    if pt.get("cor") not in CORES:
-        e(f"{rot}: cor inválida: {pt.get('cor')!r}")
+    if "cor" in ok and pt["cor"] not in CORES:
+        e(f"{rot}: cor inválida: {pt['cor']!r}")
     if isinstance(pt.get("frase"), str) and len(pt["frase"]) > FRASE_MAX:
         e(f"{rot}: frase com {len(pt['frase'])} caracteres (máximo {FRASE_MAX})")
     frente = pt.get("frente")
-    if isinstance(frente, str) and frente:
-        if not (frente.startswith("assets/frente/") and frente.endswith(".webp")):
+    if "frente" in ok:
+        if not (frente.startswith("assets/frente/") and frente.endswith(".webp")) or ".." in Path(frente).parts:
             e(f"{rot}: frente deve ser .webp em assets/frente/ (veio {frente})")
         elif not (raiz / frente).is_file():
             e(f"{rot}: frente inexistente: {frente}")
-    if not isinstance(arq, str) or not arq or tipo not in POR_TRAS_TIPOS:
+    if "arquivo" not in ok or tipo not in POR_TRAS_TIPOS:
+        return
+    if ".." in Path(arq).parts or Path(arq).is_absolute():
+        e(f"{rot}: arquivo não pode sair da pasta (veio {arq})")
         return
     prefixo, sufixo = ("fonte/conteudo/por-tras/", ".txt") if tipo == "codigo" else ("assets/por-tras/", ".webp")
     if not (arq.startswith(prefixo) and arq.endswith(sufixo)):
@@ -211,6 +220,8 @@ def _por_tras(rot, pt, raiz, e):
     if tipo != "codigo":
         return
     linhas = (raiz / arq).read_text(encoding="utf-8").splitlines()
+    if not any(l.strip() for l in linhas):
+        e(f"{rot}: {arq} sem nenhuma linha com código")
     if len(linhas) > POR_TRAS_MAX_LINHAS:
         e(f"{rot}: {arq} com {len(linhas)} linhas (máximo {POR_TRAS_MAX_LINHAS} linhas)")
     for n, linha in enumerate(linhas, 1):
@@ -285,8 +296,8 @@ def validar(dados: Dados, raiz: Path):
             a(f"{rot}: rascunho (texto aguarda o autor)")
         if p.link:
             https(rot, p.link)
-        if not isinstance(p.loja, str) or (p.loja and not p.loja.startswith(PLAY_STORE)):
-            e(f"{rot}: loja deve começar com {PLAY_STORE} (ou ficar vazia)")
+        if not isinstance(p.loja, str) or (p.loja and not RE_LOJA.match(p.loja)):
+            e(f"{rot}: loja deve ser {PLAY_STORE}<id do pacote> (ou ficar vazia)")
         if p.por_tras is not None:
             _por_tras(rot, p.por_tras, raiz, e)
         for img in p.imagens:
