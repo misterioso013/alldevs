@@ -194,8 +194,9 @@ main > .breadcrumb + section { border-top: 0; }
   border: 1px solid var(--claro);
   transition: background-color var(--t-curto) var(--curva), color var(--t-curto) var(--curva);
 }
-.btn-primary { background: var(--claro); color: var(--fundo); }
-.btn-primary:hover { background: transparent; color: var(--claro); }
+.btn-primary { background: transparent; color: var(--claro); border-color: var(--claro); }
+.btn-primary:hover,
+.btn-primary:focus-visible { background: var(--claro); color: var(--fundo); }
 .btn-ghost { background: transparent; color: var(--claro); border-color: var(--grade); }
 .btn-ghost:hover { border-color: var(--claro); color: var(--claro); }
 .btn-primary svg { flex: none; width: 16px; height: 16px; }

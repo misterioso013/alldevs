@@ -8,15 +8,14 @@ Este é o relatório final. A medição da 13A fica no fim, em "Medição anteri
 
 ```
 export BANCADA_LIBS=$HOME/.local/lib/chromium-deps          # só onde faltam as bibliotecas do Chromium
-python3 fonte/gerar.py --previa --saida ~/TMP/alldevs-previa
-python3 bancada/gzserver.py 8765 ~/TMP/alldevs-previa &     # pare pelo PID
-node bancada/rodar.mjs --url http://127.0.0.1:8765/ --saida ~/TMP/alldevs-13b-bancada
+python3 fonte/gerar.py --previa --saida <pasta-fora-do-repo>
+python3 bancada/gzserver.py 8765 <pasta-fora-do-repo> & # pare pelo PID
+node bancada/rodar.mjs --url http://127.0.0.1:8765/ --saida <pasta-das-capturas>
 node bancada/inspetor.mjs --url http://127.0.0.1:8765/
 node bancada/paleta.mjs --url http://127.0.0.1:8765/
 ```
 
-O Lighthouse é o móvel padrão (4G simulado). As capturas (`*-430.png`, `*-1440.png`, 7,5 MB) ficaram em `~/TMP/alldevs-13b-bancada/`,
-fora do repo (passam de 3 MB e o `.gitignore` já ignora `bancada/relatorios/*/*.png`). O relatório cita os nomes dos arquivos.
+O Lighthouse é o móvel padrão (4G simulado). As capturas (`*-430.png`, `*-1440.png`, 7,5 MB) ficaram numa pasta fora do repo (passam de 3 MB e o `.gitignore` já ignora `bancada/relatorios/*/*.png`). O relatório cita os nomes dos arquivos.
 
 ## Resumo
 
@@ -70,7 +69,7 @@ Nenhuma página passou de 2500 ms em nenhuma das 6 medidas, então não houve co
 ## Alvos de toque
 
 Regra do projeto: controles (botões, CTAs, pílula da paleta, abas, filtros, links de perfil, perguntas do FAQ) com 44 px ou mais de
-altura, no toque (412 px). `~/TMP/alldevs-13b-tmp/alvos2.mjs` mede a altura de cada controle em cada página:
+altura, no toque (412 px). `bancada/alvos.mjs` mede a altura de cada controle em cada página:
 
 - **0 controles abaixo de 44 px em 15 páginas** (menor altura: 44 px em todas). O caso mais cheio é /rosiel/, com 11 controles,
   entre eles os 7 links de `.perfil-links`.
@@ -144,7 +143,7 @@ A resposta (a) foi "sim, mesma família". Medi o que dá para medir nas capturas
 | Tipografia | didone em itálico dourado | Fraunces (serifa suave) + DM Sans + JetBrains Mono |
 | Imagem principal | frasco 3D e fumaça | inspetor de código (HTML real) |
 
-Os 6 pontos do Codex, um a um (nada foi alterado no código: o Passo 2 não gerou o commit `alldevs: ajustes da bancada final`):
+Os 6 pontos do Codex, um a um (na rodada 2 nada foi alterado; a mudança do botão principal veio depois, na revisão final, e a comparação foi refeita na seção ao fim):
 
 1. **Captura 2, composição do hero** (título grande à esquerda, visual à direita, dois botões abaixo). Composição de hero muito comum
    (título, visual, dois botões); é estrutural, não uma cópia de componente. Mantido. Item aberto, avaliação: risco baixo.
@@ -153,7 +152,7 @@ Os 6 pontos do Codex, um a um (nada foi alterado no código: o Passo 2 não gero
    spec (que o descreve como "blocos claros frios, usados pouco"; a cor real é quente e pouco saturada, R236 G235 B230), o mesmo tom do
    texto do site, com um terço da saturação do creme da Amott. Segundo, trocar
    o preenchimento obriga a escolher outra cor para o CTA: usar violeta ou laranja o ligaria a um dos sócios, e um terceiro acento é
-   decisão de marca. Item aberto [R], com a opção barata: CTA principal só com contorno e o preenchimento no `:hover`.
+   decisão de marca. Na revisão final a opção barata foi aplicada: CTA principal só com contorno e o preenchimento no `:hover`/`:focus-visible` (ver "Comparação refeita").
 3. **Capturas 2–5, cabeçalho** (marca à esquerda, navegação à direita, último botão em cápsula). Estrutural e padrão de mercado
    (a pílula `> ir para…` da paleta de comandos fica nesse mesmo cabeçalho, `fonte/modelos/cabecalho.html`). Mantido.
 4. **Capturas 2–5, títulos serifados de contraste acentuado, "em branco quente".** Fraunces em peso 600 é uma serifa suave, não
@@ -165,9 +164,9 @@ Os 6 pontos do Codex, um a um (nada foi alterado no código: o Passo 2 não gero
 
 Resumo: o Codex enxerga "mesma família" no repertório editorial escuro e apontou componentes de padrão comum (botões em cápsula com o
 principal claro e o secundário contornado, cabeçalho com o último item em cápsula, chamadas pequenas e espaçadas acima dos títulos, hero
-em duas colunas) e a serifa dos títulos. Nenhum texto nem rótulo da Amott apareceu na resposta. Decidimos manter todos; as diferenças
-medidas (matiz do fundo, saturação do claro, acento, fonte, imagem) são grandes. O botão principal `--claro` é o único com opção barata e
-vira item aberto no PR (item [R] 7); a serifa e o hero (item [R] 8) só se resolveriam com redesenho e ficam registrados com esta avaliação.
+em duas colunas) e a serifa dos títulos. Nenhum texto nem rótulo da Amott apareceu na resposta. Na rodada 2 mantive todos; as diferenças
+medidas (matiz do fundo, saturação do claro, acento, fonte, imagem) são grandes. O botão principal `--claro` tinha opção barata e foi
+mudado na revisão final (item [R] 7 do PR, feito); a serifa e o hero (item [R] 8) só se resolveriam com redesenho e ficam registrados com esta avaliação.
 
 ## Detalhe por meta (rodada completa de 2026-11-23T01:29:16.185Z)
 
@@ -375,3 +374,47 @@ o ProsUp, de 910 para 907 ms.
 | /servicos/criacao-de-sites-institucionais/ | passa | LCP 908 ms, CLS 0.000 |
 | /servicos/desenvolvimento-mvp-startups/ | passa | LCP 908 ms, CLS 0.000 |
 | /servicos/landing-page-conversao/ | passa | LCP 909 ms, CLS 0.000 |
+
+## Comparação refeita (revisão final)
+
+A revisão final reprovou o portão da spec §9.5 (o Codex tinha dito "sim, mesma família"). Mudança feita: `.btn-primary` em `css/site.css`
+passou a ter só contorno (fundo transparente, borda e texto em `--claro`) e se preenche com `--claro` no `:hover` e no `:focus-visible`
+(texto em `--fundo`; é o mesmo par de cores do texto do site, contraste já travado por teste). Sem cor nova, só tokens. O botão claro em cápsula
+era o ponto 2 e o ponto 6 do Codex. A bancada rodou de novo na prévia local (15 páginas): capturas, axe, sem JS, rolagem, links, movimento,
+inspetor, paleta e Lighthouse passam, e `bancada/alvos.mjs` dá 0 controles abaixo de 44 px.
+
+| Meta | Resultado |
+|---|---|
+| Lighthouse móvel, home | LCP 907 ms, CLS 0,000 |
+| Lighthouse móvel, serviço (`/servicos/criacao-de-sites-institucionais/`) | LCP 905 ms, CLS 0,000 |
+| Lighthouse móvel, pior página (`/rosiel/`, foto) | LCP 2260 ms, CLS 0,000 (meta 2500 ms) |
+| axe, 430 e 1440 px | 0 sérios ou críticos nas 15 páginas |
+| Rolagem horizontal em 430 px | nenhuma |
+| Alvos de toque (412 px): home, serviço, /rosiel/ | menor altura 44 px, 0 abaixo de 44 |
+
+Capturas de 1440 px enviadas, nesta ordem: Amott (a mesma da rodada 1), primeira dobra da home, página do serviço de sites institucionais,
+`/projetos/prosup/` e `/rosiel/` (as três últimas, de página inteira, geradas pela bancada). Pergunta: a mesma da rodada 2, com uma linha final.
+
+Pedido:
+
+> A PRIMEIRA imagem (ref-home-1440.png) é a home do site da Amott ([host omitido]), uma perfumaria. As outras quatro são capturas de 1440 px do site novo de um estúdio de software, na ordem: 2) primeira dobra da home, 3) página de um serviço, 4) página de um case, 5) perfil de uma pessoa. Compare a Amott com as quatro capturas. (a) Um revisor externo diria que são o mesmo estúdio ou a mesma família de site? Responda sim ou não e justifique em 2 linhas. (b) Liste só semelhanças concretas entre a Amott e as capturas, dizendo o número da captura e o lugar: layout, cores, tipografia, componentes, textos. Não liste o que é genérico de todo site escuro.
+> Responda também, em uma frase: parecem o mesmo estúdio? (sim/não)
+
+Resposta íntegra:
+
+> **(a) Não.** A Amott tem direção de arte centrada no frasco, com dourado, brilho e formas orgânicas; o estúdio usa divisórias, monoespaçadas e elementos técnicos.
+> A semelhança mais forte está na composição da primeira dobra da captura 2; as páginas internas não sustentam uma identidade comum com a Amott.
+>
+> **(b) Semelhanças concretas:**
+>
+> - **Captura 2, primeira dobra:** título grande à esquerda e demonstração visual do produto à direita, com dois botões arredondados lado a lado abaixo do texto — composição também presente na Amott.
+> - **Capturas 2–5, cabeçalho:** marca pequena à esquerda, navegação à direita e botão em formato de cápsula na extremidade direita.
+> - **Capturas 2–5, títulos:** serifadas claras com contraste entre traços finos e grossos, próximas do recurso editorial usado no título principal da Amott.
+> - **Capturas 2–5, pequenos rótulos:** espaçamento ampliado entre letras em chamadas que antecedem os títulos, semelhante aos rótulos superiores da Amott.
+>
+> **Parecem o mesmo estúdio? Não.**
+
+Veredicto: **não**, não parecem o mesmo estúdio. O ponto do botão em creme sumiu da lista. O Codex ainda cita a composição do hero
+(título à esquerda, visual à direita, dois botões), o cabeçalho com a cápsula, a serifa dos títulos e os rótulos espaçados, mas
+conclui que as páginas internas não sustentam uma identidade comum com a Amott. O portão §9.5 passa com esta resposta; os itens
+estruturais restantes (serifa dos títulos, hero em duas colunas) seguem como item [R] 8 do PR, decisão do Rosiel.

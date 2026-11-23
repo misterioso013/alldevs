@@ -73,8 +73,8 @@ A prévia sai com `noindex` em todas as páginas, `robots.txt` com `Disallow: /`
 Local:
 
 ```
-python3 fonte/gerar.py --previa --saida ~/TMP/alldevs-previa
-python3 bancada/gzserver.py 8765 ~/TMP/alldevs-previa
+python3 fonte/gerar.py --previa --saida <pasta-fora-do-repo>
+python3 bancada/gzserver.py 8765 <pasta-fora-do-repo>
 # abrir http://127.0.0.1:8765/
 ```
 
@@ -136,17 +136,17 @@ Já feitos na 13A: dados do ProsUp, do Fakly e do SendAny (brief 3) e os textos 
    sócios") e `HISTORIA_DESCRICAO` em `fonte/alldevs/paginas.py` ainda trazem a bio dele como estava (não mexi). Confirmar se vale ou
    trocar o texto.
 6. (novo) **Uma voz só.** A frase do Rosiel está em 1ª pessoa e a do Caio em 3ª. Escolher uma e ajustar a outra.
-7. (novo) **Botão principal.** Entre os pontos do Codex, o botão principal claro com texto escuro (junto a um secundário só com
-   contorno, em cápsula) é o único de cor/componente que se resolveria em uma linha. Mantive: `#ecebe6` é o `--claro` da spec, com um terço da saturação do
-   creme de lá, e trocar o preenchimento exige um terceiro acento de marca (violeta ou laranja ligariam o botão a um dos sócios). Opção
-   barata, uma linha em `.btn-primary` de `css/site.css`: CTA só com contorno e preenchimento no `:hover`. Decisão de marca.
-8. (novo) **Títulos e hero.** O Codex também citou a serifa dos títulos e a composição do hero (título à esquerda, visual à direita, dois
-   botões). Minha avaliação: Fraunces 600 é serifa suave, não didone, e o hero em duas colunas é comum; trocar a família do título
-   (`--fonte-titulo` em `css/tokens.css`) seria redesenho, então fica como está. Os 6 pontos e a resposta íntegra estão no relatório.
+7. (feito) **Botão principal.** O botão principal claro em cápsula era o ponto mais concreto do Codex. `.btn-primary` em `css/site.css` agora
+   tem só contorno (`--claro`, fundo transparente) e se preenche no `:hover` e no `:focus-visible`. Só tokens, sem cor nova. Com isso, o
+   Codex respondeu **não** na comparação refeita.
+8. (aberto, decisão do Rosiel) **Títulos e hero.** O Codex ainda cita a serifa dos títulos e o hero em duas colunas (título à esquerda,
+   visual à direita, dois botões), embora conclua que não parecem o mesmo estúdio. Fraunces 600 é serifa suave, não didone, e o hero em duas
+   colunas é comum. Trocar a família do título (`--fonte-titulo` em `css/tokens.css`) ou o hero seria redesenho: se o Rosiel quiser, é
+   uma tarefa à parte; se não, o portão §9.5 fica dispensado nesses dois pontos por decisão dele. Resposta íntegra no relatório.
 
 ### [C] Caio
 
-A pergunta só sai pelo Telegram com o OK do Rosiel. Resumo do que falta ele responder (`branco/task_caio.md`):
+A pergunta só sai pelo Telegram com o OK do Rosiel. Resumo do que falta ele responder:
 
 1. **Na página do estúdio:** o papel dele (hoje "Infraestrutura, mídia e apps"), uma frase em voz própria, links (só `https`: GitHub,
    LinkedIn, outros) e se a foto atual (`assets/images/caio.jpeg`) fica.
@@ -155,7 +155,7 @@ A pergunta só sai pelo Telegram com o OK do Rosiel. Resumo do que falta ele res
 3. **Serviços:** o site não mostra quem toca cada serviço (decisão do Rosiel; o cliente vê "a equipe"). Só precisa dizer se tem objeção.
 4. **Heisuca e outros projetos:** tipo, situação real, ano, resumo, problema, o que foi feito, resultado (só com número ou estado
    real), stack, link, imagens, autores e destaque; e se algum outro projeto dele entra como case. A Amott fica fora (o cliente é o
-   Anderson), salvo se ele liberar.
+   dono da Amott), salvo se ele liberar.
 5. **Telas do Heisuca no hero:** quais ele autoriza mostrar.
 6. **Trava de segurança:** nenhum texto, captura ou dado de cliente entra sem o OK dele; dizer o que do Heisuca não pode aparecer
    (servidor, contas, nomes de pessoas).
@@ -168,8 +168,10 @@ Enquanto ele não responde:
 
 ### Técnicos
 
-- **`README.md` desatualizado.** A árvore ainda lista `css/styles.css`, `css/servico.css` e `js/servico-gsap.js` (que saíram) e não
-  fala do gerador nem da bancada. Não mexi (esta etapa só fecha relatório e texto do PR); sugiro uma passada antes de publicar.
+- **`_config.yml` na raiz** (`exclude: [docs, bancada, fonte, README.md]`) tira essas pastas do site publicado. Depois do merge,
+  conferir que `/README.md`, `/docs/`, `/bancada/` e `/fonte/gerar.py` dão 404; se não derem, o Pages está em deploy por Actions e
+  é preciso publicar só os arquivos do site.
+- **`README.md`** atualizado: estrutura, gerador, testes, prévia e bancada.
 - **Links de texto corrido, logo e rodapé** têm entre 17 e 34 px de altura. Passam o AA (2.5.8, que tem exceção para link em linha de
   texto), mas não o AAA (2.5.5, 44 px). Não mexi porque mudaria a leitura do texto. A regra de 44 px vale, e passa, para controles.
 - **Os 4 arquivos removidos** (imagem OG antiga e 3 de CSS/JS) devolvem 404 (ver "URLs preservadas").
@@ -180,9 +182,10 @@ Enquanto ele não responde:
 - **Comparação com a Amott (Passo 2).** O primeiro Codex não abriu o site de referência (sem DNS no sandbox) e pediu capturas dela; fiz a
   segunda rodada lado a lado. Resposta: "sim, mesma família visual", com 6 pontos. O Codex apontou componentes de padrão comum (botões em
   cápsula com o principal claro e o secundário contornado, cabeçalho com o último item em cápsula, chamadas pequenas e espaçadas acima dos
-  títulos, hero em duas colunas) e a serifa dos títulos; nenhum texto nem rótulo da Amott apareceu. Decidimos manter todos. Nenhum
-  código mudou por causa dela. Só o botão principal `--claro` tem opção barata (item [R] 7); a serifa dos títulos e o hero (item
-  [R] 8) só se resolveriam com redesenho, então ficam registrados com a minha avaliação.
+  títulos, hero em duas colunas) e a serifa dos títulos; nenhum texto nem rótulo da Amott apareceu. Na revisão final apliquei a opção barata (item [R] 7: botão
+  principal só com contorno) e refiz a comparação: o Codex respondeu **não**, não parecem o mesmo estúdio. Ele ainda cita o hero em duas
+  colunas, o cabeçalho, a serifa dos títulos e os rótulos espaçados; esses itens ficam no item [R] 8. Resposta íntegra no relatório,
+  seção "Comparação refeita (revisão final)".
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
