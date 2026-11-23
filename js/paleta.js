@@ -128,7 +128,7 @@
       campo.focus();
       return;
     }
-    antes = doc.activeElement;
+    antes = peloGatilho ? gatilho : doc.activeElement;
     campo.value = "";
     filtrar();
     if (!itens) mostrar("Carregando…");

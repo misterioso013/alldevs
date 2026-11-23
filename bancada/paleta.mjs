@@ -5,7 +5,9 @@
 //  b) 412 px, toque: a pílula "> ir para…" tem >= 44 px, não há barra fixa embaixo, o toque abre, as opções têm
 //     >= 44 px, Esc devolve o foco à pílula, tocar numa opção navega, axe com a paleta aberta;
 //  c) reducedMotion: aberta, nenhum elemento com transform após 1 s e o diálogo termina opaco;
-//  d) 412 px com o paleta.json bloqueado: a pílula segue como link e leva a /projetos/.
+//  d) 412 px com o paleta.json bloqueado: a pílula segue como link e leva a /projetos/;
+//  e) 412 px, clique sem foco (o que o toque faz no Safari/iOS e no Firefox/macOS: o <a> não ganha foco, o activeElement
+//     é o body): aberta pela pílula, Esc devolve o foco à pílula.
 // Uso solo: node bancada/paleta.mjs --url http://127.0.0.1:8765/   (o rodar.mjs chama medePaleta)
 import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
@@ -181,9 +183,34 @@ async function semRede(nav, url) {
   } finally { await ctx.close(); }
 }
 
+async function semFoco(nav, url) {
+  const falhas = [];
+  const ctx = await contexto(nav, 412, { hasTouch: true, isMobile: true });
+  try {
+    const p = await ctx.newPage();
+    await p.goto(url, { waitUntil: 'networkidle' });
+    // click() por script não dá foco ao <a>, como o toque do Safari; o tap()/click() do Playwright daria (Chromium)
+    const antes = await p.evaluate(() => {
+      document.activeElement && document.activeElement.blur();
+      const a = document.activeElement;
+      return a ? a.tagName.toLowerCase() : null;
+    });
+    if (antes !== 'body') falhas.push(`preparo: o foco inicial está em ${antes}, esperava body`);
+    await p.evaluate(() => document.querySelector('.paleta-gatilho').click());
+    await p.waitForSelector(`${ABERTA} [role="option"]`, ESPERA);
+    let e = await estado(p);
+    if (!e.aberto || !e.foco) falhas.push(`clique sem foco: aberto ${e.aberto}, foco no campo ${e.foco}`);
+    await p.keyboard.press('Escape');
+    await p.waitForTimeout(150);
+    e = await estado(p);
+    if (e.aberto || !/paleta-gatilho/.test(e.ativoEm || '')) falhas.push(`clique sem foco, Esc: aberto ${e.aberto}, foco em ${e.ativoEm}, esperava a pílula`);
+    return { falhas, det: `clique sem foco no link: Esc devolve o foco à pílula (${e.ativoEm})` };
+  } finally { await ctx.close(); }
+}
+
 export async function medePaleta(nav, url) {
   const total = (await (await fetch(new URL(ARQ, url))).json()).length;
-  const casos = await Promise.all([teclado(nav, url, total), toque(nav, url, total), calmo(nav, url), semRede(nav, url)]
+  const casos = await Promise.all([teclado(nav, url, total), toque(nav, url, total), calmo(nav, url), semRede(nav, url), semFoco(nav, url)]
     .map((c) => c.catch((e) => ({ falhas: [String(e && e.message || e).split('\n')[0]], det: '' }))));
   const falhas = casos.flatMap((c) => c.falhas);
   return { passou: falhas.length === 0, det: falhas.length ? falhas.join('; ') : casos.map((c) => c.det).join('; '), casos };

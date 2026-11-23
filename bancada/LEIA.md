@@ -54,7 +54,8 @@ Toda página precisa responder 200; página sem medição numa meta conta como F
   - 412 px, toque: pílula visível com ≥ 44 px, sem elemento fixo colado ao rodapé; tocar na pílula abre; opções com ≥ 44 px; axe aberta;
     Esc devolve o foco à pílula; tocar numa opção navega;
   - `reducedMotion: reduce`: aberta, nenhum `transform` após 1 s e o diálogo termina opaco (só esmaece);
-  - 412 px com o `paleta.json` bloqueado: a pílula segue como link e leva a `/projetos/`.
+  - 412 px com o `paleta.json` bloqueado: a pílula segue como link e leva a `/projetos/`;
+  - 412 px, clique sem foco no link (o que o toque faz no Safari/iOS: o `activeElement` fica no `body`): aberta pela pílula, Esc devolve o foco à pílula.
 
 ## Máquina sem as libs do Chrome (Whatbox)
 Faltam `libgbm`, `libxkbcommon` etc. Baixe os .deb do Debian bookworm (libgbm1, libdrm2, libwayland-server0, libxkbcommon0),
