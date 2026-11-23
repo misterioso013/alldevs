@@ -1,0 +1,173 @@
+# Redesenho do ALL.dev: estúdio do Caio e do Rosiel
+
+Ramo `claude/redesenho`, base `7acc4d2`. O site continua estático e publicado pela raiz do repositório, mas agora a raiz é a
+saída de um gerador em Python (só biblioteca padrão): o que se edita fica em `fonte/`.
+
+**Push e PR só com o OK do Rosiel.** Este texto fica pronto no repositório até lá.
+
+## O que muda
+
+- **Gerador e dados.** `python3 fonte/gerar.py` escreve todas as páginas, o `sitemap.xml`, o JSON-LD e `assets/paleta.json` a partir de
+  `fonte/dados/*.json` (estúdio, pessoas, serviços, projetos), `fonte/modelos/` e `fonte/conteudo/`. Telefone, e-mail e links vêm de
+  `estudio.json`, nunca escritos à mão nas páginas. `python3 fonte/checar.py` valida a saída (sem erro = rc 0).
+- **Visual novo.** Escuro, com tokens de cor e tipografia em `css/tokens.css` e o resto em `css/site.css` (saem `css/styles.css` e
+  `css/servico.css`). Fontes Fraunces, DM Sans e JetBrains Mono servidas por nós em `assets/fontes/`. Acento violeta para o Caio e
+  laranja para o Rosiel; os blocos claros usam o neutro frio `--claro`.
+- **Movimento.** GSAP 3.13.0 (com ScrollTrigger e SplitText) e Lenis 1.3.27 em `js/vendor/`, com versão e SHA-256 fixados em
+  `VERSOES.json` e conferidos por teste. Com `prefers-reduced-motion` não sobra nenhum transform depois de 1 s. Sem JS o conteúdo
+  todo aparece (sai `js/servico-gsap.js`).
+- **Páginas novas.** `/caio/` e `/rosiel/` (perfis), `/projetos/` (portfólio) e quatro cases: `/projetos/prosup/`,
+  `/projetos/fakly/`, `/projetos/sendany/` e `/projetos/heisuca/`.
+- **Hero inspetor.** A home mostra telas reais de produto (`assets/inspetor/`) com caixas de inspeção que acendem e apagam; a troca
+  de tela só começa depois do primeiro gesto do visitante (para não atrasar o LCP) e, parado, o hero fica calmo. Sem JS fica só a
+  primeira imagem.
+- **Paleta de comandos.** `Ctrl K` (ou a pílula `> ir para…` no cabeçalho, também no toque) abre uma lista com 16 opções: projetos,
+  serviços, as duas pessoas e os canais de contato; `Esc` fecha e devolve o foco. Sem JS a pílula é um link para `/projetos/`.
+- **Contato.** Link do WhatsApp com mensagem pronta e um código de origem no fim dela (por exemplo `[site·case·heisuca]`), para saber de
+  onde veio o contato. Sem formulário.
+- **Compartilhamento.** Uma imagem OG de 1200×630 por página em `assets/og/`, gerada por `bancada/og.mjs`.
+- **Bancada.** `bancada/` mede cada página com Playwright, axe e Lighthouse móvel, e confere paleta e inspetor em casos à parte.
+- **CI.** `.github/workflows/checar.yml` roda os testes, regera o site e exige que o `git diff` fique limpo, e roda `checar.py`.
+- **Saem do repositório:** `css/styles.css`, `css/servico.css`, `js/servico-gsap.js` e `assets/images/og-image.png`.
+- **Intocados:** `CNAME`, `app-ads.txt`, `.github/FUNDING.yml` e `robots.txt`.
+
+Nada da Amott aparece na saída do site (há teste para isso).
+
+## URLs preservadas
+
+Comparação com a base (`git show 7acc4d2:sitemap.xml` e `git ls-tree -r --name-only 7acc4d2 | grep index.html`) contra a saída atual:
+
+| URL da base | Hoje |
+|---|---|
+| `/` | igual |
+| `/historia.html` | igual (sem redirecionamento; a URL com `.html` continua) |
+| `/servicos/criacao-de-sites-institucionais/` | igual |
+| `/servicos/landing-page-conversao/` | igual |
+| `/servicos/bots-whatsapp-automacao/` | igual |
+| `/servicos/aplicativo-mobile-react-native/` | igual |
+| `/servicos/desenvolvimento-mvp-startups/` | igual |
+| `/servicos/automacoes-integracoes-api/` | igual |
+
+**Nenhuma página da base sumiu.** A base tinha 8 páginas; a saída tem 15. As 7 novas são `/caio/`, `/rosiel/`, `/projetos/` e os
+quatro cases. O `sitemap.xml` lista 14: `/projetos/heisuca/` fica de fora, porque é rascunho e sai com `noindex` (ver itens em aberto).
+
+Única URL de arquivo que deixa de existir: **`/assets/images/og-image.png`**, a imagem de compartilhamento antiga, que as páginas da
+base citavam em `og:image` e `twitter:image`. Agora cada página cita a sua em `/assets/og/`. Quem já compartilhou um link pode ver a
+prévia antiga em cache até a rede social atualizar; o link da página em si não muda. Se quiserem evitar o 404 para essa imagem, basta
+voltar a gerar um arquivo com esse nome (não fiz: seria um arquivo a mais só para cache de terceiros).
+
+## Como ver a prévia
+
+A prévia sai com `noindex` em todas as páginas, `robots.txt` com `Disallow: /` e o cabeçalho `X-Robots-Tag: noindex` (`_headers`).
+
+Local:
+
+```
+python3 fonte/gerar.py --previa --saida ~/TMP/alldevs-previa
+python3 bancada/gzserver.py 8765 ~/TMP/alldevs-previa
+# abrir http://127.0.0.1:8765/
+```
+
+Cloudflare Pages, no ramo `previa`:
+
+```
+Comando de build:   python3 fonte/gerar.py --previa --saida dist-previa
+Pasta de saída:     dist-previa
+```
+
+(`dist-previa/` está no `.gitignore`.) Para a bancada, ver `bancada/LEIA.md`.
+
+## Metas medidas
+
+Rodada de 2026-11-23 sobre o commit `b7bb892`, nas 15 páginas, Lighthouse móvel com 4G simulado. Detalhe, capturas citadas, as 6
+medidas de LCP por página, o inspetor, a paleta e a comparação com a Amott: [`bancada/relatorios/2026-11-23/RELATORIO.md`](../../bancada/relatorios/2026-11-23/RELATORIO.md).
+
+| Meta | Resultado |
+|---|---|
+| LCP < 2500 ms | passa em 15/15. Home ~907 ms; `/rosiel/` até 2263 ms; `/caio/` até 2408 ms (6 medidas cada) |
+| CLS < 0,05 | passa em 15/15 (máximo 0,029, em `/projetos/`) |
+| axe: 0 serious/critical | passa em 15/15, em 430 e 1440 px (inclui a regra `target-size`, AA) |
+| Sem rolagem horizontal em 430 px | passa em 15/15 |
+| Alvos de toque ≥ 44 px nos controles | passa: 0 controles abaixo de 44 px em 15 páginas |
+| Funciona sem JS | passa em 15/15 (título, contato e, em `/projetos/`, todos os cards) |
+| `reducedMotion` sem transform após 1 s | passa em 15/15 |
+| Links internos com 200 e sem redirecionamento | passa em 15/15 |
+| Inspetor do hero e paleta de comandos | passam (casos solo `bancada/inspetor.mjs` e `bancada/paleta.mjs`) |
+| Testes | `python3 -m unittest discover -s fonte/testes -t fonte -v`: 202 OK; `gerar.py` sem diff; `checar.py` com 0 erro |
+
+Duas margens finas, ambas explicadas no relatório: `/caio/` tem 92 ms de folga no LCP e `/rosiel/` tem 237 ms (o LCP das duas é a foto
+de perfil, hoje provisória).
+
+## O que muda em relação à spec
+
+- Contraste AA: `--rosiel-texto` passa de `#c2410c` para **`#9a3412`**, e entram `--suave #9b99a6`, `--caio-texto #a78bfa` e
+  `--caio-texto-claro #6d28d9`.
+- Campos novos nos dados: `nome` curto nos serviços (para a mensagem do WhatsApp), `atualizado` (para o `lastmod`), `inspetor` no
+  `estudio.json` e `rascunho` nos textos provisórios.
+- A bancada vem antes do visual (Tarefa 8), para medir a linha de base.
+- Exceção temporária da regra de cor para os CSS antigos até a Tarefa 10.
+- Workflow de CI novo (`.github/workflows/checar.yml`).
+
+## Itens em aberto
+
+### [R] Rosiel
+
+Já feitos na 13A: dados do ProsUp, do Fakly e do SendAny (brief 3) e os textos de §6 (brief 5).
+
+1. (brief 1) Ligar o Cloudflare Pages no ramo `previa`, com o comando e a pasta da seção "Como ver a prévia".
+2. (brief 2) Mandar as fotos dos dois. As atuais são provisórias; medir o LCP de `/caio/` e `/rosiel/` de novo quando chegarem (folga de 92 e
+   237 ms, ver acima). Se passar de 2500 ms, o primeiro remédio é um arquivo menor (por exemplo 480 px).
+3. (brief 4) Dizer se o Ultron tem acesso ao repositório.
+4. (brief 6) Trocar o e-mail pelo do domínio: basta mudar `fonte/dados/estudio.json` e gerar de novo.
+5. (novo) **"Engenheiro sênior" e "sócios".** `fonte/conteudo/historia.html` ("virou engenheiro sênior") e as constantes `HOME_DESCRICAO` ("dois
+   sócios") e `HISTORIA_DESCRICAO` em `fonte/alldevs/paginas.py` ainda trazem a bio dele como estava (não mexi). Confirmar se vale ou
+   trocar o texto.
+6. (novo) **Uma voz só.** A frase do Rosiel está em 1ª pessoa e a do Caio em 3ª. Escolher uma e ajustar a outra.
+7. (novo) **Botão principal.** Entre os pontos do Codex, o botão principal claro com texto escuro (junto a um secundário só com
+   contorno, em cápsula) é o único de cor/componente que se resolveria em uma linha. Mantive: `#ecebe6` é o `--claro` da spec, com um terço da saturação do
+   creme de lá, e trocar o preenchimento exige um terceiro acento de marca (violeta ou laranja ligariam o botão a um dos sócios). Opção
+   barata, uma linha em `.btn-primary` de `css/site.css`: CTA só com contorno e preenchimento no `:hover`. Decisão de marca.
+8. (novo) **Títulos e hero.** O Codex também citou a serifa dos títulos e a composição do hero (título à esquerda, visual à direita, dois
+   botões). Minha avaliação: Fraunces 600 é serifa suave, não didone, e o hero em duas colunas é comum; trocar a família do título
+   (`--fonte-titulo` em `css/tokens.css`) seria redesenho, então fica como está. Os 6 pontos e a resposta íntegra estão no relatório.
+
+### [C] Caio
+
+A pergunta só sai pelo Telegram com o OK do Rosiel. Resumo do que falta ele responder (`branco/task_caio.md`):
+
+1. **Na página do estúdio:** o papel dele (hoje "Infraestrutura, mídia e apps"), uma frase em voz própria, links (só `https`: GitHub,
+   LinkedIn, outros) e se a foto atual (`assets/images/caio.jpeg`) fica.
+2. **Experiência:** se o estúdio pode dizer "mais de 8 anos" ou 10, e como ele quer ser descrito (equipe qualificada, ou com o papel de
+   marketing, design e prototipação).
+3. **Serviços:** o site não mostra quem toca cada serviço (decisão do Rosiel; o cliente vê "a equipe"). Só precisa dizer se tem objeção.
+4. **Heisuca e outros projetos:** tipo, situação real, ano, resumo, problema, o que foi feito, resultado (só com número ou estado
+   real), stack, link, imagens, autores e destaque; e se algum outro projeto dele entra como case. A Amott fica fora (o cliente é o
+   Anderson), salvo se ele liberar.
+5. **Telas do Heisuca no hero:** quais ele autoriza mostrar.
+6. **Trava de segurança:** nenhum texto, captura ou dado de cliente entra sem o OK dele; dizer o que do Heisuca não pode aparecer
+   (servidor, contas, nomes de pessoas).
+
+Enquanto ele não responde:
+
+- **O Heisuca está visível** (`/projetos/heisuca/`, na lista de projetos e na paleta), mas com `noindex`, fora do `sitemap.xml` e **sem
+  link externo**, porque o texto é provisório (`rascunho: true`). O que ele vetar ganha `visivel: false`.
+- **Os serviços estão sem selo de pessoa**, como o Rosiel decidiu.
+
+### Técnicos
+
+- **`README.md` desatualizado.** A árvore ainda lista `css/styles.css`, `css/servico.css` e `js/servico-gsap.js` (que saíram) e não
+  fala do gerador nem da bancada. Não mexi (esta etapa só fecha relatório e texto do PR); sugiro uma passada antes de publicar.
+- **Links de texto corrido, logo e rodapé** têm entre 17 e 34 px de altura. Passam o AA (2.5.8, que tem exceção para link em linha de
+  texto), mas não o AAA (2.5.5, 44 px). Não mexi porque mudaria a leitura do texto. A regra de 44 px vale, e passa, para controles.
+- **Imagem OG antiga** devolve 404 (ver "URLs preservadas").
+- **Capturas de página inteira** da bancada mostram seções vazias abaixo da primeira tela: a revelação por rolagem só pinta o que
+  entra na janela. O conteúdo está lá (meta "Sem JS" passa em 15/15).
+- **Oscilações isoladas** na rodada completa do Lighthouse (`/historia.html` 1219 ms, `/servicos/desenvolvimento-mvp-startups/` 1215 ms,
+  CLS 0,011 em `/servicos/bots-whatsapp-automacao/`), todas dentro das metas e sem repetir nas medições 3×.
+- **Comparação com a Amott (Passo 2).** O primeiro Codex não abriu o site de referência (sem DNS no sandbox) e pediu capturas dela; fiz a
+  segunda rodada lado a lado. Resposta: mesma família visual (repertório editorial escuro), sem texto nem componente próprio. Nenhum
+  código mudou por causa dela; os itens 7 e 8 acima são o que sobrou.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+https://claude.ai/code/session_01Bxzke1fDqMR8GQ6eWNkVxj
