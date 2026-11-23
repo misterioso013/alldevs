@@ -200,7 +200,7 @@ Os textos acima são de partida: o Rosiel ajusta na etapa 2.
 5. Stack (etiquetas mono).
 6. Imagens 16:10 e link para o produto.
 
-**Primeiros cases:** ProsUp, Fakly e SendAny (Rosiel); Heisuca (Caio). Depois entram os outros que o Caio liberar. O case da Amott só entra se o Caio liberar, porque o cliente é o Anderson; mesmo assim, só com texto e capturas, nunca com a identidade visual da Amott no nosso código.
+**Primeiros cases:** ProsUp, Fakly e SendAny (Rosiel); Heisuca (Caio). Depois entram os outros que o Caio liberar. O case da Amott só entra se o Caio liberar, porque o cliente é o dono da Amott; mesmo assim, só com texto e capturas, nunca com a identidade visual da Amott no nosso código.
 
 ### 6.3 Títulos
 
@@ -315,7 +315,7 @@ O texto longo é migrado **sem reescrever**. Só três coisas mudam:
 **Regras para todos:**
 - O trabalho sai em ramos `claude/…` e `codex/…`, nunca direto na `main`.
 - Nenhum push no repo do Rosiel sem o OK dele.
-- Nada da identidade visual da Amott (do Anderson) entra no código: nem fontes, nem cores, nem trechos copiados.
+- Nada da identidade visual da Amott (do dono da Amott) entra no código: nem fontes, nem cores, nem trechos copiados.
 - Cada entrega diz o que foi e o que não foi testado.
 
 ## 11. Tarefas de pessoas

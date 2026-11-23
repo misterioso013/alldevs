@@ -29,7 +29,7 @@ abaixo é a da spec.
   inspetor. Como case, só com o OK do Caio.
 - Python só com a biblioteca padrão. Testes: `python3 -m unittest discover -s fonte/testes -t fonte -v`.
 - Ficam como estão: `CNAME`, `app-ads.txt`, `.github/FUNDING.yml` e `robots.txt` da produção.
-- WhatsApp `558189477459`, e-mail `rosielvictor.dev@gmail.com` (temporário), Telegram `https://t.me/m/PYdcFSXtNjZh`.
+- WhatsApp `558189477459`, e-mail `rosielvictor.dev@gmail.com`, Telegram `https://t.me/m/PYdcFSXtNjZh`.
 - Cabeçalho de todo arquivo gerado: `<!-- gerado por fonte/gerar.py — não editar -->`.
 - Proibido (§5.1): fundo creme, serifa didone, dourado, revelação por fluido, cursor com curva, barra de vidro no rodapé do
   celular, botão flutuante e preloader. Também ficam fora formulário, analytics, blog, modo claro e WebGL.

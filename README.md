@@ -2,7 +2,7 @@
 
 Site autoral da AllDevs, criado para contar a historia de como começamos e vender freelas de desenvolvimento com uma experiencia visual forte, direta e artesanal.
 
-A proposta desta versao e voltar ao essencial: HTML, CSS e JavaScript puros, com GSAP conduzindo movimento, narrativa e microinteracoes. Nada de framework por obrigação. A pagina precisa carregar rapido, comunicar valor em poucos segundos e ainda ter personalidade.
+A proposta desta versao e voltar ao essencial: HTML e CSS gerados por um script Python simples, com JavaScript so como melhoria. Nada de framework por obrigação. A pagina precisa carregar rapido, comunicar valor em poucos segundos e ainda ter personalidade.
 
 ## Objetivo
 
@@ -16,44 +16,61 @@ Transformar a AllDevs em uma vitrine comercial e narrativa para:
 
 ## Stack
 
-- HTML sem build step
-- CSS customizado
-- JavaScript vanilla
-- GSAP
-- ScrollTrigger
-- SplitText
+- HTML e CSS estáticos, publicados pelo GitHub Pages (sem build no servidor)
+- JavaScript vanilla, só como melhoria: o site funciona sem JS
+- Gerador em Python (só biblioteca padrão) em `fonte/`
+- Bancada de medição em Node (Playwright, axe, Lighthouse) em `bancada/`
 
 ## Estrutura
 
 ```text
 .
-├── index.html
-├── historia.html
-├── css/
-│   ├── styles.css
-│   └── servico.css
-├── js/
-│   └── servico-gsap.js
-├── servicos/
-│   ├── aplicativo-mobile-react-native/
-│   ├── automacoes-integracoes-api/
-│   ├── bots-whatsapp-automacao/
-│   ├── criacao-de-sites-institucionais/
-│   ├── desenvolvimento-mvp-startups/
-│   └── landing-page-conversao/
-└── assets/
+├── index.html, historia.html     # saída do gerador
+├── caio/, rosiel/, projetos/, servicos/   # saída do gerador
+├── css/        # tokens.css e site.css (escritos à mão)
+├── js/         # scripts da página e js/vendor/
+├── assets/     # imagens, fontes e paleta.json
+├── fonte/      # gerador: modelos, conteúdo, dados (estudio.json etc.), testes
+├── bancada/    # medição: capturas, axe, Lighthouse, inspetor e paleta
+├── docs/       # spec, plano e texto do PR
+└── _config.yml # tira docs, bancada, fonte e este README do site publicado
 ```
 
-## Paginas principais
+As páginas HTML da raiz e das pastas do site são geradas: não edite à mão, edite `fonte/` e rode o gerador.
+Telefone, e-mail e demais dados do estúdio ficam em `fonte/dados/estudio.json`.
+
+## Gerador, testes e prévia
+
+```bash
+python3 fonte/gerar.py                  # reescreve a saída na raiz do repo
+python3 -m unittest discover -s fonte/testes -t fonte
+python3 fonte/checar.py                 # regras do projeto sobre a saída (rc 0 = limpo)
+python3 fonte/gerar.py --previa --saida <pasta-fora-do-repo>   # prévia com noindex
+```
+
+Depois de gerar, `git diff` precisa ficar limpo (a saída é determinística).
+
+## Bancada
+
+Mede a prévia local: capturas em 430 e 1440 px, axe, funcionamento sem JS, rolagem horizontal, links, movimento reduzido e
+Lighthouse (LCP e CLS). Como instalar e rodar: `bancada/LEIA.md`.
+
+## Páginas principais
 
 `index.html`  
-Home comercial com hero animado, particulas em canvas, secoes de servicos, projetos, stack, historia resumida e contato.
+Home comercial com o inspetor de código no hero, serviços, projetos e contato.
 
 `historia.html`  
-Pagina narrativa com timeline, manifesto horizontal em GSAP, cursor customizado e CTA para transformar a historia em conversa comercial.
+Página narrativa do estúdio.
+
+`caio/`, `rosiel/`  
+Perfil de cada sócio.
+
+`projetos/`  
+Cases, um por pasta.
 
 `servicos/*/index.html`  
-Paginas especificas para cada oferta, pensadas para SEO e conversao.
+Uma página por oferta, pensada para busca e conversão.
 
 ## Identidade
 
@@ -67,22 +84,6 @@ A AllDevs agora tem uma cara mais madura: tecnologia, velocidade e produto. A na
 - uso cedo de LLMs em processos reais;
 - mentoria para desenvolvedores;
 - ForjaDev como escola 1-on-1.
-
-## Rodando localmente
-
-Como o projeto e estatico, basta abrir `index.html` no navegador.
-
-Se preferir servir com um servidor local:
-
-```bash
-python3 -m http.server 8000
-```
-
-Depois acesse:
-
-```text
-http://localhost:8000
-```
 
 ## Filosofia
 
