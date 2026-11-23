@@ -443,11 +443,15 @@ main > .breadcrumb + section { border-top: 0; }
 .selo-caio { color: var(--caio-texto); border-color: var(--caio); }
 .selo-rosiel { color: var(--rosiel); border-color: var(--rosiel); }
 
-.img-16-10 {
+.img-captura {
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
+  border: 1px solid var(--grade);
+}
+.img-retrato {
+  width: calc(50% - 8px);
+  max-width: 240px;
+  height: auto;
   border: 1px solid var(--grade);
 }
 
@@ -503,7 +507,7 @@ main > .breadcrumb + section { border-top: 0; }
   border: 1px solid var(--grade);
   border-radius: 2px;
 }
-.case [data-secao="imagens"] { display: grid; gap: 16px; }
+.case [data-secao="imagens"] { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
 
 /* ---------- Contato ---------- */
 .contato h2 { max-width: 20ch; }

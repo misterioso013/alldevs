@@ -5,24 +5,42 @@
     "autores": [
       "rosiel"
     ],
-    "tipo": "produto",
+    "tipo": "app",
     "situacao": "no ar",
-    "ano": null,
-    "resumo": "Produto próprio de software web publicado em prosup.app com portal de documentação dedicado em docs.prosup.app.",
-    "problema": "Produtos digitais próprios precisam combinar uma aplicação web rápida com documentação clara para quem usa a plataforma no dia a dia.",
+    "ano": 2026,
+    "resumo": "App que acompanha preços e monta, no automático, os posts de ofertas com link de afiliado para Telegram e WhatsApp.",
+    "problema": "Quem divulga ofertas perde tempo copiando link, escrevendo legenda e postando em cada grupo, e quem compra não sabe se o desconto é real.",
     "fizemos": [
-      "Desenvolvemos e colocamos no ar a aplicação web principal em prosup.app.",
-      "Estruturamos e publicamos a documentação dedicada em docs.prosup.app.",
-      "Mantemos produto e documentação no ar, cada um no seu endereço."
+      "App Android (Google Play) que gera o link de afiliado e a legenda por template e publica no Telegram e no WhatsApp.",
+      "Histórico de preço com alerta de queda, para mostrar se o desconto é de verdade.",
+      "Fila e agendamento de posts, listas de produtos para compartilhar e extensão do Chrome que mostra a comissão na página do produto.",
+      "Planos Free, Lite e Pro, com robô para grupos do WhatsApp (beta) no Pro.",
+      "Documentação própria em `docs.prosup.app`."
     ],
     "resultado": null,
-    "stack": [],
+    "stack": [
+      "React Native",
+      "TypeScript",
+      "Node.js",
+      "AWS Lambda",
+      "DynamoDB",
+      "API Gateway",
+      "Cognito",
+      "SNS",
+      "S3",
+      "Secrets Manager"
+    ],
     "link": "https://prosup.app",
-    "imagens": [],
+    "imagens": [
+      "assets/images/prosup-1.webp",
+      "assets/images/prosup-2.webp",
+      "assets/images/prosup-3.webp",
+      "assets/images/prosup-4.webp"
+    ],
     "destaque": true,
     "visivel": true,
-    "rascunho": true,
-    "atualizado": "2026-11-22"
+    "rascunho": false,
+    "atualizado": "2026-11-23"
   },
   {
     "slug": "fakly",
@@ -32,25 +50,29 @@
     ],
     "tipo": "ferramenta",
     "situacao": "no ar",
-    "ano": null,
-    "resumo": "Ferramenta SaaS criada para desenvolvedores gerarem páginas e seções de FAQ elegantes.",
-    "problema": "Montar e manter seções de perguntas frequentes bem acabadas costuma consumir tempo de engenharia em produtos digitais. Desenvolvedores precisam de uma solução direta para publicar FAQs elegantes sem retrabalho manual de interface.",
+    "ano": 2025,
+    "resumo": "Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.",
+    "problema": "Montar uma seção de perguntas frequentes bem acabada e legível pelo Google dá trabalho de interface e de SEO.",
     "fizemos": [
-      "Construímos uma ferramenta SaaS focada na geração rápida de FAQs elegantes.",
-      "Desenvolvemos a interface web em React voltada ao fluxo de trabalho de desenvolvedores.",
-      "Implementamos o backend em Node.js para sustentar a criação e a entrega do conteúdo."
+      "Editor com pré-visualização em tempo real: escreve as perguntas e copia o código para colar no site.",
+      "Widget que já gera o schema `FAQPage` (JSON-LD), para as perguntas poderem aparecer no Google.",
+      "Interface responsiva e acessível, com navegação por teclado e atributos ARIA.",
+      "Salvamento automático no navegador, sem cadastro."
     ],
     "resultado": null,
     "stack": [
-      "Node.js",
-      "React"
+      "HTML",
+      "CSS",
+      "JavaScript"
     ],
-    "link": "",
-    "imagens": [],
+    "link": "https://misterioso013.github.io/fakly/",
+    "imagens": [
+      "assets/images/fakly.png"
+    ],
     "destaque": true,
     "visivel": true,
-    "rascunho": true,
-    "atualizado": "2026-11-22"
+    "rascunho": false,
+    "atualizado": "2026-11-23"
   },
   {
     "slug": "sendany",
@@ -60,25 +82,31 @@
     ],
     "tipo": "produto",
     "situacao": "no ar",
-    "ano": null,
-    "resumo": "Plataforma SaaS de compartilhamento para desenvolvedores que reúne funções de Gist, Pastebin e Drive em um só lugar.",
-    "problema": "No dia a dia técnico, compartilhar trechos de código, notas rápidas e arquivos costuma exigir a alternância entre serviços separados como Gist, Pastebin e Drive. Essa divisão espalha links e adiciona atrito ao fluxo de trabalho.",
+    "ano": 2025,
+    "resumo": "Plataforma para compartilhar texto, código e arquivos num só lugar, na linha do Gist, do Pastebin e do Drive.",
+    "problema": "Compartilhar um trecho de código, uma nota e um arquivo costuma exigir serviços separados, com links espalhados.",
     "fizemos": [
-      "Unificamos o compartilhamento de código, texto e arquivos em uma única plataforma web.",
-      "Construímos a experiência de uso em React com foco em agilidade para desenvolvedores.",
-      "Desenvolvemos a estrutura SaaS no backend utilizando Node.js."
+      "Workspaces com vários arquivos, no estilo do Gist, com editor de código com destaque de sintaxe e suporte a Markdown.",
+      "Envio de qualquer tipo de arquivo, com controle de privacidade (público ou privado).",
+      "Proteção por senha e expiração automática dos links.",
+      "Login com Stack Auth e banco PostgreSQL (Neon)."
     ],
     "resultado": null,
     "stack": [
-      "Node.js",
-      "React"
+      "Next.js",
+      "React",
+      "TypeScript",
+      "PostgreSQL",
+      "Tailwind CSS"
     ],
-    "link": "",
-    "imagens": [],
+    "link": "https://sendany.all.dev.br",
+    "imagens": [
+      "assets/images/sendany.png"
+    ],
     "destaque": true,
     "visivel": true,
-    "rascunho": true,
-    "atualizado": "2026-11-22"
+    "rascunho": false,
+    "atualizado": "2026-11-23"
   },
   {
     "slug": "heisuca",

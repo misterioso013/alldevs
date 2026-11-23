@@ -21,11 +21,40 @@
     "nome": "Rosiel Victor",
     "papel": "Produto, web e automação",
     "papel_mono": "rosiel · produto, web, automação",
-    "frase": "Sócio do estúdio. Cuida de produto, web e automação.",
+    "frase": "Transformo ideia em produto no ar, do protótipo à automação.",
     "foto": "assets/images/rosiel-640.webp",
-    "links": [],
+    "links": [
+      {
+        "rotulo": "GitHub",
+        "url": "https://github.com/misterioso013"
+      },
+      {
+        "rotulo": "LinkedIn",
+        "url": "https://www.linkedin.com/in/rosielvictor"
+      },
+      {
+        "rotulo": "X",
+        "url": "https://twitter.com/RVictor013"
+      },
+      {
+        "rotulo": "Instagram",
+        "url": "https://www.instagram.com/rosielvictor"
+      },
+      {
+        "rotulo": "YouTube",
+        "url": "https://www.youtube.com/channel/UCbkvqP3kbIVbFcaKk9fTpFQ"
+      },
+      {
+        "rotulo": "Telegram",
+        "url": "https://t.me/misterioso013"
+      },
+      {
+        "rotulo": "CV",
+        "url": "https://misterioso013.github.io/my-cv/"
+      }
+    ],
     "cor": "laranja",
-    "atualizado": "2026-11-22",
+    "atualizado": "2026-11-23",
     "faz": [
       "Produtos próprios, da ideia ao ar",
       "Sites e aplicações web",

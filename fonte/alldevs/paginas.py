@@ -154,6 +154,26 @@ def _tamanho_webp(arq: Path) -> tuple:
     raise ValueError(f"{arq}: bloco WebP desconhecido {tipo!r}")
 
 
+def _tamanho_png(arq: Path) -> tuple:
+    """(largura, altura) de um PNG pelo bloco IHDR (inteiros big-endian nos bytes 16 a 24), sem dependência."""
+    b = arq.read_bytes()[:24]
+    if len(b) < 24:
+        raise ValueError(f"{arq}: PNG curto demais")
+    if b[:8] != b"\x89PNG\r\n\x1a\n" or b[12:16] != b"IHDR":
+        raise ValueError(f"{arq}: não é PNG")
+    return int.from_bytes(b[16:20], "big"), int.from_bytes(b[20:24], "big")
+
+
+def _tamanho_imagem(arq: Path) -> tuple:
+    """(largura, altura) de uma imagem de caso: PNG ou WebP, escolhido pela extensão; outra coisa é erro."""
+    sufixo = arq.suffix.lower()
+    if sufixo == ".png":
+        return _tamanho_png(arq)
+    if sufixo == ".webp":
+        return _tamanho_webp(arq)
+    raise ValueError(f"{arq}: imagem de caso precisa ser PNG ou WebP")
+
+
 def _cor_autor(autores) -> str:
     return autores[0] if len(set(autores)) == 1 else "dupla"
 
@@ -204,11 +224,10 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     destaques = "\n".join(
         _cartao_projeto(p, dados, "cartao-destaque", False) for p in visiveis(dados.projetos) if p.destaque)
     servicos = "\n".join(
-        f'    <article class="cartao-servico{_dupla(s.quem_toca)}">\n'
+        f'    <article class="cartao-servico">\n'
         f'      <h3><a href="/servicos/{esc(s.slug)}/">{esc(s.nome)}</a></h3>\n'
         f'      <p>{esc(s.resumo)}</p>\n'
-        + (f'      <p>{_selos(dados, s.quem_toca)}</p>\n' if s.quem_toca else "")
-        + '    </article>'
+        '    </article>'
         for s in dados.servicos)
     corpo = render(
         "home", **_cabecalho_e_rodape(dados),
@@ -266,7 +285,17 @@ def _lista(itens) -> str:
     return "\n".join(f"      <li>{esc(i)}</li>" for i in itens)
 
 
-def _case(proj, dados: Dados, previa: bool) -> Pagina:
+def _img_case(proj, rel: str, numero: int, raiz: Path) -> str:
+    """`<img>` de uma captura do case com width/height reais (evita salto de layout) e classe pela orientação:
+    retrato (celular) fica estreito, paisagem ocupa a coluna. Sem recorte forçado: a imagem aparece inteira."""
+    w, h = _tamanho_imagem(Path(raiz) / rel)
+    classe = "img-retrato" if h > w else "img-captura"
+    legenda = f"Captura {numero} de {proj.nome}" if len(proj.imagens) > 1 else f"Captura de {proj.nome}"
+    return (f'    <img class="{classe}" src="/{esc(rel)}" alt="{esc(legenda)}" width="{w}" height="{h}" '
+            f'loading="lazy" decoding="async">')
+
+
+def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     linha = " · ".join([*_com_ano(proj.tipo, proj.ano), _nomes(dados, proj.autores), proj.situacao])
     resultado = ""
     if proj.resultado is not None:
@@ -278,9 +307,7 @@ def _case(proj, dados: Dados, previa: bool) -> Pagina:
         stack = f'\n  <section data-secao="stack">\n    <h2>Stack</h2>\n    <ul class="etiquetas">{etiquetas}</ul>\n  </section>\n'
     imagens = ""
     if proj.imagens:
-        figuras = "\n".join(
-            f'    <img class="img-16-10" src="/{esc(i)}" alt="Captura de {esc(proj.nome)}" loading="lazy">'
-            for i in proj.imagens)
+        figuras = "\n".join(_img_case(proj, i, n, raiz) for n, i in enumerate(proj.imagens, 1))
         imagens = f'\n  <section data-secao="imagens">\n{figuras}\n  </section>\n'
     link = ""
     if proj.link:
@@ -314,7 +341,6 @@ def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     corpo = render(
         "servico", **_cabecalho_e_rodape(dados),
         nome=s.nome,
-        quem_toca=Seguro(""),
         conteudo=_ler_conteudo(
             raiz, ("servicos", f"{s.slug}.html"),
             _bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug)),
@@ -329,7 +355,7 @@ def montar_todas(dados: Dados, raiz: Path, previa: bool) -> list:
     """Todas as páginas, ordenadas por caminho. Na `previa` cada uma leva a meta noindex."""
     paginas = [_home(dados, raiz, previa), _historia(dados, raiz, previa), _projetos(dados, previa)]
     paginas += [_perfil(p, dados, previa) for p in dados.pessoas]
-    paginas += [_case(x, dados, previa) for x in visiveis(dados.projetos)]
+    paginas += [_case(x, dados, raiz, previa) for x in visiveis(dados.projetos)]
     paginas += [_servico(s, dados, raiz, previa) for s in dados.servicos]
     return sorted(paginas, key=lambda p: p.caminho)
 

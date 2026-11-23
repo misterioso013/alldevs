@@ -5,10 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fakly: ferramenta — AllDevs</title>
-<meta name="description" content="Ferramenta SaaS criada para desenvolvedores gerarem páginas e seções de FAQ elegantes."><meta name="robots" content="noindex">
+<meta name="description" content="Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.">
 <link rel="canonical" href="https://all.dev.br/projetos/fakly/">
 <meta property="og:title" content="Fakly: ferramenta — AllDevs">
-<meta property="og:description" content="Ferramenta SaaS criada para desenvolvedores gerarem páginas e seções de FAQ elegantes.">
+<meta property="og:description" content="Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://all.dev.br/projetos/fakly/">
 <meta property="og:image" content="https://all.dev.br/assets/og/fakly.png">
@@ -16,7 +16,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Fakly: ferramenta — AllDevs">
-<meta name="twitter:description" content="Ferramenta SaaS criada para desenvolvedores gerarem páginas e seções de FAQ elegantes.">
+<meta name="twitter:description" content="Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.">
 <meta name="twitter:image" content="https://all.dev.br/assets/og/fakly.png">
 <link rel="preload" href="/assets/fontes/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css">
@@ -28,7 +28,7 @@
 <script src="/js/vendor/lenis.min.js" defer></script>
 <script src="/js/site.js" defer></script>
 <script src="/js/paleta.js" defer></script>
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "author": [{"@id": "https://all.dev.br/#rosiel-victor"}], "description": "Ferramenta SaaS criada para desenvolvedores gerarem páginas e seções de FAQ elegantes.", "name": "Fakly"}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "author": [{"@id": "https://all.dev.br/#rosiel-victor"}], "description": "Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.", "name": "Fakly", "url": "https://misterioso013.github.io/fakly/"}]</script>
 </head>
 <body>
 <header id="main-nav" class="cabecalho">
@@ -49,29 +49,36 @@
 <main data-molde="case">
 <article class="case">
   <section class="case-topo" data-secao="topo">
-    <p class="rotulo-mono case-linha">ferramenta · Rosiel Victor · no ar</p>
+    <p class="rotulo-mono case-linha">ferramenta · 2025 · Rosiel Victor · no ar</p>
     <h1>Fakly</h1>
-    <p class="hero-sub">Ferramenta SaaS criada para desenvolvedores gerarem páginas e seções de FAQ elegantes.</p>
+    <p class="hero-sub">Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.</p>
   </section>
 
   <section data-secao="problema">
     <h2>Problema</h2>
-    <p>Montar e manter seções de perguntas frequentes bem acabadas costuma consumir tempo de engenharia em produtos digitais. Desenvolvedores precisam de uma solução direta para publicar FAQs elegantes sem retrabalho manual de interface.</p>
+    <p>Montar uma seção de perguntas frequentes bem acabada e legível pelo Google dá trabalho de interface e de SEO.</p>
   </section>
 
   <section data-secao="fizemos">
     <h2>O que fizemos</h2>
     <ul>
-      <li>Construímos uma ferramenta SaaS focada na geração rápida de FAQs elegantes.</li>
-      <li>Desenvolvemos a interface web em React voltada ao fluxo de trabalho de desenvolvedores.</li>
-      <li>Implementamos o backend em Node.js para sustentar a criação e a entrega do conteúdo.</li>
+      <li>Editor com pré-visualização em tempo real: escreve as perguntas e copia o código para colar no site.</li>
+      <li>Widget que já gera o schema `FAQPage` (JSON-LD), para as perguntas poderem aparecer no Google.</li>
+      <li>Interface responsiva e acessível, com navegação por teclado e atributos ARIA.</li>
+      <li>Salvamento automático no navegador, sem cadastro.</li>
     </ul>
   </section>
 
   <section data-secao="stack">
     <h2>Stack</h2>
-    <ul class="etiquetas"><li class="etiqueta-mono">Node.js</li><li class="etiqueta-mono">React</li></ul>
+    <ul class="etiquetas"><li class="etiqueta-mono">HTML</li><li class="etiqueta-mono">CSS</li><li class="etiqueta-mono">JavaScript</li></ul>
   </section>
+
+  <section data-secao="imagens">
+    <img class="img-captura" src="/assets/images/fakly.png" alt="Captura de Fakly" width="2549" height="921" loading="lazy" decoding="async">
+  </section>
+
+  <p class="case-link"><a href="https://misterioso013.github.io/fakly/" rel="noopener" class="btn-ghost">Ver Fakly no ar</a></p>
 
 </article>
 
@@ -93,7 +100,7 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <a href="/" class="footer-logo">all<span>.</span>dev</a>
-      <p>Dois desenvolvedores, um estúdio. Sites, apps, bots e produtos próprios no ar.</p>
+      <p>Um estúdio de software. Sites, apps, bots e produtos próprios no ar.</p>
     </div>
     <div class="footer-col">
       <h2 class="footer-titulo">Serviços</h2>

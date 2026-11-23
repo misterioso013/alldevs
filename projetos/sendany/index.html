@@ -5,10 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SendAny: produto — AllDevs</title>
-<meta name="description" content="Plataforma SaaS de compartilhamento para desenvolvedores que reúne funções de Gist, Pastebin e Drive em um só lugar."><meta name="robots" content="noindex">
+<meta name="description" content="Plataforma para compartilhar texto, código e arquivos num só lugar, na linha do Gist, do Pastebin e do Drive.">
 <link rel="canonical" href="https://all.dev.br/projetos/sendany/">
 <meta property="og:title" content="SendAny: produto — AllDevs">
-<meta property="og:description" content="Plataforma SaaS de compartilhamento para desenvolvedores que reúne funções de Gist, Pastebin e Drive em um só lugar.">
+<meta property="og:description" content="Plataforma para compartilhar texto, código e arquivos num só lugar, na linha do Gist, do Pastebin e do Drive.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://all.dev.br/projetos/sendany/">
 <meta property="og:image" content="https://all.dev.br/assets/og/sendany.png">
@@ -16,7 +16,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="SendAny: produto — AllDevs">
-<meta name="twitter:description" content="Plataforma SaaS de compartilhamento para desenvolvedores que reúne funções de Gist, Pastebin e Drive em um só lugar.">
+<meta name="twitter:description" content="Plataforma para compartilhar texto, código e arquivos num só lugar, na linha do Gist, do Pastebin e do Drive.">
 <meta name="twitter:image" content="https://all.dev.br/assets/og/sendany.png">
 <link rel="preload" href="/assets/fontes/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css">
@@ -28,7 +28,7 @@
 <script src="/js/vendor/lenis.min.js" defer></script>
 <script src="/js/site.js" defer></script>
 <script src="/js/paleta.js" defer></script>
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "author": [{"@id": "https://all.dev.br/#rosiel-victor"}], "description": "Plataforma SaaS de compartilhamento para desenvolvedores que reúne funções de Gist, Pastebin e Drive em um só lugar.", "name": "SendAny"}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "author": [{"@id": "https://all.dev.br/#rosiel-victor"}], "description": "Plataforma para compartilhar texto, código e arquivos num só lugar, na linha do Gist, do Pastebin e do Drive.", "name": "SendAny", "url": "https://sendany.all.dev.br"}]</script>
 </head>
 <body>
 <header id="main-nav" class="cabecalho">
@@ -49,29 +49,36 @@
 <main data-molde="case">
 <article class="case">
   <section class="case-topo" data-secao="topo">
-    <p class="rotulo-mono case-linha">produto · Rosiel Victor · no ar</p>
+    <p class="rotulo-mono case-linha">produto · 2025 · Rosiel Victor · no ar</p>
     <h1>SendAny</h1>
-    <p class="hero-sub">Plataforma SaaS de compartilhamento para desenvolvedores que reúne funções de Gist, Pastebin e Drive em um só lugar.</p>
+    <p class="hero-sub">Plataforma para compartilhar texto, código e arquivos num só lugar, na linha do Gist, do Pastebin e do Drive.</p>
   </section>
 
   <section data-secao="problema">
     <h2>Problema</h2>
-    <p>No dia a dia técnico, compartilhar trechos de código, notas rápidas e arquivos costuma exigir a alternância entre serviços separados como Gist, Pastebin e Drive. Essa divisão espalha links e adiciona atrito ao fluxo de trabalho.</p>
+    <p>Compartilhar um trecho de código, uma nota e um arquivo costuma exigir serviços separados, com links espalhados.</p>
   </section>
 
   <section data-secao="fizemos">
     <h2>O que fizemos</h2>
     <ul>
-      <li>Unificamos o compartilhamento de código, texto e arquivos em uma única plataforma web.</li>
-      <li>Construímos a experiência de uso em React com foco em agilidade para desenvolvedores.</li>
-      <li>Desenvolvemos a estrutura SaaS no backend utilizando Node.js.</li>
+      <li>Workspaces com vários arquivos, no estilo do Gist, com editor de código com destaque de sintaxe e suporte a Markdown.</li>
+      <li>Envio de qualquer tipo de arquivo, com controle de privacidade (público ou privado).</li>
+      <li>Proteção por senha e expiração automática dos links.</li>
+      <li>Login com Stack Auth e banco PostgreSQL (Neon).</li>
     </ul>
   </section>
 
   <section data-secao="stack">
     <h2>Stack</h2>
-    <ul class="etiquetas"><li class="etiqueta-mono">Node.js</li><li class="etiqueta-mono">React</li></ul>
+    <ul class="etiquetas"><li class="etiqueta-mono">Next.js</li><li class="etiqueta-mono">React</li><li class="etiqueta-mono">TypeScript</li><li class="etiqueta-mono">PostgreSQL</li><li class="etiqueta-mono">Tailwind CSS</li></ul>
   </section>
+
+  <section data-secao="imagens">
+    <img class="img-captura" src="/assets/images/sendany.png" alt="Captura de SendAny" width="1352" height="649" loading="lazy" decoding="async">
+  </section>
+
+  <p class="case-link"><a href="https://sendany.all.dev.br" rel="noopener" class="btn-ghost">Ver SendAny no ar</a></p>
 
 </article>
 
@@ -93,7 +100,7 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <a href="/" class="footer-logo">all<span>.</span>dev</a>
-      <p>Dois desenvolvedores, um estúdio. Sites, apps, bots e produtos próprios no ar.</p>
+      <p>Um estúdio de software. Sites, apps, bots e produtos próprios no ar.</p>
     </div>
     <div class="footer-col">
       <h2 class="footer-titulo">Serviços</h2>

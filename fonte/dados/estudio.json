@@ -10,6 +10,10 @@
     "perfil": "Olá, AllDevs! Vim pela página do {alvo}. [{codigo}]"
   },
   "redes": [],
-  "inspetor": ["prosup", "fakly", "sendany"],
-  "atualizado": "2026-11-22"
+  "inspetor": [
+    "prosup",
+    "fakly",
+    "sendany"
+  ],
+  "atualizado": "2026-11-23"
 }

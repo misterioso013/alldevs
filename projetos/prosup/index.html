@@ -4,19 +4,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ProsUp: produto — AllDevs</title>
-<meta name="description" content="Produto próprio de software web publicado em prosup.app com portal de documentação dedicado em docs.prosup.app."><meta name="robots" content="noindex">
+<title>ProsUp: app — AllDevs</title>
+<meta name="description" content="App que acompanha preços e monta, no automático, os posts de ofertas com link de afiliado para Telegram e WhatsApp.">
 <link rel="canonical" href="https://all.dev.br/projetos/prosup/">
-<meta property="og:title" content="ProsUp: produto — AllDevs">
-<meta property="og:description" content="Produto próprio de software web publicado em prosup.app com portal de documentação dedicado em docs.prosup.app.">
+<meta property="og:title" content="ProsUp: app — AllDevs">
+<meta property="og:description" content="App que acompanha preços e monta, no automático, os posts de ofertas com link de afiliado para Telegram e WhatsApp.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://all.dev.br/projetos/prosup/">
 <meta property="og:image" content="https://all.dev.br/assets/og/prosup.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ProsUp: produto — AllDevs">
-<meta name="twitter:description" content="Produto próprio de software web publicado em prosup.app com portal de documentação dedicado em docs.prosup.app.">
+<meta name="twitter:title" content="ProsUp: app — AllDevs">
+<meta name="twitter:description" content="App que acompanha preços e monta, no automático, os posts de ofertas com link de afiliado para Telegram e WhatsApp.">
 <meta name="twitter:image" content="https://all.dev.br/assets/og/prosup.png">
 <link rel="preload" href="/assets/fontes/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/tokens.css">
@@ -28,7 +28,7 @@
 <script src="/js/vendor/lenis.min.js" defer></script>
 <script src="/js/site.js" defer></script>
 <script src="/js/paleta.js" defer></script>
-<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "author": [{"@id": "https://all.dev.br/#rosiel-victor"}], "description": "Produto próprio de software web publicado em prosup.app com portal de documentação dedicado em docs.prosup.app.", "name": "ProsUp", "url": "https://prosup.app"}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "author": [{"@id": "https://all.dev.br/#rosiel-victor"}], "description": "App que acompanha preços e monta, no automático, os posts de ofertas com link de afiliado para Telegram e WhatsApp.", "name": "ProsUp", "url": "https://prosup.app"}]</script>
 </head>
 <body>
 <header id="main-nav" class="cabecalho">
@@ -49,23 +49,37 @@
 <main data-molde="case">
 <article class="case">
   <section class="case-topo" data-secao="topo">
-    <p class="rotulo-mono case-linha">produto · Rosiel Victor · no ar</p>
+    <p class="rotulo-mono case-linha">app · 2026 · Rosiel Victor · no ar</p>
     <h1>ProsUp</h1>
-    <p class="hero-sub">Produto próprio de software web publicado em prosup.app com portal de documentação dedicado em docs.prosup.app.</p>
+    <p class="hero-sub">App que acompanha preços e monta, no automático, os posts de ofertas com link de afiliado para Telegram e WhatsApp.</p>
   </section>
 
   <section data-secao="problema">
     <h2>Problema</h2>
-    <p>Produtos digitais próprios precisam combinar uma aplicação web rápida com documentação clara para quem usa a plataforma no dia a dia.</p>
+    <p>Quem divulga ofertas perde tempo copiando link, escrevendo legenda e postando em cada grupo, e quem compra não sabe se o desconto é real.</p>
   </section>
 
   <section data-secao="fizemos">
     <h2>O que fizemos</h2>
     <ul>
-      <li>Desenvolvemos e colocamos no ar a aplicação web principal em prosup.app.</li>
-      <li>Estruturamos e publicamos a documentação dedicada em docs.prosup.app.</li>
-      <li>Mantemos produto e documentação no ar, cada um no seu endereço.</li>
+      <li>App Android (Google Play) que gera o link de afiliado e a legenda por template e publica no Telegram e no WhatsApp.</li>
+      <li>Histórico de preço com alerta de queda, para mostrar se o desconto é de verdade.</li>
+      <li>Fila e agendamento de posts, listas de produtos para compartilhar e extensão do Chrome que mostra a comissão na página do produto.</li>
+      <li>Planos Free, Lite e Pro, com robô para grupos do WhatsApp (beta) no Pro.</li>
+      <li>Documentação própria em `docs.prosup.app`.</li>
     </ul>
+  </section>
+
+  <section data-secao="stack">
+    <h2>Stack</h2>
+    <ul class="etiquetas"><li class="etiqueta-mono">React Native</li><li class="etiqueta-mono">TypeScript</li><li class="etiqueta-mono">Node.js</li><li class="etiqueta-mono">AWS Lambda</li><li class="etiqueta-mono">DynamoDB</li><li class="etiqueta-mono">API Gateway</li><li class="etiqueta-mono">Cognito</li><li class="etiqueta-mono">SNS</li><li class="etiqueta-mono">S3</li><li class="etiqueta-mono">Secrets Manager</li></ul>
+  </section>
+
+  <section data-secao="imagens">
+    <img class="img-retrato" src="/assets/images/prosup-1.webp" alt="Captura 1 de ProsUp" width="720" height="1524" loading="lazy" decoding="async">
+    <img class="img-retrato" src="/assets/images/prosup-2.webp" alt="Captura 2 de ProsUp" width="720" height="1524" loading="lazy" decoding="async">
+    <img class="img-retrato" src="/assets/images/prosup-3.webp" alt="Captura 3 de ProsUp" width="720" height="1524" loading="lazy" decoding="async">
+    <img class="img-retrato" src="/assets/images/prosup-4.webp" alt="Captura 4 de ProsUp" width="720" height="1524" loading="lazy" decoding="async">
   </section>
 
   <p class="case-link"><a href="https://prosup.app" rel="noopener" class="btn-ghost">Ver ProsUp no ar</a></p>
@@ -90,7 +104,7 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <a href="/" class="footer-logo">all<span>.</span>dev</a>
-      <p>Dois desenvolvedores, um estúdio. Sites, apps, bots e produtos próprios no ar.</p>
+      <p>Um estúdio de software. Sites, apps, bots e produtos próprios no ar.</p>
     </div>
     <div class="footer-col">
       <h2 class="footer-titulo">Serviços</h2>
