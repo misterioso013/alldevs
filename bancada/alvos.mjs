@@ -3,7 +3,7 @@
 import { chromium } from 'playwright';
 const [base, ...paths] = process.argv.slice(2);
 const env = { ...process.env, LD_LIBRARY_PATH: [process.env.BANCADA_LIBS, process.env.LD_LIBRARY_PATH].filter(Boolean).join(':') };
-const SEL = 'button, summary, input, select, textarea, [role=button], .btn, .btn-ghost, .btn-primary, .nav-cta, .paleta-gatilho, .nav-links a, .filtro-botao, .perfil-links a, .faq-question, .inspetor-proximo, .menu-toggle, .nav-toggle';
+const SEL = 'button, summary, input, select, textarea, [role=button], .btn, .nav-cta, .paleta-gatilho, .nav-links a, .perfil-links a, .faq-question, .menu-toggle, .nav-toggle';
 const b = await chromium.launch({ env });
 let falhas = 0;
 for (const p of paths) {

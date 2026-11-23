@@ -2,7 +2,7 @@
 //  a) 1440 px, teclado: sem pedido do paleta.json na carga; Ctrl K abre (foco no campo, 1 pedido, todos os itens);
 //     seta muda a opção (aria-activedescendant), a busca ignora acento, Enter navega até o destino da opção;
 //     Esc devolve o foco a quem o tinha (o logo); ⌘K (Meta+K) também abre; axe com a paleta aberta (0 serious/critical);
-//  b) 412 px, toque: a pílula "> ir para…" tem >= 44 px, não há barra fixa embaixo, o toque abre, as opções têm
+//  b) 412 px, toque: a pílula "> ir para…" tem >= 44 px, não há barra fixa embaixo (fora a .barra-wa e o .preloader do v2), o toque abre, as opções têm
 //     >= 44 px, Esc devolve o foco à pílula, tocar numa opção navega, axe com a paleta aberta;
 //  c) reducedMotion: aberta, nenhum elemento com transform após 1 s e o diálogo termina opaco;
 //  d) 412 px com o paleta.json bloqueado: a pílula segue como link e leva a /projetos/;
@@ -121,7 +121,7 @@ async function toque(nav, url, total) {
     const alt = (await pilula.boundingBox() || { height: 0 }).height;
     if (!(await pilula.isVisible()) || alt < 44) falhas.push(`pílula a 412 px: visível ${await pilula.isVisible()}, ${alt.toFixed(0)} px de altura`);
     const fixas = await p.evaluate(() => [...document.querySelectorAll('body *')]
-      .filter((el) => getComputedStyle(el).position === 'fixed' && el.getBoundingClientRect().bottom >= innerHeight - 1 && el.getBoundingClientRect().height > 0)
+      .filter((el) => !el.closest('.barra-wa, .preloader') && getComputedStyle(el).position === 'fixed' && el.getBoundingClientRect().bottom >= innerHeight - 1 && el.getBoundingClientRect().height > 0)
       .map((el) => el.tagName.toLowerCase() + [...el.classList].map((c) => '.' + c).join('')));
     if (fixas.length) falhas.push('barra fixa embaixo: ' + fixas.join(', '));
 

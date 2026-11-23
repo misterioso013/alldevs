@@ -17,13 +17,13 @@ SLUGS = [
 class TestModelos(unittest.TestCase):
     def test_render_escapa_texto(self):
         out = render("base", titulo="<b>x</b>", descricao="d", canonical="c", og_imagem="o", corpo=Seguro(""),
-                     json_ld=Seguro(""), robots_meta=Seguro(""))
+                     json_ld=Seguro(""), robots_meta=Seguro(""), barra_wa=Seguro(""))
         self.assertIn("&lt;b&gt;x&lt;/b&gt;", out)
         self.assertNotIn("<b>x</b>", out)
 
     def test_render_mantem_seguro(self):
         out = render("base", titulo="t", descricao="d", canonical="c", og_imagem="o", corpo=Seguro("<p>oi</p>"),
-                 json_ld=Seguro(""), robots_meta=Seguro(""))
+                 json_ld=Seguro(""), robots_meta=Seguro(""), barra_wa=Seguro(""))
         self.assertIn("<p>oi</p>", out)
         self.assertIsInstance(out, Seguro)
         self.assertIs(esc(Seguro("<i>")).__class__, Seguro)

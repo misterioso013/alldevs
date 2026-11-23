@@ -1,17 +1,25 @@
-/* Tokens do ALL.dev: cores, movimento, fontes. Fontes e licença em assets/fontes/. */
+/* Tokens do ALL.dev: cores, movimento, fontes e grão. Identidade (Syne, roxo e laranja do estúdio).
+   Fontes e licença em assets/fontes/. Roxo e laranja são cores da marca, nunca de um sócio. */
 @font-face {
-  font-family: "Fraunces";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("../assets/fontes/fraunces-latin-400-normal.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Fraunces";
+  font-family: "Syne";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url("../assets/fontes/fraunces-latin-600-normal.woff2") format("woff2");
+  src: url("../assets/fontes/syne-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Syne";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fontes/syne-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Syne";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../assets/fontes/syne-latin-800-normal.woff2") format("woff2");
 }
 @font-face {
   font-family: "DM Sans";
@@ -42,7 +50,7 @@
   src: url("../assets/fontes/jetbrains-mono-latin-400-normal.woff2") format("woff2");
 }
 
-/* Reservas com métrica: a fonte local (Arial/Georgia) ajustada ao tamanho da web font,
+/* Reservas com métrica: a fonte local (Arial) ajustada ao tamanho da web font,
    para a troca do font-display: swap não empurrar o layout (CLS). Valores da capsize. */
 @font-face {
   font-family: "DM Sans Reserva";
@@ -75,44 +83,39 @@
   line-gap-override: 0%;
 }
 @font-face {
-  font-family: "Fraunces Reserva";
+  font-family: "Syne Reserva";
   font-style: normal;
-  font-weight: 400;
-  src: local("Georgia");
-  size-adjust: 105.20%;
-  ascent-override: 92.96%;
-  descent-override: 24.24%;
+  font-weight: 600 800;
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Arimo Bold");
+  size-adjust: 166.55%;
+  ascent-override: 55.54%;
+  descent-override: 16.51%;
   line-gap-override: 0%;
 }
-@font-face {
-  font-family: "Fraunces Reserva";
-  font-style: normal;
-  font-weight: 600;
-  src: local("Georgia Bold"), local("Georgia-Bold");
-  size-adjust: 93.43%;
-  ascent-override: 104.67%;
-  descent-override: 27.29%;
-  line-gap-override: 0%;
-}
+
 
 :root {
-  --fundo: #0d0c12;
-  --claro: #ecebe6;
-  --suave: #9b99a6;
-  --grade: #24222c;
+  --fundo: #0a0a0f;
+  --fundo-2: #12121a;
+  --roxo: #7c3aed;
+  --roxo-claro: #9d6bf0;
+  --laranja: #f97316;
+  --laranja-claro: #fb923c;
+  --texto: #eeeef5;
+  --texto-2: #a6a6bb;
+  --linha: #26263a;
 
-  --caio: #7c3aed;
-  --caio-texto: #a78bfa;
-  --caio-texto-claro: #6d28d9;
-  --rosiel: #f97316;
-  --rosiel-texto: #9a3412;
+  --dur-curta: 200ms;
+  --dur-media: 400ms;
+  --dur-longa: 800ms;
+  --curva-saida: cubic-bezier(0.22, 1, 0.36, 1);
+  --curva-entrada: cubic-bezier(0.64, 0, 0.78, 0);
 
-  --t-curto: 200ms;
-  --t-medio: 450ms;
-  --t-longo: 900ms;
-  --curva: cubic-bezier(0.22, 1, 0.36, 1);
-
-  --fonte-titulo: "Fraunces", "Fraunces Reserva", Georgia, serif;
+  --fonte-titulo: "Syne", "Syne Reserva", system-ui, sans-serif;
   --fonte-texto: "DM Sans", "DM Sans Reserva", system-ui, sans-serif;
   --fonte-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Grão: ruído SVG inline sobre o fundo (site.css põe em body::after). */
+  --grao: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23r)'/%3E%3C/svg%3E");
+  --grao-opacidade: 0.05;
 }

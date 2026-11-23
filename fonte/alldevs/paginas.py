@@ -47,14 +47,14 @@ def og_slug(caminho: str) -> str:
     return caminho.rsplit("/", 1)[-1].removesuffix(".html")
 
 
-def _documento(caminho, titulo, descricao, corpo, json_ld=(), previa=False) -> Seguro:
+def _documento(caminho, titulo, descricao, corpo, json_ld=(), previa=False, barra="") -> Seguro:
     if json_ld:
         bloco = f'\n<script type="application/ld+json">{seo.serializar(json_ld)}</script>'
     else:
         bloco = ""
     return render("base", titulo=titulo, descricao=descricao, canonical=seo.url_publica(caminho),
                   og_imagem=f"{seo.SITE}/assets/og/{og_slug(caminho)}.png", corpo=corpo, json_ld=Seguro(bloco),
-                  robots_meta=Seguro(seo.META_NOINDEX if previa else ""))
+                  robots_meta=Seguro(seo.META_NOINDEX if previa else ""), barra_wa=barra)
 
 
 def _bloco_contato(estudio, tipo, alvo=None, slug=None) -> Seguro:
@@ -66,6 +66,13 @@ def _bloco_contato(estudio, tipo, alvo=None, slug=None) -> Seguro:
         email=contato.link_email(estudio.email, codigo),
         telegram=estudio.telegram,
     )
+
+
+def _barra_wa(estudio, tipo, alvo=None, slug=None) -> Seguro:
+    """Barra fixa do WhatsApp (só no celular, via CSS) com a origem da página. /projetos/ e /historia.html
+    usam `home`, como o bloco de contato do v1."""
+    msg = contato.mensagem(estudio, tipo, alvo, slug)
+    return render("barra_wa", whatsapp=contato.link_whatsapp(estudio.whatsapp, msg))
 
 
 def _ler_conteudo(raiz: Path, partes, contato_html: Seguro) -> Seguro:
@@ -171,7 +178,7 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     )
     caminho = "index.html"
     ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in sorted(dados.pessoas, key=lambda p: p.slug)))
-    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, corpo, ld, previa)
+    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, corpo, ld, previa, _barra_wa(est, "home"))
     return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ld)
 
 
@@ -199,7 +206,8 @@ def _perfil(p, dados: Dados, previa: bool) -> Pagina:
     titulo = f"{p.nome} — AllDevs"
     descricao = f"{p.nome}, sócio da AllDevs: {p.papel.lower()}."
     ld = (seo.json_ld_pessoa(p),)
-    doc = _documento(caminho, titulo, descricao, corpo, json_ld=ld, previa=previa)
+    doc = _documento(caminho, titulo, descricao, corpo, json_ld=ld, previa=previa,
+                     barra=_barra_wa(dados.estudio, "perfil", alvo=p.nome, slug=p.slug))
     return Pagina(caminho, titulo, descricao, doc, p.atualizado, ld)
 
 
@@ -212,7 +220,8 @@ def _projetos(dados: Dados, previa: bool) -> Pagina:
     )
     caminho = "projetos/index.html"
     atualizado = max([x.atualizado for x in vis] + [dados.estudio.atualizado])
-    doc = _documento(caminho, PROJETOS_TITULO, PROJETOS_DESCRICAO, corpo, previa=previa)
+    doc = _documento(caminho, PROJETOS_TITULO, PROJETOS_DESCRICAO, corpo, previa=previa,
+                     barra=_barra_wa(dados.estudio, "home"))
     return Pagina(caminho, PROJETOS_TITULO, PROJETOS_DESCRICAO, doc, atualizado, ())
 
 
@@ -246,7 +255,7 @@ def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
         imagens = f'\n  <section data-secao="imagens">\n{figuras}\n  </section>\n'
     link = ""
     if proj.link:
-        link = (f'\n  <p class="case-link"><a href="{esc(proj.link)}" rel="noopener" class="btn-ghost">'
+        link = (f'\n  <p class="case-link"><a href="{esc(proj.link)}" rel="noopener" class="btn btn-linha">'
                 f'Ver {esc(proj.nome)} no ar</a></p>\n')
     corpo = render(
         "case", **_cabecalho_e_rodape(dados),
@@ -258,7 +267,8 @@ def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     caminho = f"projetos/{proj.slug}/index.html"
     titulo = f"{proj.nome}: {proj.tipo} — AllDevs"
     ld = (seo.json_ld_case(proj, dados),)
-    doc = _documento(caminho, titulo, proj.resumo, corpo, json_ld=ld, previa=previa or proj.rascunho)
+    doc = _documento(caminho, titulo, proj.resumo, corpo, json_ld=ld, previa=previa or proj.rascunho,
+                     barra=_barra_wa(dados.estudio, "case", alvo=proj.nome, slug=proj.slug))
     return Pagina(caminho, titulo, proj.resumo, doc, proj.atualizado, ld, indexar=not proj.rascunho)
 
 
@@ -268,7 +278,7 @@ def _historia(dados: Dados, raiz: Path, previa: bool) -> Pagina:
         conteudo=_ler_conteudo(raiz, ("historia.html",), _bloco_contato(dados.estudio, "home")),
     )
     caminho = "historia.html"
-    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, corpo, (), previa)
+    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, corpo, (), previa, _barra_wa(dados.estudio, "home"))
     return Pagina(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, doc, dados.estudio.atualizado, ())
 
 
@@ -282,7 +292,8 @@ def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     )
     caminho = f"servicos/{s.slug}/index.html"
     ld = (seo.json_ld_servico(s),)
-    doc = _documento(caminho, s.titulo, s.descricao, corpo, json_ld=ld, previa=previa)
+    doc = _documento(caminho, s.titulo, s.descricao, corpo, json_ld=ld, previa=previa,
+                     barra=_barra_wa(dados.estudio, "servico", alvo=s.nome, slug=s.slug))
     return Pagina(caminho, s.titulo, s.descricao, doc, s.atualizado, ld)
 
 

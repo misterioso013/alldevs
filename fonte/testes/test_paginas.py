@@ -7,6 +7,7 @@ import struct
 import tempfile
 import unittest
 from pathlib import Path
+from urllib.parse import unquote
 
 import gerar
 from alldevs import paginas
@@ -97,7 +98,7 @@ class TestGerar(Base):
             head = arq.read_text(encoding="utf-8").partition("</head>")[0]
             self.assertLess(head.index('href="/css/tokens.css"'), head.index('href="/css/site.css"'), arq)
             self.assertEqual(re.findall(r'<link rel="preload" href="([^"]+)"', head),
-                             ["/assets/fontes/fraunces-latin-600-normal.woff2"], arq)
+                             ["/assets/fontes/syne-latin-800-normal.woff2"], arq)
             achados = re.findall(r'<script src="([^"]+)"( defer)?></script>', head)
             self.assertEqual([s for s, _ in achados], scripts, arq)
             self.assertTrue(all(d for _, d in achados), arq)
@@ -136,6 +137,26 @@ class TestGerar(Base):
         css = (REPO / "css" / "site.css").read_text(encoding="utf-8")
         regra = css[css.index(".cartao-pessoa img {"):]
         self.assertIn("aspect-ratio: 4 / 5;", regra[:regra.index("}")])
+
+    def test_barra_wa_em_toda_pagina_com_origem(self):
+        # Home, serviço, case e perfil levam a origem da própria página; /projetos/ e /historia.html seguem
+        # o v1 (site·home). Uma barra por página, com wa.me.
+        esperada = {"index.html": "site·home", "projetos/index.html": "site·home", "historia.html": "site·home"}
+        for arq in sorted(self.saida.rglob("*.html")):
+            rel = arq.relative_to(self.saida).as_posix()
+            txt = arq.read_text(encoding="utf-8")
+            barras = re.findall(r'<div class="barra-wa"[^>]*>.*?</div>', txt, re.S)
+            self.assertEqual(len(barras), 1, rel)
+            href = unquote(re.search(r'href="(https://wa\.me/[^"]+)"', barras[0]).group(1))
+            if rel in esperada:
+                origem = esperada[rel]
+            elif rel.startswith("servicos/"):
+                origem = "site·servico·" + rel.split("/")[1]
+            elif rel.startswith("projetos/"):
+                origem = "site·case·" + rel.split("/")[1]
+            else:
+                origem = "site·perfil·" + rel.split("/")[0]
+            self.assertIn(f"[{origem}]", href, rel)
 
     def test_faq_desativado_sem_js(self):
         total = 0

@@ -31,7 +31,7 @@ Transformar a AllDevs em uma vitrine comercial e narrativa para:
 ├── js/         # scripts da página e js/vendor/
 ├── assets/     # imagens, fontes e paleta.json
 ├── fonte/      # gerador: modelos, conteúdo, dados (estudio.json etc.), testes
-├── bancada/    # medição: capturas, axe, Lighthouse, inspetor e paleta
+├── bancada/    # medição: capturas, axe, Lighthouse e paleta
 ├── docs/       # spec, plano e texto do PR
 └── _config.yml # tira docs, bancada, fonte e este README do site publicado
 ```
@@ -58,7 +58,7 @@ Lighthouse (LCP e CLS). Como instalar e rodar: `bancada/LEIA.md`.
 ## Páginas principais
 
 `index.html`  
-Home comercial com o inspetor de código no hero, serviços, projetos e contato.
+Home comercial com serviços, projetos e contato.
 
 `historia.html`  
 Página narrativa do estúdio.

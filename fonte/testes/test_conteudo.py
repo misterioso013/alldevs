@@ -548,7 +548,7 @@ class TestCasesReais(Base):
         for slug, (linha, botao, url) in esperado.items():
             txt = ler(self.saida / "projetos" / slug / "index.html")
             self.assertIn(linha, txt, slug)
-            self.assertIn(f'<a href="{url}" rel="noopener" class="btn-ghost">{botao}</a>', txt, slug)
+            self.assertIn(f'<a href="{url}" rel="noopener" class="btn btn-linha">{botao}</a>', txt, slug)
 
     def test_cases_reais_indexaveis(self):
         mapa = ler(self.saida / "sitemap.xml")
