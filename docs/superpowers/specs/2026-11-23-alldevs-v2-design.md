@@ -127,6 +127,26 @@ Pode ficar se couber no visual (decisão do construtor): a paleta de comandos (C
 Disposição exata das seções, escala tipográfica, quais trechos de código e wireframes aparecem no hero, curvas e tempos das
 animações, e o desenho do cursor. Tudo passa pela crítica externa e pela bancada.
 
-## 9. Perguntas em aberto (do Caio ou do Rosiel)
+## 9. Respostas da checagem do construtor (23/11)
 
-Preenchidas depois da checagem do construtor.
+**Já respondidas pelo projeto:**
+- **Código do fluido:** está embutido em `index.html` no ramo `claude/amott-v2` do repo `~/amott`. Ler com
+  `git -C ~/amott show origin/claude/amott-v2:index.html`. Não mexer nesse repo: outra sessão trabalha nele. A técnica é
+  portada para `js/` daqui, com arte e parâmetros nossos.
+- **Anos de experiência:** "8 anos" já está aprovado em `fonte/conteudo/`.
+
+**Decisões minhas (o Caio pode corrigir):**
+- **Fontes:** hospedar a Syne (OFL) em `assets/fontes/` ao lado da DM Sans; a JetBrains Mono fica para o código do "por trás";
+  a Fraunces sai.
+- **Faixa de prova:** só números contáveis no próprio conteúdo: "8 anos", nº de produtos com link no ar e nº de tecnologias
+  da seção Tecnologias. Nada de "clientes satisfeitos" ou porcentagem.
+- **Prévia:** no mesmo modelo do Amott (`publicar-previa`), num subdomínio `docaio` com `noindex` e `robots` bloqueado. A
+  bancada mede local, com gzip; a medida no celular real é feita pelo Caio e pelo Rosiel.
+- **`/caio/`, `/rosiel/` e `/historia.html`:** fotos e frases como estão; a história mantém o texto (revisado pelo Rosiel em
+  `c0a1742`); só o layout muda.
+- **Sem conteúdo real para um "por trás":** o produto entra no site como case comum, sem revelação, e não no ciclo do hero.
+  Código ilustrativo inventado não entra.
+
+## 10. Perguntas para o Caio (uma rodada)
+
+Preenchidas com as respostas dele.
