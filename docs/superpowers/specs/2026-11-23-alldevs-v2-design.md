@@ -107,9 +107,8 @@ Pode ficar se couber no visual (decisão do construtor): a paleta de comandos (C
   provar ganho grande e houver fallback.
 - **Conteúdo:**
   - reaproveitar os textos aprovados no redesenho (serviços, FAQ, descrições);
-  - os cases saem do site anterior e do atual: ForjaDev, AllDevs Platform, ProsUp, Fakly, SendAny, Heisuca (sem link) e site
-    institucional em 2 h;
-  - Amott como case só com OK do dono (ver 9).
+  - cases (ver 10): Amott, Heisuca, CGFLIX Lite, ProsUp, Fakly e SendAny. ForjaDev, AllDevs Platform e o "site em 2 h" do
+    site antigo só entram se houver tela e link reais.
 - **Prévia:** fora do `main`, num caminho da VPS com `noindex`. O link vai ao Caio por `cgf-telegram aviso entrega`. O
   `main`, ou seja o site no ar, só muda com OK do Caio ou do Rosiel.
 - **Site no ar até lá:** fica o `26115c1` (proposta de 23/11; o Caio não pediu reverter).
@@ -147,6 +146,20 @@ animações, e o desenho do cursor. Tudo passa pela crítica externa e pela banc
 - **Sem conteúdo real para um "por trás":** o produto entra no site como case comum, sem revelação, e não no ciclo do hero.
   Código ilustrativo inventado não entra.
 
-## 10. Perguntas para o Caio (uma rodada)
+## 10. Respostas do Caio (23/11)
 
-Preenchidas com as respostas dele.
+- **Projetos:** "Pode incluir o Amott sim, tbm inclua o Heisuca, pode pegar prints da Google Play mostrando que nosso app é
+  reconhecido, o CGFLIX lite também."
+  - Heisuca e CGFLIX Lite entram com prints da página da Google Play (prova de app publicado e reconhecido). **Minha
+    decisão:** o link vai para a página da loja; os cases falam do app (player, recursos) e nunca do servidor ou do acervo
+    (a marca dos players é separada do CGSERVER).
+  - Amott entra como case com link para amott.docaio.com.br e a revelação "por trás" no cartão.
+- **Depoimentos:** "No momento sem depoimentos isso fica mais pra frente." A seção não aparece; o gerador já prevê a entrada
+  futura (lista vazia = sem seção).
+- **"Da ideia ao ar":** "Pode redesenhar, geralmente a ideia vinha de conversas do telegram, nos víamos e pensávamos." O
+  estágio 1 é uma conversa de chat redesenhada por nós (balões no visual da marca, sem logo do Telegram), com texto curto
+  no espírito real, marcada como reconstrução. Depois: "nos víamos e pensávamos" (rabisco ou quadro) → protótipo → código →
+  no ar.
+- **Código "por trás" (sem resposta explícita; minha decisão):** os projetos são do estúdio, então uso trechos curtos e
+  reais dos nossos repositórios, revisados para não ter segredo, chave, URL interna nem dado de cliente. A lista de trechos
+  vai para o Caio e o Rosiel conferirem na prévia antes do `main`.
