@@ -1,0 +1,9 @@
+import 'package:flutter/widgets.dart';
+
+class TemaHisui {
+    TemaHisui._();
+
+    static const temaCorAcento = Color(0xFF276C4F);
+    static const temaCorAcentoSuave = Color(0xFFD3EEDF);
+    static const temaCorAviso = Color(0xFF9A600B);
+    static const temaCorBorda = Color(0xFFD1CDC5);

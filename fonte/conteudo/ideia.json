@@ -1,0 +1,40 @@
+{
+  "projeto": "heisuca",
+  "estagios": [
+    {
+      "chave": "conversa",
+      "titulo": "A conversa",
+      "texto": "Reconstruímos a conversa que deu início ao app. As falas são resumidas.",
+      "reconstrucao": true,
+      "mensagens": [
+        {"de": "caio", "texto": "Os apps de vídeo que a gente usa são pesados no celular simples."},
+        {"de": "rosiel", "texto": "E se a gente fizesse um que abre rápido e é bonito de usar?"},
+        {"de": "caio", "texto": "Fechado. A tela pode ganhar a cor do pôster."},
+        {"de": "rosiel", "texto": "Eu desenho, você monta o primeiro protótipo."}
+      ]
+    },
+    {
+      "chave": "encontro",
+      "titulo": "O encontro",
+      "texto": "Nos víamos e pensávamos."
+    },
+    {
+      "chave": "prototipo",
+      "titulo": "O protótipo",
+      "texto": "As primeiras telas em Flutter, já com as cores saindo de um conjunto único de tokens."
+    },
+    {
+      "chave": "codigo",
+      "titulo": "O código",
+      "texto": "Um trecho do tema: cada cor do app tem um nome e vem de um único lugar.",
+      "arquivo": "fonte/conteudo/por-tras/heisuca.txt"
+    },
+    {
+      "chave": "no-ar",
+      "titulo": "No ar",
+      "texto": "O app chegou à loja.",
+      "link": "https://play.google.com/store/apps/details?id=app.heisuca.player",
+      "resultado": "Publicado na Google Play."
+    }
+  ]
+}

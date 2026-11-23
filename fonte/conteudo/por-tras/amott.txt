@@ -1,0 +1,4 @@
+:root{
+  --noir:#0e0c0a; --noir-2:#17140f; --noir-3:#211c16;
+  --ivory:#f3ebdf; --paper:#fbf8f2; --ink:#1f1912;
+  --gold:#c9a45c; --gold-deep:#8b682c; --smoke:#a3957f;

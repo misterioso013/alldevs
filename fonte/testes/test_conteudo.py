@@ -93,10 +93,21 @@ class TestPaginas(Base):
         self.assertIn("%5Bsite%C2%B7perfil%C2%B7caio%5D", ler(self.saida / "caio/index.html"))
         self.assertIn("%5Bsite%C2%B7perfil%C2%B7rosiel%5D", ler(self.saida / "rosiel/index.html"))
 
+    PROIBIDAS = ("CGSERVER", "servidor", "Whatbox", "torrent", "tracker", "acervo", "Jellyfin", "Plex")
+
     def test_heisuca_sem_vocabulario_do_servidor(self):
         txt = ler(self.saida / "projetos/heisuca/index.html")
-        for palavra in ("CGSERVER", "servidor", "Whatbox", "torrent", "tracker", "acervo", "Jellyfin", "Plex"):
+        for palavra in self.PROIBIDAS:
             self.assertNotIn(palavra.lower(), txt.lower(), palavra)
+
+    def test_cgflix_lite_e_heisuca_sem_vocabulario_do_servidor(self):
+        for slug in ("heisuca", "cgflix-lite"):
+            txt = ler(self.saida / "projetos" / slug / "index.html")
+            for palavra in self.PROIBIDAS:
+                self.assertNotIn(palavra.lower(), txt.lower(), f"{slug}: {palavra}")
+            for arq in REPO.glob(f"fonte/conteudo/por-tras/{slug}.txt"):
+                for palavra in self.PROIBIDAS:
+                    self.assertNotIn(palavra.lower(), ler(arq).lower(), f"{arq.name}: {palavra}")
 
     def test_sitemap_tem_perfis_projetos_e_cases(self):
         mapa = ler(self.saida / "sitemap.xml")
@@ -243,12 +254,10 @@ class TestRascunhoNoindex(unittest.TestCase):
         self.assertIn("/projetos/pronto/", mapa)
         self.assertNotIn(noindex, ler(raiz / "index.html"))
 
-    def test_so_o_heisuca_segue_rascunho_com_noindex_fora_do_sitemap(self):
+    def test_nenhum_projeto_segue_rascunho_e_todos_entram_no_sitemap(self):
         raiz = gerar_copia(self, lambda ps: ps)
         mapa = ler(raiz / "sitemap.xml")
-        self.assertIn('name="robots" content="noindex"', ler(raiz / "projetos" / "heisuca" / "index.html"))
-        self.assertNotIn("/projetos/heisuca/", mapa)
-        for slug in ("prosup", "fakly", "sendany"):
+        for slug in ("prosup", "fakly", "sendany", "heisuca", "cgflix-lite", "amott"):
             self.assertNotIn("noindex", ler(raiz / "projetos" / slug / "index.html"), slug)
             self.assertIn(f"<loc>https://all.dev.br/projetos/{slug}/</loc>", mapa)
 
@@ -494,11 +503,10 @@ class TestCasesReais(Base):
             self.assertTrue(p.destaque, slug)
             self.assertTrue(p.visivel, slug)
 
-    def test_heisuca_continua_rascunho_sem_link_nem_imagens(self):
+    def test_heisuca_publicado_com_a_loja(self):
         h = self.proj("heisuca")
-        self.assertTrue(h.rascunho)
-        self.assertEqual(h.link, "")
-        self.assertEqual(h.imagens, ())
+        self.assertFalse(h.rascunho)
+        self.assertEqual(h.loja, "https://play.google.com/store/apps/details?id=app.heisuca.player")
 
     def test_prosup(self):
         p = self.proj("prosup")
@@ -538,13 +546,11 @@ class TestCasesReais(Base):
             self.assertIn(linha, txt, slug)
             self.assertIn(f'<a href="{url}" rel="noopener" class="btn-ghost">{botao}</a>', txt, slug)
 
-    def test_cases_reais_indexaveis_e_heisuca_nao(self):
+    def test_cases_reais_indexaveis(self):
         mapa = ler(self.saida / "sitemap.xml")
-        for slug in ("prosup", "fakly", "sendany"):
+        for slug in ("prosup", "fakly", "sendany", "heisuca", "cgflix-lite", "amott"):
             self.assertNotIn("noindex", ler(self.saida / "projetos" / slug / "index.html"), slug)
             self.assertIn(f"<loc>https://all.dev.br/projetos/{slug}/</loc>", mapa)
-        self.assertIn('<meta name="robots" content="noindex">', ler(self.saida / "projetos/heisuca/index.html"))
-        self.assertNotIn("/projetos/heisuca/", mapa)
 
     @unittest.skipUnless(any(p["slug"] == "amott" for p in json.loads(
         (REPO / "fonte" / "dados" / "projetos.json").read_text(encoding="utf-8"))), "o case amott chega na Task 2")
@@ -714,11 +720,72 @@ class TestRodada1(Base):
 class TestAvisos(unittest.TestCase):
     def test_rascunho_e_destaques_avisam(self):
         avisos = D.validar(D.carregar(REPO), REPO)[1]
-        self.assertIn("projeto heisuca: rascunho (texto aguarda o autor)", avisos)
-        for slug in ("prosup", "fakly", "sendany"):
+        self.assertFalse([a for a in avisos if "rascunho" in a], avisos)
+        for slug in ("prosup", "fakly", "sendany", "heisuca", "cgflix-lite", "amott"):
             self.assertFalse([a for a in avisos if a.startswith(f"projeto {slug}:")], slug)
         self.assertFalse([a for a in avisos if a.startswith("destaques:")])
         self.assertFalse([a for a in avisos if "descricao com" in a], avisos)
+
+
+class TestConteudoV2(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.dados = D.carregar(REPO)
+        cls.por_slug = {p.slug: p for p in cls.dados.projetos}
+        cls.ideia = json.loads(ler(REPO / "fonte/conteudo/ideia.json"))
+
+    def test_ciclo_tem_ao_menos_3_com_por_tras(self):
+        ciclo = self.dados.estudio.ciclo
+        self.assertGreaterEqual(len(ciclo), 3)
+        for s in ciclo:
+            self.assertTrue(self.por_slug[s].por_tras, s)
+
+    def test_ciclo_so_publicados(self):
+        for s in self.dados.estudio.ciclo:
+            p = self.por_slug[s]
+            self.assertTrue(p.visivel, s)
+            self.assertFalse(p.rascunho, s)
+
+    def test_cada_captura_existe_e_cabe_no_limite(self):
+        from alldevs import paginas
+        achou = 0
+        for pasta, limite in (("frente", 960), ("por-tras", 960), ("loja", 540)):
+            for arq in sorted((REPO / "assets" / pasta).glob("*.webp")):
+                achou += 1
+                self.assertLessEqual(paginas._tamanho_webp(arq)[0], limite, arq)
+        self.assertGreaterEqual(achou, 11)
+        for p in self.por_slug.values():
+            if p.por_tras:
+                self.assertTrue((REPO / p.por_tras["frente"]).is_file(), p.slug)
+        for slug in ("heisuca", "cgflix-lite"):
+            for n in (1, 2, 3):
+                self.assertTrue((REPO / f"assets/loja/{slug}-{n}.webp").is_file(), (slug, n))
+
+    def test_ideia_tem_os_5_estagios_na_ordem(self):
+        self.assertEqual([e["chave"] for e in self.ideia["estagios"]],
+                         ["conversa", "encontro", "prototipo", "codigo", "no-ar"])
+        self.assertIn(self.ideia["projeto"], self.por_slug)
+        for e in self.ideia["estagios"]:
+            self.assertTrue(e["titulo"].strip() and e["texto"].strip(), e["chave"])
+        cod = next(e for e in self.ideia["estagios"] if e["chave"] == "codigo")
+        self.assertTrue(cod["arquivo"].startswith("fonte/conteudo/por-tras/") and (REPO / cod["arquivo"]).is_file())
+        no_ar = next(e for e in self.ideia["estagios"] if e["chave"] == "no-ar")
+        self.assertTrue(no_ar["link"].startswith("https://") and no_ar["resultado"].strip())
+        self.assertEqual(no_ar["link"], self.por_slug[self.ideia["projeto"]].loja)
+        enc = next(e for e in self.ideia["estagios"] if e["chave"] == "encontro")
+        self.assertIn("nos víamos e pensávamos", enc["texto"].lower())
+
+    def test_conversa_marcada_como_reconstrucao(self):
+        conv = self.ideia["estagios"][0]
+        self.assertIs(conv["reconstrucao"], True)
+        self.assertGreaterEqual(len(conv["mensagens"]), 2)
+        for m in conv["mensagens"]:
+            self.assertIn(m["de"], ("caio", "rosiel"))
+            self.assertLessEqual(len(m["texto"]), 120)
+            self.assertNotIn("telegram", m["texto"].lower())
+
+    def test_amott_link_amott_docaio(self):
+        self.assertEqual(self.por_slug["amott"].link, "https://amott.docaio.com.br")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,15 @@
 [
   {
+    "rotulo": "amott",
+    "tipo": "projeto",
+    "url": "/projetos/amott/"
+  },
+  {
+    "rotulo": "CGFLIX Lite",
+    "tipo": "projeto",
+    "url": "/projetos/cgflix-lite/"
+  },
+  {
     "rotulo": "Fakly",
     "tipo": "projeto",
     "url": "/projetos/fakly/"

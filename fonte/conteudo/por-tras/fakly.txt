@@ -1,0 +1,19 @@
+  const schemaJson = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: data.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+
+  const escapedTitle = title.replace(/"/g, "&quot;");
+  const escapedData = JSON.stringify(data).replace(/'/g, "\\'");
+  const schemaScript =
+    '<script type="application/ld+json">' +
+    JSON.stringify(schemaJson) +
+    "<\\/script>";

@@ -19,7 +19,6 @@ const porSlug = Object.fromEntries(projetos.map((p) => [p.slug, p]));
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ACENTO = { caio: 'var(--caio)', rosiel: 'var(--rosiel)', dupla: 'linear-gradient(90deg, var(--caio), var(--rosiel))' };
-const acentoDe = (autores) => (new Set(autores).size > 1 ? ACENTO.dupla : ACENTO[autores[0]]);
 
 // Tipo e acento pelo caminho. O degradê violeta↔laranja fica só para o que é dos dois sócios.
 function classificar(caminho) {
@@ -27,7 +26,7 @@ function classificar(caminho) {
   if (caminho === '/historia.html') return { tipo: 'história', acento: ACENTO.rosiel };
   if (caminho === '/projetos/') return { tipo: 'projetos', acento: ACENTO.dupla };
   let m = caminho.match(/^\/projetos\/([a-z0-9-]+)\/$/);
-  if (m) { const p = porSlug[m[1]]; return { tipo: p ? p.tipo : 'projeto', acento: p ? acentoDe(p.autores) : ACENTO.dupla }; }
+  if (m) { const p = porSlug[m[1]]; return { tipo: p ? p.tipo : 'projeto', acento: ACENTO.dupla }; }
   if (/^\/servicos\/[a-z0-9-]+\/$/.test(caminho)) return { tipo: 'serviço', acento: ACENTO.dupla };
   m = caminho.match(/^\/(caio|rosiel)\/$/);
   if (m) return { tipo: 'perfil', acento: ACENTO[m[1]] };

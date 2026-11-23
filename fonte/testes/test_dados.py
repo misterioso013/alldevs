@@ -379,6 +379,10 @@ class ProjetoSemPorTrasTest(Base):
         for p in obj:
             p["por_tras"] = None
         arq.write_text(json.dumps(obj, ensure_ascii=False), encoding="utf-8")
+        est = raiz / "fonte" / "dados" / "estudio.json"  # o ciclo exige por_tras; sem por_tras, ciclo vazio
+        e = json.loads(est.read_text(encoding="utf-8"))
+        e["ciclo"] = []
+        est.write_text(json.dumps(e, ensure_ascii=False), encoding="utf-8")
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             rc = gerar.main(["--raiz", str(raiz), "--saida", str(Path(tmp.name) / "saida")])
         self.assertEqual(rc, 0)

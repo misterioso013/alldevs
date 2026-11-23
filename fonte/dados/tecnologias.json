@@ -66,5 +66,29 @@
   {
     "nome": "PostgreSQL",
     "grupo": "dados"
+  },
+  {
+    "nome": "GSAP",
+    "grupo": "front"
+  },
+  {
+    "nome": "three.js",
+    "grupo": "front"
+  },
+  {
+    "nome": "Flutter",
+    "grupo": "mobile"
+  },
+  {
+    "nome": "Dart",
+    "grupo": "mobile"
+  },
+  {
+    "nome": "Kotlin",
+    "grupo": "mobile"
+  },
+  {
+    "nome": "Tizen",
+    "grupo": "mobile"
   }
 ]
