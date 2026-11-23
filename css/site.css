@@ -340,18 +340,101 @@ html.pre-1a .preloader span {
 @keyframes pre-sai { to { opacity: 0; } }
 
 /* ---------- Páginas atuais (transição até as Tasks 4 a 8) ---------- */
-/* ---------- Hero ---------- */
+/* ---------- Hero: o produto na frente, o código por trás (js/revelar.js) ----------
+   O palco empilha três camadas: por trás (trecho real ou wireframe), a frente (captura real, um <img> para o LCP) e o
+   canvas, que o JS liga. Com o canvas ligado (.vivo) a frente é redesenhada nele, com o buraco da revelação; sem JS só se vê a frente.
+   Só opacity muda nas trocas; o canvas anima por conta própria. A cor do item (roxo ou laranja) é do PROJETO. */
 .hero {
-  padding-block: 96px 64px;
+  padding-block: 64px 112px;
   display: grid;
-  gap: 48px;
+  gap: 40px;
   align-items: center;
 }
 .hero-headline { max-width: 14ch; }
 .hero-sub { font-size: 1.15rem; color: var(--texto-2); max-width: 52ch; }
 .hero-ctas { margin-top: 32px; }
+.hero-palco {
+  --cor-item: var(--roxo-claro);
+  position: relative;
+  aspect-ratio: 16 / 10;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.hero-palco[data-cor="laranja"] { --cor-item: var(--laranja-claro); }
+.hero-frente,
+.hero-por-tras,
+.hero-mascara {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--fundo-2);
+  transition: opacity var(--dur-curta) var(--curva-saida);
+}
+.hero-por-tras { z-index: 1; border: 1px solid var(--linha); }
+.hero-frente { z-index: 2; border: 1px solid var(--linha); }
+.hero-frente img { width: 100%; height: 100%; object-fit: contain; }
+.hero-mascara { z-index: 3; background: transparent; pointer-events: none; display: none; }
+.hero-palco.vivo .hero-mascara { display: block; }
+.hero-palco.vivo .hero-frente { border-color: transparent; background: transparent; }
+.hero-palco.vivo .hero-frente img { opacity: 0; }
+.hero-por-tras pre {
+  margin: 0;
+  padding: 16px 16px 40px;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--texto-2);
+  white-space: pre;
+}
+.hero-por-tras img { width: 100%; height: 100%; object-fit: cover; }
+.hero-origem {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  font-family: var(--fonte-mono);
+  font-size: 0.7rem;
+  color: var(--cor-item);
+}
+.hero-palco.trocando .hero-frente,
+.hero-palco.trocando .hero-por-tras,
+.hero-palco.trocando .hero-mascara { opacity: 0; }
+.hero-palco.mostrando .hero-frente { opacity: 0; }
+.hero-ver-por-tras {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 4;
+  min-height: 44px;
+  padding: 0 18px;
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+  color: var(--texto);
+  background: var(--fundo-2);
+  border: 1px solid var(--cor-item);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.hero-ver-por-tras[aria-pressed="true"] { background: var(--cor-item); color: var(--fundo); }
+.hero-frase {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 16px 0 0;
+  font-size: 0.95rem;
+  color: var(--texto-2);
+}
+.hero-frase-nome { font-family: var(--fonte-mono); color: var(--cor-item); margin-right: 8px; }
 @media (min-width: 960px) {
-  .hero { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .hero { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; }
+  .hero-por-tras pre { font-size: 0.8rem; }
 }
 
 /* ---------- Cartões ---------- */
@@ -736,4 +819,8 @@ html.lenis body { height: auto; }
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* a regra global zera as transições; o esmaecido da revelação por botão fica em 200 ms (tokens) */
+  .hero-palco .hero-frente { transition-duration: var(--dur-curta) !important; }
 }

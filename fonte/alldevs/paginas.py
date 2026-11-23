@@ -6,7 +6,7 @@ from pathlib import Path
 
 from . import contato, seo
 from .dados import Dados
-from .dados import visiveis
+from .dados import ler_por_tras, visiveis
 from .modelos import Seguro, esc, render
 
 CABECALHO = "<!-- gerado por fonte/gerar.py — não editar -->"
@@ -159,6 +159,64 @@ def _tamanho_imagem(arq: Path) -> tuple:
     raise ValueError(f"{arq}: imagem de caso precisa ser PNG ou WebP")
 
 
+def _item_ciclo(proj, raiz: Path) -> dict:
+    """Um item do ciclo do hero: o que o JS precisa para trocar frente, trecho e frase."""
+    pt = proj.por_tras
+    w, h = _tamanho_webp(raiz / pt["frente"])
+    atras = {"tipo": pt["tipo"], "origem": pt["origem"]}
+    texto = ler_por_tras(raiz, proj)
+    if texto is not None:
+        atras["texto"] = texto
+    else:
+        atras["src"] = "/" + pt["arquivo"]
+    return {"slug": proj.slug, "nome": proj.nome, "frase": pt["frase"], "cor": pt["cor"],
+            "frente": {"src": "/" + pt["frente"], "w": w, "h": h}, "por_tras": atras}
+
+
+def _json_script(valor) -> str:
+    """JSON para dentro de <script type=application/json>: todo "<" vira \\u003c, então nem "</script>" nem "<!--" passam."""
+    return json.dumps(valor, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c").replace("#", "\\u0023")
+
+
+def _hero(dados: Dados, raiz: Path) -> Seguro:
+    """Hero: h1 fixo, palco com a captura real (frente) e, por trás, o trecho real do projeto (revelado por js/revelar.js)."""
+    raiz = Path(raiz)
+    por_slug = {p.slug: p for p in dados.projetos}
+    itens = [_item_ciclo(por_slug[s], raiz) for s in dados.estudio.ciclo]
+    palco = pre = ""
+    if itens:   # sem ciclo (nenhum projeto com por_tras) o hero fica só com o texto
+        pri = itens[0]
+        atras = pri["por_tras"]
+        if "texto" in atras:
+            camada = f"<pre hidden><code>{esc(atras['texto']).replace('#', '&#35;')}</code></pre>"
+        else:
+            camada = f'<img src="{esc(atras["src"])}" alt="" decoding="async" hidden>'
+        frente = pri["frente"]
+        pre = f'\n <link rel="preload" as="image" href="{esc(frente["src"])}" type="image/webp" fetchpriority="high">'
+        palco = f'''
+ <div class="hero-palco" data-ciclo data-cor="{esc(pri["cor"])}">
+  <figure class="hero-frente"><img src="{esc(frente["src"])}" width="{frente["w"]}" height="{frente["h"]}" alt="Captura de tela de {esc(pri["nome"])}" fetchpriority="high" decoding="async"></figure>
+  <div class="hero-por-tras" aria-hidden="true">{camada}<span class="hero-origem">{esc(atras["origem"])}</span></div>
+  <canvas class="hero-mascara" aria-hidden="true"></canvas>
+  <button type="button" class="hero-ver-por-tras" aria-pressed="false" hidden>Ver por trás</button>
+  <p class="hero-frase" aria-live="off"><span class="hero-frase-nome">{esc(pri["nome"])}</span> {esc(pri["frase"])}</p>
+  <script id="ciclo" type="application/json">{_json_script(itens)}</script>
+  <script src="/js/revelar.js" defer></script>
+ </div>'''
+    return Seguro(
+        f'''<section id="hero" class="hero" data-secao="hero">{pre}
+ <div class="hero-texto">
+  <p class="rotulo-mono">// estúdio de software</p>
+  <h1 class="hero-headline">Fazemos <span class="titulo-mono">software</span> que vive.</h1>
+  <p class="hero-sub">Um estúdio de software. Sites, apps, bots e produtos próprios no ar.</p>
+  <div class="hero-ctas">
+    <a href="/projetos/" class="btn btn-cheio">Ver projetos</a>
+    <a href="#contato" class="btn btn-linha">Pedir orçamento</a>
+  </div>
+ </div>{palco}
+</section>''')
+
+
 def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     est = dados.estudio
     cartoes = "\n".join(_cartao_pessoa(p, prioridade=(i == 0))
@@ -172,7 +230,7 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
         '    </article>'
         for s in dados.servicos)
     corpo = render(
-        "home", **_cabecalho_e_rodape(dados),
+        "home", **_cabecalho_e_rodape(dados), hero=_hero(dados, raiz),
         cartoes=Seguro(cartoes), destaques=Seguro(destaques), servicos=Seguro(servicos),
         contato=_bloco_contato(est, "home"),
     )
