@@ -150,7 +150,8 @@ Os 6 pontos do Codex, um a um (nada foi alterado no código: o Passo 2 não gero
    (título, visual, dois botões); é estrutural, não uma cópia de componente. Mantido. Item aberto, avaliação: risco baixo.
 2. **Captura 2, botão principal "creme" com texto escuro + secundário contornado, em cápsula.** É o único ponto de cor/componente que
    daria para mexer em uma linha (`.btn-primary` em `css/site.css`). Mantido, por duas razões. Primeiro, `#ecebe6` é o `--claro` da
-   spec ("blocos claros frios, usados pouco"), o mesmo tom do texto do site, com um terço da saturação do creme da Amott. Segundo, trocar
+   spec (que o descreve como "blocos claros frios, usados pouco"; a cor real é quente e pouco saturada, R236 G235 B230), o mesmo tom do
+   texto do site, com um terço da saturação do creme da Amott. Segundo, trocar
    o preenchimento obriga a escolher outra cor para o CTA: usar violeta ou laranja o ligaria a um dos sócios, e um terceiro acento é
    decisão de marca. Item aberto [R], com a opção barata: CTA principal só com contorno e o preenchimento no `:hover`.
 3. **Capturas 2–5, cabeçalho** (marca à esquerda, navegação à direita, último botão em cápsula). Estrutural e padrão de mercado
@@ -162,9 +163,11 @@ Os 6 pontos do Codex, um a um (nada foi alterado no código: o Passo 2 não gero
    em JetBrains Mono, sem relação com o texto da Amott. Mantido.
 6. **Capturas 4–5, área de contato com o botão claro e botões contornados.** Mesma resposta do ponto 2.
 
-Resumo: o Codex enxerga "mesma família" no repertório editorial escuro (serifa, eyebrows, cápsulas, hero em duas colunas), que é
-comum a muitos sites; as diferenças medidas (matiz do fundo, saturação do claro, acento, fonte, imagem) são grandes. Nenhum texto,
-rótulo ou componente próprio da Amott apareceu na resposta. Os pontos 1, 2 e 4 ficam como itens abertos no PR com esta avaliação.
+Resumo: o Codex enxerga "mesma família" no repertório editorial escuro e apontou componentes de padrão comum (botões em cápsula com o
+principal claro e o secundário contornado, cabeçalho com o último item em cápsula, chamadas pequenas e espaçadas acima dos títulos, hero
+em duas colunas) e a serifa dos títulos. Nenhum texto nem rótulo da Amott apareceu na resposta. Decidimos manter todos; as diferenças
+medidas (matiz do fundo, saturação do claro, acento, fonte, imagem) são grandes. O botão principal `--claro` é o único com opção barata e
+vira item aberto no PR (item [R] 7); a serifa e o hero (item [R] 8) só se resolveriam com redesenho e ficam registrados com esta avaliação.
 
 ## Detalhe por meta (rodada completa de 2026-11-23T01:29:16.185Z)
 

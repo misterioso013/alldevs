@@ -12,7 +12,7 @@ saída de um gerador em Python (só biblioteca padrão): o que se edita fica em 
   `estudio.json`, nunca escritos à mão nas páginas. `python3 fonte/checar.py` valida a saída (sem erro = rc 0).
 - **Visual novo.** Escuro, com tokens de cor e tipografia em `css/tokens.css` e o resto em `css/site.css` (saem `css/styles.css` e
   `css/servico.css`). Fontes Fraunces, DM Sans e JetBrains Mono servidas por nós em `assets/fontes/`. Acento violeta para o Caio e
-  laranja para o Rosiel; os blocos claros usam o neutro frio `--claro`.
+  laranja para o Rosiel; os blocos claros usam o neutro de baixa saturação `--claro` (R236 G235 B230).
 - **Movimento.** GSAP 3.13.0 (com ScrollTrigger e SplitText) e Lenis 1.3.27 em `js/vendor/`, com versão e SHA-256 fixados em
   `VERSOES.json` e conferidos por teste. Com `prefers-reduced-motion` não sobra nenhum transform depois de 1 s. Sem JS o conteúdo
   todo aparece (sai `js/servico-gsap.js`).
@@ -51,10 +51,20 @@ Comparação com a base (`git show 7acc4d2:sitemap.xml` e `git ls-tree -r --name
 **Nenhuma página da base sumiu.** A base tinha 8 páginas; a saída tem 15. As 7 novas são `/caio/`, `/rosiel/`, `/projetos/` e os
 quatro cases. O `sitemap.xml` lista 14: `/projetos/heisuca/` fica de fora, porque é rascunho e sai com `noindex` (ver itens em aberto).
 
-Única URL de arquivo que deixa de existir: **`/assets/images/og-image.png`**, a imagem de compartilhamento antiga, que as páginas da
-base citavam em `og:image` e `twitter:image`. Agora cada página cita a sua em `/assets/og/`. Quem já compartilhou um link pode ver a
-prévia antiga em cache até a rede social atualizar; o link da página em si não muda. Se quiserem evitar o 404 para essa imagem, basta
-voltar a gerar um arquivo com esse nome (não fiz: seria um arquivo a mais só para cache de terceiros).
+**URLs de arquivo que deixam de existir: 4.** São todos os arquivos servidos da base `7acc4d2` que não estão mais na saída (conferido com
+`git ls-tree -r --name-only 7acc4d2` contra a árvore atual; `fonte/`, `bancada/`, `docs/` e `.superpowers/` são novos e não contam). Os
+outros 37 arquivos da base seguem no mesmo caminho. Os 4 passam a dar 404:
+
+| URL que some | Destino |
+|---|---|
+| `/assets/images/og-image.png` | `/assets/og/<página>.png`: a imagem de compartilhamento antiga, que as páginas da base citavam em `og:image` e `twitter:image`; agora cada página cita a sua |
+| `/css/styles.css` | removido, sem substituto (o CSS é `/css/tokens.css` e `/css/site.css`); nenhuma página o referencia |
+| `/css/servico.css` | removido, sem substituto (idem); nenhuma página o referencia |
+| `/js/servico-gsap.js` | removido, sem substituto (o movimento está em `/js/site.js` e em `/js/vendor/`); nenhuma página o referencia |
+
+Só o `README.md` ainda cita os três de CSS/JS (ver "Técnicos"). Quem já compartilhou um link pode ver a prévia antiga em cache até a rede
+social atualizar; o link da página em si não muda. Se quiserem evitar o 404 da imagem OG, basta voltar a gerar um arquivo com esse nome
+(não fiz: seria um arquivo a mais só para cache de terceiros).
 
 ## Como ver a prévia
 
@@ -107,6 +117,9 @@ de perfil, hoje provisória).
 - A bancada vem antes do visual (Tarefa 8), para medir a linha de base.
 - Exceção temporária da regra de cor para os CSS antigos até a Tarefa 10.
 - Workflow de CI novo (`.github/workflows/checar.yml`).
+- A spec descreve o `--claro` (`#ecebe6`) como "blocos claros frios". A cor real é quente e pouco saturada (R236 G235 B230, matiz de
+  cerca de 50°, saturação 0,14), não fria. A spec fica como está e o valor da cor não mudou; só o rótulo, e por isso este PR a chama de
+  neutro de baixa saturação. A comparação com a Amott (item [R] 7 abaixo) usa essa saturação, não a temperatura.
 
 ## Itens em aberto
 
@@ -159,14 +172,17 @@ Enquanto ele não responde:
   fala do gerador nem da bancada. Não mexi (esta etapa só fecha relatório e texto do PR); sugiro uma passada antes de publicar.
 - **Links de texto corrido, logo e rodapé** têm entre 17 e 34 px de altura. Passam o AA (2.5.8, que tem exceção para link em linha de
   texto), mas não o AAA (2.5.5, 44 px). Não mexi porque mudaria a leitura do texto. A regra de 44 px vale, e passa, para controles.
-- **Imagem OG antiga** devolve 404 (ver "URLs preservadas").
+- **Os 4 arquivos removidos** (imagem OG antiga e 3 de CSS/JS) devolvem 404 (ver "URLs preservadas").
 - **Capturas de página inteira** da bancada mostram seções vazias abaixo da primeira tela: a revelação por rolagem só pinta o que
   entra na janela. O conteúdo está lá (meta "Sem JS" passa em 15/15).
 - **Oscilações isoladas** na rodada completa do Lighthouse (`/historia.html` 1219 ms, `/servicos/desenvolvimento-mvp-startups/` 1215 ms,
   CLS 0,011 em `/servicos/bots-whatsapp-automacao/`), todas dentro das metas e sem repetir nas medições 3×.
 - **Comparação com a Amott (Passo 2).** O primeiro Codex não abriu o site de referência (sem DNS no sandbox) e pediu capturas dela; fiz a
-  segunda rodada lado a lado. Resposta: mesma família visual (repertório editorial escuro), sem texto nem componente próprio. Nenhum
-  código mudou por causa dela; os itens 7 e 8 acima são o que sobrou.
+  segunda rodada lado a lado. Resposta: "sim, mesma família visual", com 6 pontos. O Codex apontou componentes de padrão comum (botões em
+  cápsula com o principal claro e o secundário contornado, cabeçalho com o último item em cápsula, chamadas pequenas e espaçadas acima dos
+  títulos, hero em duas colunas) e a serifa dos títulos; nenhum texto nem rótulo da Amott apareceu. Decidimos manter todos. Nenhum
+  código mudou por causa dela. Só o botão principal `--claro` tem opção barata (item [R] 7); a serifa dos títulos e o hero (item
+  [R] 8) só se resolveriam com redesenho, então ficam registrados com a minha avaliação.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
