@@ -9,21 +9,22 @@ Formato: repositório · caminho@commit. Tudo foi lido sem alterar os repositór
 | sendany | sendany.txt (15 linhas) | misterioso013/sendany · src/lib/database.ts, linhas 29-43 @1117310 |
 | amott | amott.txt (4 linhas) | CaioGuerras/amott-perfumes · index.html, linhas 30-33 @00aa67a |
 | heisuca | heisuca.txt (9 linhas) | heisuca · apps/app/lib/heisuca/theme/temas/tema_hisui.dart, linhas 10-18 @9755d4a (ramo claude/heisuca-v2) |
-| cgflix-lite | cgflix-lite.txt (23 linhas) | cgflix-lite · core/src/main/java/dev/jdtech/jellyfin/core/presentation/theme/CgflixPalette.kt, linhas 54-76 @8aa925d |
+| cgflix-lite | cgflix-lite.txt (12 linhas) | cgflix-lite · core/src/main/java/dev/jdtech/jellyfin/core/presentation/theme/CgflixPalette.kt, linhas 24-35 @8aa925d (campos da paleta; sem os nomes dos temas) |
 | prosup | sem trecho (`por_tras: null`) | sem repositório disponível |
 
 No site, o campo `origem` do cgflix-lite traz só `CgflixPalette.kt@8aa925d`: o caminho completo tem o nome do servidor de mídia e não pode aparecer num texto do app. O caminho completo fica só neste documento. Os trechos são cópias sem edição (só cortes).
 
 ## Capturas de frente (assets/frente/, até 960 px)
-- amott, fakly, sendany: captura do site no ar (Chromium, 960x600), em 2026-11-23.
-- heisuca: phoneScreenshots_2.png do material da loja (~/TMP/loja-play/backup_20261116), reduzida de 1080x1920 para 540x960.
-- cgflix-lite: tela inicial baixada da página da Google Play (540x960).
+- amott (cena parada, com `prefers-reduced-motion`), fakly (com a fonte Noto Color Emoji instalada só no usuário), sendany: captura do site no ar (Chromium, 960x600), em 2026-11-23.
+- heisuca: imagem individual da Google Play (tela de temas), 540x960. Sem título de obra, pôster nem nome de outro serviço na imagem.
+- cgflix-lite: nenhuma captura da loja serve (todas mostram títulos, pôsteres ou nomes de uso interno). A frente é o ícone do app da loja sobre fundo escuro (960x600).
+- fakly e sendany (assets/images/): PNG de 2549 e 1352 px trocados por WebP de 960 px; os PNG antigos foram para ~/Arquivos_Obsoletos/2026-11-23_alldevs_v1/.
 
 ## Lojas (assets/loja/, 540 px)
-Recortes da página móvel da Google Play (Chromium, viewport 540, 2026-11-23): cabeçalho, faixa de capturas e "Segurança dos dados". Heisuca: app.heisuca.player. CGFLIX Lite: br.com.docaio.cgflix.lite. Ambas responderam 200 e o desenvolvedor é AllDevs. As imagens trazem o texto da própria loja.
+Heisuca: 1 = cabeçalho da loja (nome, ícone, AllDevs, classificação e downloads); 2 = imagem individual de captura publicada pela página (tela de temas, 540x960); 3 = ícone oficial (512 px). CGFLIX Lite: 1 = cabeçalho da loja; 2 = ícone do app (512 px); 3 = recorte do topo do cabeçalho. Nenhuma captura de carrossel. Nenhuma das capturas individuais do CGFLIX Lite foi usada, porque todas mostram títulos, pôsteres ou nomes que não podem aparecer. Fonte: app.heisuca.player e br.com.docaio.cgflix.lite (página da Google Play, 2026-11-23, desenvolvedor AllDevs).
 
 ## Ideia (fonte/conteudo/ideia.json)
-Projeto Heisuca. A conversa é reconstrução (marcada `reconstrucao: true`), com falas curtas inventadas só como ilustração; nada vem de mensagem real. O resultado "Publicado na Google Play." é fato verificado.
+Projeto Heisuca. A conversa é reconstrução (marcada `reconstrucao: true`), com falas curtas inventadas só como ilustração; nada vem de mensagem real. O estágio `prototipo` é fato com fonte: o primeiro commit do `tema_hisui.dart` no repositório do Heisuca é 612b0a6, de 2026-10-20 (primeiro app em Flutter); o site web do Heisuca começou em 2026-10-18 (e512785). O resultado "Publicado na Google Play." é fato verificado.
 
 ## Pendências
 - Caio e Rosiel devem aprovar ou reescrever as quatro falas da conversa e o texto do protótipo (ideia.json).

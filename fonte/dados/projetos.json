@@ -63,7 +63,7 @@
     ],
     "link": "https://misterioso013.github.io/fakly/",
     "imagens": [
-      "assets/images/fakly.png"
+      "assets/images/fakly.webp"
     ],
     "destaque": true,
     "visivel": true,
@@ -103,7 +103,7 @@
     ],
     "link": "https://sendany.all.dev.br",
     "imagens": [
-      "assets/images/sendany.png"
+      "assets/images/sendany.webp"
     ],
     "destaque": true,
     "visivel": true,
@@ -173,7 +173,7 @@
       "arquivo": "fonte/conteudo/por-tras/cgflix-lite.txt",
       "origem": "cgflix-lite · CgflixPalette.kt@8aa925d",
       "frente": "assets/frente/cgflix-lite.webp",
-      "frase": "Dois temas, cada um com sua paleta completa.",
+      "frase": "Toda cor do app tem um nome e um só lugar.",
       "cor": "roxo"
     },
     "imagens": [
@@ -186,13 +186,13 @@
     "tipo": "app",
     "situacao": "no ar",
     "ano": 2026,
-    "resumo": "App de filmes, séries e animes feito para celular simples e internet ruim: abre rápido, gasta pouca memória e toca o vídeo direto.",
-    "problema": "Em celular de entrada e com internet fraca, a maioria dos apps de vídeo demora para abrir, trava e gasta memória demais.",
+    "resumo": "App com player leve, feito para celular simples e internet ruim: abre rápido, gasta pouca memória e toca o vídeo direto.",
+    "problema": "Em celular de entrada e com internet fraca, a maioria dos players demora para abrir, trava e gasta memória demais.",
     "fizemos": [
-      "Início por categoria (Filmes, Séries e Animes) com Continuar assistindo e Em alta, e uma busca única.",
-      "Página do título com botão Assistir ou Continuar, selos Dublado e Legendado e temporadas em chips.",
-      "Player com legendas no estilo original e menu de áudio e legenda que não pausa o vídeo, mais downloads para assistir sem internet.",
-      "Dois temas, Isis (escuro) e Heitor (claro), e um modo infantil protegido por PIN. Sem anúncios e sem rastreamento."
+      "Player leve, que abre rápido e gasta pouca memória.",
+      "Menu de áudio e legenda que não pausa o vídeo, mais downloads para usar sem internet.",
+      "Dois temas, escuro e claro, com a paleta de cores definida num lugar só.",
+      "Modo infantil protegido por PIN, pensado para o celular simples da família. Sem anúncios e sem rastreamento."
     ],
     "stack": [
       "Kotlin"

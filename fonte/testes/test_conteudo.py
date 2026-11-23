@@ -4,6 +4,7 @@ import json
 import re
 import shutil
 import subprocess
+import struct
 import tempfile
 import unittest
 from pathlib import Path
@@ -93,21 +94,24 @@ class TestPaginas(Base):
         self.assertIn("%5Bsite%C2%B7perfil%C2%B7caio%5D", ler(self.saida / "caio/index.html"))
         self.assertIn("%5Bsite%C2%B7perfil%C2%B7rosiel%5D", ler(self.saida / "rosiel/index.html"))
 
-    PROIBIDAS = ("CGSERVER", "servidor", "Whatbox", "torrent", "tracker", "acervo", "Jellyfin", "Plex")
-
-    def test_heisuca_sem_vocabulario_do_servidor(self):
-        txt = ler(self.saida / "projetos/heisuca/index.html")
-        for palavra in self.PROIBIDAS:
-            self.assertNotIn(palavra.lower(), txt.lower(), palavra)
+    PROIBIDAS = ("CGSERVER", "servidor", "Whatbox", "torrent", "tracker", "acervo", "Jellyfin", "Plex",
+                 "nuvem", "Emby")
 
     def test_cgflix_lite_e_heisuca_sem_vocabulario_do_servidor(self):
+        projs = json.loads(ler(REPO / "fonte/dados/projetos.json"))
+        ideia = ler(REPO / "fonte/conteudo/ideia.json")
         for slug in ("heisuca", "cgflix-lite"):
-            txt = ler(self.saida / "projetos" / slug / "index.html")
-            for palavra in self.PROIBIDAS:
-                self.assertNotIn(palavra.lower(), txt.lower(), f"{slug}: {palavra}")
+            p = next(x for x in projs if x["slug"] == slug)
+            textos = {
+                "pagina": ler(self.saida / "projetos" / slug / "index.html"),
+                "projetos.json": json.dumps(p, ensure_ascii=False),  # inclui por_tras.frase e origem
+                "ideia.json": ideia,
+            }
             for arq in REPO.glob(f"fonte/conteudo/por-tras/{slug}.txt"):
+                textos[arq.name] = ler(arq)
+            for onde, txt in textos.items():
                 for palavra in self.PROIBIDAS:
-                    self.assertNotIn(palavra.lower(), ler(arq).lower(), f"{arq.name}: {palavra}")
+                    self.assertNotIn(palavra.lower(), txt.lower(), f"{slug} {onde}: {palavra}")
 
     def test_sitemap_tem_perfis_projetos_e_cases(self):
         mapa = ler(self.saida / "sitemap.xml")
@@ -523,7 +527,7 @@ class TestCasesReais(Base):
                          ("produto", "no ar", 2025, "https://misterioso013.github.io/fakly/"))
         self.assertEqual(p.stack, ("HTML", "CSS", "JavaScript"))
         self.assertEqual(len(p.fizemos), 4)
-        self.assertEqual(p.imagens, ("assets/images/fakly.png",))
+        self.assertEqual(p.imagens, ("assets/images/fakly.webp",))
         txt = ler(self.saida / "projetos/fakly/index.html")
         self.assertNotIn("React", txt)
         self.assertNotIn("Node.js", txt)
@@ -533,7 +537,7 @@ class TestCasesReais(Base):
         self.assertEqual((p.tipo, p.situacao, p.ano, p.link), ("produto", "no ar", 2025, "https://sendany.all.dev.br"))
         self.assertEqual(p.stack, ("Next.js", "React", "TypeScript", "PostgreSQL", "Tailwind CSS"))
         self.assertEqual(len(p.fizemos), 4)
-        self.assertEqual(p.imagens, ("assets/images/sendany.png",))
+        self.assertEqual(p.imagens, ("assets/images/sendany.webp",))
 
     def test_linha_mono_e_botao_de_cada_case(self):
         esperado = {"prosup": ("app · 2026 · no ar", "Ver ProsUp no ar", "https://prosup.app"),
@@ -567,7 +571,7 @@ class TestImagensDosCases(Base):
     TAMANHOS = {
         "assets/images/prosup-1.webp": (720, 1524), "assets/images/prosup-2.webp": (720, 1524),
         "assets/images/prosup-3.webp": (720, 1524), "assets/images/prosup-4.webp": (720, 1524),
-        "assets/images/fakly.png": (2549, 921), "assets/images/sendany.png": (1352, 649),
+        "assets/images/fakly.webp": (960, 347), "assets/images/sendany.webp": (960, 461),
     }
 
     def imgs(self, slug):
@@ -579,7 +583,10 @@ class TestImagensDosCases(Base):
         from alldevs import paginas
         for rel, wh in self.TAMANHOS.items():
             self.assertEqual(paginas._tamanho_imagem(REPO / rel), wh, rel)
-        self.assertEqual(paginas._tamanho_png(REPO / "assets/images/fakly.png"), (2549, 921))
+        with tempfile.TemporaryDirectory() as d:
+            png = Path(d) / "x.png"
+            png.write_bytes(b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", 2549, 921) + b"\0" * 5)
+            self.assertEqual(paginas._tamanho_png(png), (2549, 921))
         self.assertEqual(paginas._tamanho_webp(REPO / "assets/images/prosup-1.webp"), (720, 1524))
 
     def test_leitor_recusa_arquivo_que_nao_e_png(self):
@@ -598,8 +605,8 @@ class TestImagensDosCases(Base):
 
     def test_img_com_width_e_height_reais(self):
         for slug, arquivos in {"prosup": [f"assets/images/prosup-{n}.webp" for n in (1, 2, 3, 4)],
-                               "fakly": ["assets/images/fakly.png"],
-                               "sendany": ["assets/images/sendany.png"]}.items():
+                               "fakly": ["assets/images/fakly.webp"],
+                               "sendany": ["assets/images/sendany.webp"]}.items():
             tags = self.imgs(slug)
             self.assertEqual(len(tags), len(arquivos), slug)
             for tag, rel in zip(tags, arquivos):
@@ -779,10 +786,39 @@ class TestConteudoV2(unittest.TestCase):
         conv = self.ideia["estagios"][0]
         self.assertIs(conv["reconstrucao"], True)
         self.assertGreaterEqual(len(conv["mensagens"]), 2)
+        self.assertEqual({m["de"] for m in conv["mensagens"]}, {"caio", "rosiel"})
         for m in conv["mensagens"]:
-            self.assertIn(m["de"], ("caio", "rosiel"))
             self.assertLessEqual(len(m["texto"]), 120)
             self.assertNotIn("telegram", m["texto"].lower())
+        for campo in ("titulo", "texto"):
+            self.assertNotIn("telegram", conv[campo].lower())
+
+    def test_trechos_por_tras_cabem_em_24x72(self):
+        arqs = sorted((REPO / "fonte/conteudo/por-tras").glob("*.txt"))
+        self.assertGreaterEqual(len(arqs), 5)
+        for arq in arqs:
+            linhas = ler(arq).splitlines()
+            self.assertLessEqual(len(linhas), 24, arq.name)
+            for n, l in enumerate(linhas, 1):
+                self.assertLessEqual(len(l), 72, f"{arq.name}:{n}")
+
+    def test_imagens_e_frentes_dos_visiveis_sao_webp_no_limite(self):
+        from alldevs import paginas
+        for p in self.por_slug.values():
+            if not p.visivel:
+                continue
+            itens = [(i, 960) for i in p.imagens]
+            if p.por_tras:
+                itens.append((p.por_tras["frente"], 960))
+            for rel, limite in itens:
+                self.assertTrue(rel.endswith(".webp"), f"{p.slug}: {rel}")
+                lim = 540 if rel.startswith("assets/loja/") else limite
+                self.assertLessEqual(paginas._tamanho_webp(REPO / rel)[0], lim, f"{p.slug}: {rel}")
+
+    def test_og_existe_para_todo_projeto_publicado(self):
+        for p in self.por_slug.values():
+            if p.visivel and not p.rascunho:
+                self.assertTrue((REPO / "assets/og" / f"{p.slug}.png").is_file(), p.slug)
 
     def test_amott_link_amott_docaio(self):
         self.assertEqual(self.por_slug["amott"].link, "https://amott.docaio.com.br")

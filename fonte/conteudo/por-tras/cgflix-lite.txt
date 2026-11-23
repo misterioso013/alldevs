@@ -1,23 +1,12 @@
-val CgflixIsis =
-    CgflixPalette(
-        background = Color(0xFF07060A),
-        surface = Color(0xFF120E1A),
-        surfaceHigh = Color(0xFF1B1526),
-        surfaceHighest = Color(0xFF251D33),
-        accent = Color(0xFFA855F7),
-        accentStrong = Color(0xFF9333EA),
-        accentDeep = Color(0xFF3B1F5C),
-        lilac = Color(0xFFC084FC),
-        onAccent = Color(0xFFFFFFFF),
-        text = Color(0xFFE1E2E8),
-        textMuted = Color(0xFFA9A3B5),
-        outline = Color(0xFF8D9199),
-        skeleton = Color(0xFF1B1526),
-        rankNumber = Color(0xFFA855F7),
-        badgeDubbed = Color(0xFF9333EA),
-        badgeSubtitled = Color(0xFF3B1F5C),
-        onBadge = Color(0xFFFFFFFF),
-        badgeRequest = Color(0xFF251D33),
-        heartIsis = Color(0xFFA855F7),
-        heartHeitor = Color(0xFF22C55E),
-    )
+    val accent: Color,
+    /** Roxo forte (#9333ea): início do gradiente do botão principal. */
+    val accentStrong: Color,
+    /** Roxo escuro: contêineres. */
+    val accentDeep: Color,
+    /** Lilás (#c084fc): slogan, foco, textos de destaque. */
+    val lilac: Color,
+    /** Texto sobre o roxo. */
+    val onAccent: Color,
+    val text: Color,
+    val textMuted: Color,
+    val outline: Color,

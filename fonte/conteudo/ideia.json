@@ -7,10 +7,10 @@
       "texto": "Reconstruímos a conversa que deu início ao app. As falas são resumidas.",
       "reconstrucao": true,
       "mensagens": [
-        {"de": "caio", "texto": "Os apps de vídeo que a gente usa são pesados no celular simples."},
-        {"de": "rosiel", "texto": "E se a gente fizesse um que abre rápido e é bonito de usar?"},
-        {"de": "caio", "texto": "Fechado. A tela pode ganhar a cor do pôster."},
-        {"de": "rosiel", "texto": "Eu desenho, você monta o primeiro protótipo."}
+        {"de": "caio", "texto": "Todo player que a gente testa funciona num aparelho e quebra em outro."},
+        {"de": "rosiel", "texto": "E se as cores e as regras viessem de um conjunto só, igual no celular, na TV e no navegador?"},
+        {"de": "caio", "texto": "Fechado. Cada cor com nome, num único lugar."},
+        {"de": "rosiel", "texto": "Eu desenho o tema, você monta o primeiro app."}
       ]
     },
     {
@@ -21,7 +21,8 @@
     {
       "chave": "prototipo",
       "titulo": "O protótipo",
-      "texto": "As primeiras telas em Flutter, já com as cores saindo de um conjunto único de tokens."
+      "texto": "O primeiro app em Flutter entrou no repositório em 20/10/2026, já com o tema Hisui, de cores fixas e nomeadas.",
+      "fonte": "heisuca · commit 612b0a6 · 2026-10-20"
     },
     {
       "chave": "codigo",
