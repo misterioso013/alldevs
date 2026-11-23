@@ -168,6 +168,16 @@ class TestCss(unittest.TestCase):
         self.assertIsNotNone(m)
         self.assertGreaterEqual(int(m.group(1)), 44)
 
+    def test_img_da_frente_nao_vira_lcp_com_js(self):
+        css = CSS.read_text(encoding="utf-8")
+        i = css.index("@media (scripting: enabled)")
+        bloco = css[i:css.index("}", css.index("}", i) + 1) + 1]
+        self.assertIn("prefers-reduced-motion: no-preference", bloco)
+        self.assertIn(".hero-palco .hero-frente img", bloco)
+        self.assertIn("opacity: 0", bloco)
+        self.assertIn("hero-img-volta", bloco)
+        self.assertIn("@keyframes hero-img-volta", css)
+
     def test_palco_toque_pan_y(self):
         self.assertIn("touch-action: pan-y", self.regra(".hero-palco"))
 

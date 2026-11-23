@@ -381,7 +381,13 @@ html.pre-1a .preloader span {
 .hero-mascara { z-index: 3; background: transparent; pointer-events: none; display: none; }
 .hero-palco.vivo .hero-mascara { display: block; }
 .hero-palco.vivo .hero-frente { border-color: transparent; background: transparent; }
-.hero-palco.vivo .hero-frente img { opacity: 0; }
+/* Com JS e sem reduce, o canvas desenha a frente: a img nasce invisivel (nao vira LCP; o h1 vira).
+   Se o canvas nao assumir em 3 s, a img aparece sozinha. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .hero-palco .hero-frente img { opacity: 0; animation: hero-img-volta 0s 3s forwards; }
+}
+@keyframes hero-img-volta { to { opacity: 1; } }
+.hero-palco.vivo .hero-frente img { opacity: 0; animation: none; }
 .hero-por-tras pre {
   margin: 0;
   padding: 16px 16px 40px;
