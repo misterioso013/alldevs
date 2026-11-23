@@ -98,6 +98,27 @@ Pode ficar se couber no visual (decisão do construtor): a paleta de comandos (C
 - **Referências:** a pesquisa em `~/cgmind/pareceres/*alldevs-ref-*.md` traz os sites e as técnicas. Usar o método do Gustavo
   Campelo: gravar a referência, anotar, reconstruir com arte nossa e comparar.
 
+### 5.5 Referências aplicadas (pesquisa do Gemini, 23/11; domínios não reverificados)
+Íntegras: `~/cgmind/pareceres/20261123-204317_pesquisa_alldevs-ref-{estudios,youtube}.md`.
+- **Estúdios a estudar antes de cada peça:** basement.studio (tipografia pesada, cursor próprio, laboratório/GitHub),
+  view-source.com (texto cinético, clip-path e case em `sticky`), unseen.co (ASCII ao vivo em `<pre>` só quando visível),
+  n4.studio (curvas GSAP), malvah.co (entrada com `clip-path` em 400 ms), thefirstthelast.agency (grade editorial de
+  projetos) e studiofreight.com (grade visível, metadados em mono).
+- **Aplicações (decisões minhas):**
+  - o "por trás" pode ter uma camada ASCII ou de código vivo, a 15 fps e só quando visível;
+  - a revelação de títulos usa linhas com `overflow:hidden` e stagger de cerca de 0,05 s;
+  - os cases usam `position: sticky` no desktop;
+  - a grade e os metadados ficam em mono;
+  - o preloader segue o modelo do Amott: só na primeira visita, no máximo cerca de 1 s.
+- **Confiança (padrões BR):** proposta clara na 1ª dobra; stack e integrações explícitas (API oficial do WhatsApp/Meta,
+  ERPs e CRMs só se já fizemos); etapas de trabalho visíveis; WhatsApp com mensagem que diz de onde a pessoa veio.
+  Formulário próprio continua fora (não-meta).
+- **Método (vídeos do Gustavo Campelo):** decompor a referência em blocos e reconstruir uma peça por vez. Comparar quadros
+  em rodadas na bancada (Playwright). Animar só `transform` e `opacity`. Trocar listeners de rolagem por
+  IntersectionObserver. Converter mídia para WebP/WebM.
+- **Skills para os subagentes:** `greensock/gsap-skills` (GSAP oficial), `ibelick/ui-skills` (fixing-motion-performance) e
+  `Leonxlnx/taste-skill` (anti-"cara de IA"), lidas como referência e **sem instalar nada sem OK**.
+
 ## 6. Técnica e restrições
 
 - **Reaproveitar:** o gerador `fonte/gerar.py`, os módulos `fonte/alldevs/*`, os testes, a bancada (`bancada/`), o sitemap e
