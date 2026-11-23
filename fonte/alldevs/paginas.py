@@ -21,7 +21,7 @@ PROJETOS_TITULO = "Projetos — AllDevs"
 PROJETOS_DESCRICAO = "Os projetos da AllDevs: sites, apps, bots e produtos próprios, de cada sócio."
 HISTORIA_TITULO = "A história — AllDevs"
 HISTORIA_DESCRICAO = (
-    "Como um adolescente que programava no celular virou engenheiro sênior, mentor de desenvolvedores "
+    "Como um adolescente que programava no celular virou mentor de desenvolvedores "
     "e fundador do ForjaDev."
 )
 MARCADOR_CONTATO = "<!--contato-->"
