@@ -15,7 +15,7 @@
       "Histórico de preço com alerta de queda, para mostrar se o desconto é de verdade.",
       "Fila e agendamento de posts, listas de produtos para compartilhar e extensão do Chrome que mostra a comissão na página do produto.",
       "Planos Free, Lite e Pro, com robô para grupos do WhatsApp (beta) no Pro.",
-      "Documentação própria em `docs.prosup.app`."
+      "Documentação própria em docs.prosup.app."
     ],
     "resultado": null,
     "stack": [
@@ -55,7 +55,7 @@
     "problema": "Montar uma seção de perguntas frequentes bem acabada e legível pelo Google dá trabalho de interface e de SEO.",
     "fizemos": [
       "Editor com pré-visualização em tempo real: escreve as perguntas e copia o código para colar no site.",
-      "Widget que já gera o schema `FAQPage` (JSON-LD), para as perguntas poderem aparecer no Google.",
+      "Widget que já gera o schema FAQPage (JSON-LD), para as perguntas poderem aparecer no Google.",
       "Interface responsiva e acessível, com navegação por teclado e atributos ARIA.",
       "Salvamento automático no navegador, sem cadastro."
     ],

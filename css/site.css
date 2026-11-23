@@ -492,6 +492,7 @@ main > .breadcrumb + section { border-top: 0; }
   max-width: 36ch;
 }
 .perfil-links { list-style: none; padding: 0; }
+.perfil-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .perfil-faz ul { max-width: 60ch; }
 .vazio { color: var(--suave); }
 

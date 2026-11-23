@@ -1,6 +1,9 @@
+import dataclasses
+import hashlib
 import json
 import re
 import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -613,6 +616,83 @@ class TestImagensDosCases(Base):
         for n in (1, 2, 3, 4):
             w, _ = paginas._tamanho_webp(REPO / f"assets/images/prosup-{n}.webp")
             self.assertLessEqual(w, 960)
+
+
+class TestRodada1(Base):
+    """Correções da revisão da 13A: crases, link de afiliado, alvo de 44 px e h2 do serviço de sites."""
+
+    # sha256 da prosup-3.webp que mostrava o link de afiliado legível (não pode voltar).
+    SHA_PROSUP3_LEGIVEL = "f4c64751f8d3a0f858e68798ca5cc69ef6d3d2e5aeee78a5943b9a775830d7e4"
+    # Região do "https://meli.la/..." na captura 720x1524 (x0, y0, x1, y1).
+    CAIXA_LINK = (258, 1406, 568, 1452)
+
+    def textos(self, p):
+        for campo in dataclasses.fields(p):
+            v = getattr(p, campo.name)
+            if isinstance(v, str):
+                yield campo.name, v
+            elif isinstance(v, tuple):
+                for i, item in enumerate(v):
+                    if isinstance(item, str):
+                        yield f"{campo.name}[{i}]", item
+
+    def test_dados_dos_projetos_sem_crase_de_markdown(self):
+        for p in self.dados.projetos:
+            for nome, txt in self.textos(p):
+                self.assertNotIn("`", txt, f"{p.slug}.{nome}")
+
+    def test_paginas_de_case_sem_crase(self):
+        arquivos = [self.saida / "projetos" / "index.html"] + sorted((self.saida / "projetos").glob("*/index.html"))
+        self.assertGreaterEqual(len(arquivos), 5)
+        for arq in arquivos:
+            self.assertNotIn("`", ler(arq), arq)
+
+    def test_prosup_3_nao_e_mais_a_captura_com_o_link_legivel(self):
+        arq = REPO / "assets/images/prosup-3.webp"
+        self.assertNotEqual(hashlib.sha256(arq.read_bytes()).hexdigest(), self.SHA_PROSUP3_LEGIVEL)
+        from alldevs import paginas
+        self.assertEqual(paginas._tamanho_webp(arq), (720, 1524))
+
+    @unittest.skipUnless(shutil.which("dwebp"), "dwebp ausente")
+    def test_link_de_afiliado_ilegivel_na_prosup_3(self):
+        def energia(arq):
+            ppm = subprocess.run(["dwebp", "-quiet", "-ppm", "-o", "-", str(arq)],
+                                 capture_output=True, check=True).stdout
+            m = re.match(rb"P6\s+(\d+)\s+(\d+)\s+255\s", ppm)
+            w, h = int(m.group(1)), int(m.group(2))
+            dados = ppm[m.end():]
+            x0, y0, x1, y1 = self.CAIXA_LINK
+            tot = n = 0
+            for y in range(y0, y1):
+                for x in range(x0, x1 - 1):
+                    a = dados[(y * w + x) * 3 + 1]
+                    b = dados[(y * w + x + 1) * 3 + 1]
+                    tot += abs(a - b)
+                    n += 1
+            return tot / n
+        # texto nítido dá ~11; região borrada fica perto de 0
+        self.assertLess(energia(REPO / "assets/images/prosup-3.webp"), 3.0)
+        # controle: o mesmo cálculo numa captura com texto nítido na mesma altura é alto
+        self.assertGreater(energia(REPO / "assets/images/prosup-1.webp"), 0.0)
+
+    def test_links_do_perfil_tem_alvo_de_44px(self):
+        css = ler(REPO / "css" / "site.css")
+        i = css.index(".perfil-links a {")
+        regra = css[i:css.index("}", i)]
+        self.assertIn("display: inline-flex", regra)
+        self.assertIn("align-items: center", regra)
+        self.assertIn("min-height: 44px", regra)
+        for token in re.findall(r"#[0-9a-fA-F]{3,8}\b|rgba?\(", regra):
+            self.fail(f"cor fora dos tokens: {token}")
+
+    def test_h2_do_servico_de_sites_fala_em_equipe(self):
+        fonte = ler(REPO / "fonte/conteudo/servicos/criacao-de-sites-institucionais.html")
+        txt = ler(self.saida / "servicos/criacao-de-sites-institucionais/index.html")
+        for t in (fonte, txt):
+            self.assertIn("<h2>Por que contratar uma equipe especializada?</h2>", t)
+            self.assertNotIn("desenvolvedor freelancer", t)
+        for arq in self.saida.rglob("*.html"):
+            self.assertNotIn("freelancer", ler(arq).lower(), arq)
 
 
 class TestAvisos(unittest.TestCase):
