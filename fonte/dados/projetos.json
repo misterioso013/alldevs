@@ -2,9 +2,6 @@
   {
     "slug": "prosup",
     "nome": "ProsUp",
-    "autores": [
-      "rosiel"
-    ],
     "tipo": "app",
     "situacao": "no ar",
     "ano": 2026,
@@ -40,15 +37,14 @@
     "destaque": true,
     "visivel": true,
     "rascunho": false,
-    "atualizado": "2026-11-23"
+    "atualizado": "2026-11-23",
+    "loja": "",
+    "por_tras": null
   },
   {
     "slug": "fakly",
     "nome": "Fakly",
-    "autores": [
-      "rosiel"
-    ],
-    "tipo": "ferramenta",
+    "tipo": "produto",
     "situacao": "no ar",
     "ano": 2025,
     "resumo": "Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.",
@@ -72,14 +68,13 @@
     "destaque": true,
     "visivel": true,
     "rascunho": false,
-    "atualizado": "2026-11-23"
+    "atualizado": "2026-11-23",
+    "loja": "",
+    "por_tras": null
   },
   {
     "slug": "sendany",
     "nome": "SendAny",
-    "autores": [
-      "rosiel"
-    ],
     "tipo": "produto",
     "situacao": "no ar",
     "ano": 2025,
@@ -106,14 +101,13 @@
     "destaque": true,
     "visivel": true,
     "rascunho": false,
-    "atualizado": "2026-11-23"
+    "atualizado": "2026-11-23",
+    "loja": "",
+    "por_tras": null
   },
   {
     "slug": "heisuca",
     "nome": "Heisuca",
-    "autores": [
-      "caio"
-    ],
     "tipo": "app",
     "situacao": "no ar",
     "ano": 2026,
@@ -138,6 +132,8 @@
     "destaque": true,
     "visivel": true,
     "rascunho": true,
-    "atualizado": "2026-11-22"
+    "atualizado": "2026-11-22",
+    "loja": "",
+    "por_tras": null
   }
 ]

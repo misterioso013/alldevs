@@ -2,10 +2,6 @@
   {
     "slug": "beta",
     "nome": "Beta",
-    "autores": [
-      "ana",
-      "bia"
-    ],
     "tipo": "site",
     "situacao": "beta",
     "ano": 2026,
@@ -24,14 +20,13 @@
     ],
     "destaque": false,
     "visivel": false,
-    "atualizado": "2026-11-21"
+    "atualizado": "2026-11-21",
+    "loja": "",
+    "por_tras": null
   },
   {
     "slug": "alfa",
     "nome": "Alfa",
-    "autores": [
-      "ana"
-    ],
     "tipo": "app",
     "situacao": "no ar",
     "ano": 2025,
@@ -50,6 +45,8 @@
     ],
     "destaque": true,
     "visivel": true,
-    "atualizado": "2026-11-21"
+    "atualizado": "2026-11-21",
+    "loja": "",
+    "por_tras": null
   }
 ]

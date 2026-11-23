@@ -5,7 +5,7 @@ from xml.sax.saxutils import escape
 
 SITE = "https://all.dev.br"
 ID_ORGANIZACAO = f"{SITE}/#organizacao"
-TIPOS_APLICATIVO = {"app", "bot", "produto", "ferramenta"}
+TIPOS_APLICATIVO = {"app", "produto"}
 META_NOINDEX = '<meta name="robots" content="noindex">'
 
 
@@ -54,13 +54,12 @@ def json_ld_home(dados) -> dict:
 
 
 def json_ld_case(proj, dados) -> dict:
-    ids = {p.slug: _id_pessoa(p) for p in dados.pessoas}
     ld = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication" if proj.tipo in TIPOS_APLICATIVO else "WebSite",
         "name": proj.nome,
         "description": proj.resumo,
-        "author": [{"@id": ids[a]} for a in proj.autores],
+        "creator": {"@id": ID_ORGANIZACAO},
     }
     if proj.link:
         ld["url"] = proj.link

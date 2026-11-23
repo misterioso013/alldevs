@@ -18,7 +18,7 @@ HOME_DESCRICAO = (
     "Sites, apps, bots e produtos próprios no ar."
 )
 PROJETOS_TITULO = "Projetos — AllDevs"
-PROJETOS_DESCRICAO = "Os projetos da AllDevs: sites, apps, bots e produtos próprios, de cada sócio."
+PROJETOS_DESCRICAO = "Os projetos da AllDevs: sites, apps, automações e produtos próprios, feitos pelo estúdio."
 HISTORIA_TITULO = "A história — AllDevs"
 HISTORIA_DESCRICAO = (
     "Como um adolescente que programava no celular virou mentor de desenvolvedores "
@@ -76,34 +76,14 @@ def _ler_conteudo(raiz: Path, partes, contato_html: Seguro) -> Seguro:
     return Seguro(texto.replace(MARCADOR_CONTATO, contato_html.rstrip("\n")))
 
 
-def _rosiel_primeiro(dados: Dados):
-    return sorted(dados.pessoas, key=lambda p: (p.slug != "rosiel", p.slug))
-
-
 def _cabecalho_e_rodape(dados: Dados) -> dict:
     itens = "\n".join(
         f'        <li><a href="/servicos/{esc(s.slug)}/">{esc(s.nome)}</a></li>' for s in dados.servicos)
     return {"cabecalho": render("cabecalho"), "rodape": render("rodape", servicos=Seguro(itens))}
 
 
-def _nomes(dados: Dados, autores) -> str:
-    por_slug = {p.slug: p.nome for p in dados.pessoas}
-    return " e ".join(por_slug[a] for a in autores)
-
-
-def _selos(dados: Dados, autores) -> Seguro:
-    por_slug = {p.slug: p.nome for p in dados.pessoas}
-    return Seguro("".join(
-        f'<span class="selo selo-{esc(a)}">{esc(por_slug[a])}</span>' for a in autores))
-
-
 def _com_ano(tipo, ano) -> list:
     return [str(tipo)] if ano is None else [str(tipo), str(ano)]
-
-
-def _dupla(autores) -> str:
-    """Classe do degradê violeta↔laranja: só no que os dois sócios fizeram juntos."""
-    return " obra-dupla" if len(set(autores)) > 1 else ""
 
 
 def _cartao_pessoa(p, prioridade: bool = False) -> str:
@@ -120,14 +100,12 @@ def _cartao_pessoa(p, prioridade: bool = False) -> str:
     )
 
 
-def _cartao_projeto(proj, dados: Dados, classe: str, com_autores: bool, nivel: int = 3) -> str:
-    attr = f' data-autores="{esc(" ".join(proj.autores))}"' if com_autores else ""
+def _cartao_projeto(proj, classe: str, nivel: int = 3) -> str:
     return (
-        f'    <article class="{classe}{_dupla(proj.autores)}" data-slug="{esc(proj.slug)}"{attr}>\n'
+        f'    <article class="{classe}" data-slug="{esc(proj.slug)}">\n'
         f'      <p class="rotulo-mono">{esc(" · ".join(_com_ano(proj.tipo, proj.ano)))}</p>\n'
         f'      <h{nivel}><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h{nivel}>\n'
         f'      <p>{esc(proj.resumo)}</p>\n'
-        f'      <p>{_selos(dados, proj.autores)}</p>\n'
         f'    </article>'
     )
 
@@ -174,55 +152,12 @@ def _tamanho_imagem(arq: Path) -> tuple:
     raise ValueError(f"{arq}: imagem de caso precisa ser PNG ou WebP")
 
 
-def _cor_autor(autores) -> str:
-    return autores[0] if len(set(autores)) == 1 else "dupla"
-
-
-def _inspetor(dados: Dados, raiz: Path) -> Seguro:
-    """Janela do hero: 1ª tela parada (sem JS é só isso), dados de todas inline e o botão "próximo".
-    A imagem é lazy e de baixa prioridade, sem preload: o LCP continua sendo o título."""
-    slugs = dados.estudio.inspetor
-    if not slugs:
-        return Seguro("")
-    projetos = {p.slug: p for p in dados.projetos}
-    nomes = {p.slug: p.nome for p in dados.pessoas}
-    telas = []
-    for slug in slugs:
-        insp = dados.inspecao[slug]
-        proj = projetos[slug]
-        lw, lh = _tamanho_webp(Path(raiz) / insp["imagem"])
-        telas.append({
-            "slug": slug, "nome": proj.nome, "autor": _nomes(dados, proj.autores),
-            "cor": _cor_autor(proj.autores), "imagem": "/" + insp["imagem"], "w": lw, "h": lh,
-            "caixas": insp["caixas"],
-        })
-    t = telas[0]
-    bloco = json.dumps({"telas": telas}, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
-    return Seguro(
-        f'  <div class="inspetor inspetor-{esc(t["cor"])}" aria-hidden="true">\n'
-        f'    <div class="inspetor-barra"><span class="inspetor-pontos"></span>'
-        f'<span class="inspetor-selo">{esc(t["nome"])} · {esc(t["autor"])}</span></div>\n'
-        f'    <div class="inspetor-palco">\n'
-        '      <div class="inspetor-tela">\n'
-        f'        <img src="{esc(t["imagem"])}" alt="Tela do {esc(t["nome"])}" width="{t["w"]}" height="{t["h"]}" '
-        f'loading="lazy" fetchpriority="low" decoding="async">\n'
-        f'      </div>\n'
-        f'    </div>\n'
-        f'    <p class="inspetor-codigo"><code>/* {esc(t["slug"])}.webp · {t["w"]}×{t["h"]} */</code></p>\n'
-        f'  </div><!-- /inspetor -->\n'
-        f'  <button type="button" class="inspetor-proximo" aria-label="Mostrar a próxima tela de produto" hidden>'
-        f'<span class="inspetor-proximo-texto">próxima tela</span></button>\n'
-        f'  <script type="application/json" id="inspecao">{bloco}</script>\n'
-        f'  <script src="/js/inspetor.js" defer></script>'
-    )
-
-
 def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     est = dados.estudio
     cartoes = "\n".join(_cartao_pessoa(p, prioridade=(i == 0))
                          for i, p in enumerate(sorted(dados.pessoas, key=lambda p: p.slug)))
     destaques = "\n".join(
-        _cartao_projeto(p, dados, "cartao-destaque", False) for p in visiveis(dados.projetos) if p.destaque)
+        _cartao_projeto(p, "cartao-destaque") for p in visiveis(dados.projetos) if p.destaque)
     servicos = "\n".join(
         f'    <article class="cartao-servico">\n'
         f'      <h3><a href="/servicos/{esc(s.slug)}/">{esc(s.nome)}</a></h3>\n'
@@ -232,17 +167,17 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     corpo = render(
         "home", **_cabecalho_e_rodape(dados),
         cartoes=Seguro(cartoes), destaques=Seguro(destaques), servicos=Seguro(servicos),
-        contato=_bloco_contato(est, "home"), inspetor=_inspetor(dados, raiz),
+        contato=_bloco_contato(est, "home"),
     )
     caminho = "index.html"
-    ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in _rosiel_primeiro(dados)))
+    ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in sorted(dados.pessoas, key=lambda p: p.slug)))
     doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, corpo, ld, previa)
     return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ld)
 
 
 def _perfil(p, dados: Dados, previa: bool) -> Pagina:
-    meus = [x for x in visiveis(dados.projetos) if p.slug in x.autores]
-    projetos = "\n".join(_cartao_projeto(x, dados, "cartao-projeto", False) for x in meus)
+    meus = visiveis(dados.projetos)
+    projetos = "\n".join(_cartao_projeto(x, "cartao-projeto") for x in meus)
     if not projetos:
         projetos = '    <p class="vazio">Em breve.</p>'
     links = ""
@@ -270,7 +205,7 @@ def _perfil(p, dados: Dados, previa: bool) -> Pagina:
 
 def _projetos(dados: Dados, previa: bool) -> Pagina:
     vis = visiveis(dados.projetos)
-    cartoes = "\n".join(_cartao_projeto(x, dados, "cartao-projeto", True, 2) for x in vis)
+    cartoes = "\n".join(_cartao_projeto(x, "cartao-projeto", 2) for x in vis)
     corpo = render(
         "projetos", **_cabecalho_e_rodape(dados), cartoes=Seguro(cartoes),
         contato=_bloco_contato(dados.estudio, "home"),
@@ -296,7 +231,7 @@ def _img_case(proj, rel: str, numero: int, raiz: Path) -> str:
 
 
 def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
-    linha = " · ".join([*_com_ano(proj.tipo, proj.ano), _nomes(dados, proj.autores), proj.situacao])
+    linha = " · ".join([*_com_ano(proj.tipo, proj.ano), proj.situacao])
     resultado = ""
     if proj.resultado is not None:
         resultado = (f'\n  <section data-secao="resultado">\n    <h2>Resultado</h2>\n'

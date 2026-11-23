@@ -8,7 +8,7 @@ from . import dados as mod_dados
 # Visual antigo removido na tarefa 10: nenhum arquivo tem passe livre para cor fora dos tokens.
 EXCECOES_TEMPORARIAS = ()
 
-IGNORAR = {".git", ".superpowers", ".github", "docs", "fonte", "bancada", "dist-previa", "inspecao"}
+IGNORAR = {".git", ".superpowers", ".github", "docs", "fonte", "bancada", "dist-previa"}
 EXTENSOES = {".css", ".js", ".html"}
 # hex de 3, 4, 6 ou 8 dígitos; ignora entidades (&#160;) e âncoras (href="#x", id="#x", url(#x))
 RE_COR = re.compile(

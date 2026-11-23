@@ -4,7 +4,23 @@ import re
 from dataclasses import MISSING, dataclass, fields
 from pathlib import Path
 
-TIPOS = {"app", "site", "bot", "produto", "ferramenta"}
+TIPOS = {"site", "app", "automacao", "produto"}
+TIPO_ROTULO = {"site": "Site", "app": "App", "automacao": "Automação", "produto": "Produto"}
+POR_TRAS_TIPOS = {"codigo", "wireframe", "fluxo"}
+GRUPOS_TECNOLOGIA = {"front", "mobile", "back", "nuvem", "dados"}
+REMOVIDOS = {"autores", "quem_toca"}  # campos que não existem mais: citar o arquivo em vez de ignorar
+PLAY_STORE = "https://play.google.com/store/apps/details?id="
+POR_TRAS_MAX_LINHAS, POR_TRAS_MAX_COLUNAS, FRASE_MAX = 24, 72, 60
+# Uma classe de segredo por padrão; o erro cita arquivo:linha e a classe, nunca o valor.
+RE_SEGREDO = (
+    ("chave sk-", re.compile(r"sk-[A-Za-z0-9_-]{16,}")),
+    ("chave AWS", re.compile(r"AKIA[0-9A-Z]{16}")),
+    ("token GitHub", re.compile(r"ghp_[A-Za-z0-9]{36}")),
+    ("credencial", re.compile(r"(token|password|passwd|senha|secret|api[_-]?key)\s*[:=]", re.I)),
+    ("IP", re.compile(r"\b\d{1,3}(?:\.\d{1,3}){3}\b")),
+    ("e-mail", re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")),
+    ("host interno", re.compile(r"localhost|docaio\.com\.br", re.I)),
+)
 SITUACOES = {"no ar", "beta", "encerrado"}
 CORES = {"roxo", "laranja"}
 RE_DATA = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -22,7 +38,7 @@ class Estudio:
     telegram: str
     mensagens: dict
     redes: tuple
-    inspetor: tuple
+    ciclo: tuple
     atualizado: str
 
 
@@ -45,7 +61,6 @@ class Pessoa:
 class Projeto:
     slug: str
     nome: str
-    autores: tuple
     tipo: str
     situacao: str
     ano: "int | None"
@@ -60,6 +75,8 @@ class Projeto:
     visivel: bool
     atualizado: str
     rascunho: bool = False
+    loja: str = ""
+    por_tras: "dict | None" = None
 
 
 @dataclass(frozen=True)
@@ -69,8 +86,22 @@ class Servico:
     titulo: str
     descricao: str
     resumo: str
-    quem_toca: tuple
+    tipo: str
     atualizado: str
+
+
+@dataclass(frozen=True)
+class Tecnologia:
+    nome: str
+    grupo: str
+
+
+@dataclass(frozen=True)
+class Depoimento:
+    nome: str
+    papel: str
+    texto: str
+    autorizado: bool
 
 
 @dataclass(frozen=True)
@@ -79,7 +110,8 @@ class Dados:
     pessoas: tuple
     projetos: tuple
     servicos: tuple
-    inspecao: dict
+    tecnologias: tuple
+    depoimentos: tuple
 
 
 def _ler(caminho: Path):
@@ -92,6 +124,9 @@ def _ler(caminho: Path):
 def _montar(cls, obj, arquivo):
     if not isinstance(obj, dict):
         raise ErroDeDados(f"{arquivo}: item não é um objeto")
+    for campo in sorted(REMOVIDOS & set(obj)):
+        ref = f" (slug {obj['slug']})" if "slug" in obj else ""
+        raise ErroDeDados(f"{arquivo}: campo removido não pode mais aparecer: {campo}{ref}")
     kw = {}
     for f in fields(cls):
         if f.name not in obj:
@@ -111,25 +146,79 @@ def _lista(cls, raiz_dados, arquivo):
     return tuple(sorted((_montar(cls, o, arquivo) for o in obj), key=lambda x: x.slug))
 
 
+def _simples(cls, raiz_dados, arquivo, chave):
+    obj = _ler(raiz_dados / arquivo)
+    if not isinstance(obj, list):
+        raise ErroDeDados(f"{arquivo}: esperado uma lista")
+    return tuple(sorted((_montar(cls, o, arquivo) for o in obj), key=lambda x: getattr(x, chave)))
+
+
 def carregar(raiz: Path) -> Dados:
     d = Path(raiz) / "fonte" / "dados"
     estudio = _montar(Estudio, _ler(d / "estudio.json"), "estudio.json")
-    insp = {}
-    pasta = d / "inspecao"
-    if pasta.is_dir():
-        for arq in sorted(pasta.glob("*.json")):
-            insp[arq.stem] = _ler(arq)
     return Dados(
         estudio=estudio,
         pessoas=_lista(Pessoa, d, "pessoas.json"),
         projetos=_lista(Projeto, d, "projetos.json"),
         servicos=_lista(Servico, d, "servicos.json"),
-        inspecao=insp,
+        tecnologias=_simples(Tecnologia, d, "tecnologias.json", "nome"),
+        depoimentos=_simples(Depoimento, d, "depoimentos.json", "nome"),
     )
 
 
 def visiveis(projetos):
     return [p for p in projetos if p.visivel]
+
+
+def ler_por_tras(raiz: Path, proj: Projeto) -> "str | None":
+    """Texto do .txt do "por trás" quando o tipo é código; nos outros casos, None."""
+    pt = proj.por_tras
+    if not pt or pt.get("tipo") != "codigo":
+        return None
+    return (Path(raiz) / pt["arquivo"]).read_text(encoding="utf-8")
+
+
+def _por_tras(rot, pt, raiz, e):
+    rot = f"{rot} por_tras"
+    if not isinstance(pt, dict):
+        e(f"{rot}: deve ser um objeto ou null")
+        return
+    for k in ("tipo", "arquivo", "origem", "frente", "frase", "cor"):
+        if not isinstance(pt.get(k), str) or not pt.get(k):
+            e(f"{rot}: campo {k} ausente ou vazio")
+    tipo, arq = pt.get("tipo"), pt.get("arquivo")
+    if tipo not in POR_TRAS_TIPOS:
+        e(f"{rot}: tipo inválido: {tipo!r}")
+    if pt.get("cor") not in CORES:
+        e(f"{rot}: cor inválida: {pt.get('cor')!r}")
+    if isinstance(pt.get("frase"), str) and len(pt["frase"]) > FRASE_MAX:
+        e(f"{rot}: frase com {len(pt['frase'])} caracteres (máximo {FRASE_MAX})")
+    frente = pt.get("frente")
+    if isinstance(frente, str) and frente:
+        if not (frente.startswith("assets/frente/") and frente.endswith(".webp")):
+            e(f"{rot}: frente deve ser .webp em assets/frente/ (veio {frente})")
+        elif not (raiz / frente).is_file():
+            e(f"{rot}: frente inexistente: {frente}")
+    if not isinstance(arq, str) or not arq or tipo not in POR_TRAS_TIPOS:
+        return
+    prefixo, sufixo = ("fonte/conteudo/por-tras/", ".txt") if tipo == "codigo" else ("assets/por-tras/", ".webp")
+    if not (arq.startswith(prefixo) and arq.endswith(sufixo)):
+        e(f"{rot}: arquivo de {tipo} deve ser {sufixo} em {prefixo} (veio {arq})")
+        return
+    if not (raiz / arq).is_file():
+        e(f"{rot}: arquivo inexistente: {arq}")
+        return
+    if tipo != "codigo":
+        return
+    linhas = (raiz / arq).read_text(encoding="utf-8").splitlines()
+    if len(linhas) > POR_TRAS_MAX_LINHAS:
+        e(f"{rot}: {arq} com {len(linhas)} linhas (máximo {POR_TRAS_MAX_LINHAS} linhas)")
+    for n, linha in enumerate(linhas, 1):
+        if len(linha) > POR_TRAS_MAX_COLUNAS:
+            e(f"{rot}: {arq}:{n} com {len(linha)} colunas (máximo {POR_TRAS_MAX_COLUNAS} colunas)")
+        for classe, padrao in RE_SEGREDO:
+            if padrao.search(linha):
+                e(f"{rot}: {arq}:{n} parece conter {classe}")
 
 
 def validar(dados: Dados, raiz: Path):
@@ -152,18 +241,17 @@ def validar(dados: Dados, raiz: Path):
                 e(f"{nome}: slug duplicado: {x.slug}")
             vistos.add(x.slug)
 
-    slugs_pessoas = {p.slug for p in dados.pessoas}
-
     est = dados.estudio
     data("estudio", est.atualizado)
     https("estudio.telegram", est.telegram)
     for r in est.redes:
         https(f"estudio.redes {r.get('rotulo', '?')}", r.get("url"))
-    for s in est.inspetor:
-        if s == "amott":
-            e("estudio.inspetor: 'amott' não pode aparecer no inspetor")
-        if s not in dados.inspecao:
-            e(f"estudio.inspetor: '{s}' sem arquivo em fonte/dados/inspecao/{s}.json")
+    por_slug = {p.slug: p for p in dados.projetos}
+    for s in est.ciclo:
+        if s not in por_slug:
+            e(f"estudio.ciclo: projeto inexistente: {s}")
+        elif not por_slug[s].por_tras:
+            e(f"estudio.ciclo: '{s}' não tem por_tras")
 
     for p in dados.pessoas:
         rot = f"pessoa {p.slug}"
@@ -197,9 +285,10 @@ def validar(dados: Dados, raiz: Path):
             a(f"{rot}: rascunho (texto aguarda o autor)")
         if p.link:
             https(rot, p.link)
-        for au in p.autores:
-            if au not in slugs_pessoas:
-                e(f"{rot}: autor inexistente: {au}")
+        if not isinstance(p.loja, str) or (p.loja and not p.loja.startswith(PLAY_STORE)):
+            e(f"{rot}: loja deve começar com {PLAY_STORE} (ou ficar vazia)")
+        if p.por_tras is not None:
+            _por_tras(rot, p.por_tras, raiz, e)
         for img in p.imagens:
             if not (raiz / img).is_file():
                 e(f"{rot}: imagem inexistente: {img}")
@@ -218,9 +307,20 @@ def validar(dados: Dados, raiz: Path):
         n = len(s.descricao)
         if not 140 <= n <= 160:
             a(f"{rot}: descricao com {n} caracteres (ideal 140 a 160)")
-        for q in s.quem_toca:
-            if q not in slugs_pessoas:
-                e(f"{rot}: quem_toca inexistente: {q}")
+        if s.tipo not in TIPOS:
+            e(f"{rot}: tipo inválido: {s.tipo!r}")
+
+    # A faixa de tecnologias só diz a verdade se cada item está num projeto visível e publicado.
+    no_ar = {t for p in dados.projetos if p.visivel and not p.rascunho for t in p.stack}
+    for t in dados.tecnologias:
+        if t.grupo not in GRUPOS_TECNOLOGIA:
+            e(f"tecnologia {t.nome}: grupo inválido: {t.grupo!r}")
+        if t.nome not in no_ar:
+            e(f"tecnologia {t.nome}: não aparece no stack de nenhum projeto visível e publicado")
+
+    for d in dados.depoimentos:
+        if d.autorizado is not True:
+            e(f"depoimento {d.nome}: sem autorização (autorizado deve ser true)")
 
     if not (raiz / "assets" / "og" / "site.png").is_file():
         a("falta assets/og/site.png")

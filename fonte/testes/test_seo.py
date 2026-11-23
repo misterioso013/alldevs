@@ -53,15 +53,14 @@ class TestCaseSemProjetoReal(unittest.TestCase):
         dados = mod_dados.carregar(REPO)
         from dataclasses import replace
         p = mod_dados.Projeto(
-            slug="x", nome="X", autores=("caio", "rosiel"), tipo="site", situacao="no ar", ano=2026,
+            slug="x", nome="X", tipo="site", situacao="no ar", ano=2026,
             resumo="r", problema="p", fizemos=(), resultado=None, stack=(), link="https://x.dev",
             imagens=(), destaque=False, visivel=True, atualizado="2026-11-22")
         ld = seo.json_ld_case(p, dados)
         self.assertEqual(ld["@type"], "WebSite")
-        self.assertEqual(
-            ld["author"],
-            [{"@id": "https://all.dev.br/#caio-guerras"}, {"@id": "https://all.dev.br/#rosiel-victor"}])
-        self.assertEqual(seo.json_ld_case(replace(p, tipo="bot"), dados)["@type"], "SoftwareApplication")
+        self.assertEqual(ld["creator"], {"@id": seo.ID_ORGANIZACAO})
+        self.assertNotIn("author", ld)
+        self.assertEqual(seo.json_ld_case(replace(p, tipo="app"), dados)["@type"], "SoftwareApplication")
 
 
 class TestSitemap(unittest.TestCase):
@@ -96,7 +95,7 @@ class TestSitemap(unittest.TestCase):
         arq = raiz / "fonte" / "dados" / "projetos.json"
         proj = json.loads(arq.read_text(encoding="utf-8"))
         proj.append({
-            "slug": "segredo-vetado", "nome": "Segredo Vetado", "autores": ["caio"], "tipo": "app",
+            "slug": "segredo-vetado", "nome": "Segredo Vetado", "tipo": "app",
             "situacao": "beta", "ano": 2026, "resumo": "r", "problema": "p", "fizemos": [],
             "resultado": None, "stack": [], "link": "", "imagens": [], "destaque": False,
             "visivel": False, "atualizado": "2026-11-22"})

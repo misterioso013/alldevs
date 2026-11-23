@@ -195,11 +195,11 @@ class TestCli(Base):
         shutil.copytree(REPO / "assets", raiz / "assets")
         arq = raiz / "fonte" / "dados" / "servicos.json"
         dados = json.loads(arq.read_text(encoding="utf-8"))
-        dados[0]["quem_toca"] = ["ninguem"]
+        dados[0]["tipo"] = "bot"
         arq.write_text(json.dumps(dados), encoding="utf-8")
         rc, _, err = rodar("--raiz", str(raiz), "--saida", str(self.saida))
         self.assertEqual(rc, 1)
-        self.assertIn("quem_toca inexistente: ninguem", err)
+        self.assertIn("tipo inválido: 'bot'", err)
         self.assertFalse(self.saida.exists())
 
 

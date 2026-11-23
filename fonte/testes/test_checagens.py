@@ -8,7 +8,7 @@ from alldevs import checagens
 from testes.test_paginas import REPO
 
 PROJETO_OCULTO = {
-    "slug": "oculto", "nome": "Oculto", "autores": ["caio"], "tipo": "site", "situacao": "no ar", "ano": 2026,
+    "slug": "oculto", "nome": "Oculto", "tipo": "site", "situacao": "no ar", "ano": 2026,
     "resumo": "r", "problema": "p", "fizemos": [], "resultado": None, "stack": [], "link": "https://x.dev",
     "imagens": [], "destaque": False, "visivel": False, "atualizado": "2026-11-22",
 }

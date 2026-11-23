@@ -87,8 +87,11 @@ class TestPaletaJson(Base):
                 else self.saida / caminho
             self.assertTrue(alvo.is_file(), i)
 
-    def test_sem_amott(self):
-        self.assertNotIn("amott", ler(self.saida / "assets" / "paleta.json").lower())
+    def test_amott_so_como_projeto(self):
+        """Amott só pode entrar na paleta como o projeto dele (o case chega na Task 2)."""
+        for i in self.itens:
+            if "amott" in json.dumps(i).lower():
+                self.assertEqual((i["tipo"], i["url"]), ("projeto", "/projetos/amott/"), i)
 
 
 class TestPaletaVetado(unittest.TestCase):
@@ -96,7 +99,7 @@ class TestPaletaVetado(unittest.TestCase):
         raiz = gerar_copia(self, lambda ps: ps + [
             modelo(ps, slug="visivel-ok", nome="Visivel Ok", rascunho=False),
             modelo(ps, slug="segredo-vetado", nome="Segredo Vetado", visivel=False, destaque=True,
-                   rascunho=False, autores=["caio", "rosiel"])])
+                   rascunho=False)])
         itens = paleta(raiz)
         self.assertIn(("Visivel Ok", "/projetos/visivel-ok/"), [(i["rotulo"], i["url"]) for i in itens])
         bruto = ler(raiz / "assets" / "paleta.json").lower()

@@ -11,7 +11,6 @@ from pathlib import Path
 from alldevs import dados as D
 from testes.test_paginas import REPO, rodar, titulo
 
-AUTORES = re.compile(r'data-autores="([^"]*)"')
 SUBTITULO = "Um estúdio de software. Sites, apps, bots e produtos próprios no ar."
 
 
@@ -112,7 +111,8 @@ class TestPaginas(Base):
         self.assertEqual(ld("rosiel/index.html")[0]["@id"], "https://all.dev.br/#rosiel-victor")
         case = ld("projetos/heisuca/index.html")[0]
         self.assertEqual(case["@type"], "SoftwareApplication")
-        self.assertEqual(case["author"], [{"@id": "https://all.dev.br/#caio-guerras"}])
+        self.assertEqual(case["creator"], {"@id": "https://all.dev.br/#organizacao"})
+        self.assertNotIn("author", case)
 
 
 class TestHome(Base):
@@ -136,15 +136,12 @@ class TestHome(Base):
 
 
 class TestPortfolio(Base):
-    def test_sem_js_filtro_hidden_e_todos_listados(self):
+    def test_projetos_sem_filtro_por_pessoa(self):
         txt = ler(self.saida / "projetos/index.html")
-        botoes = re.findall(r"<button\b[^>]*data-filtro[^>]*>", txt)
-        self.assertEqual(len(botoes), 3)
-        for b in botoes:
-            self.assertRegex(b, r"\shidden[\s>]")
-        self.assertEqual(len(AUTORES.findall(txt)), len(self.visiveis))
-        self.assertIn('data-autores="rosiel"', txt)
-        self.assertIn('data-autores="caio"', txt)
+        self.assertNotIn('data-filtro="caio"', txt)
+        self.assertNotIn('data-filtro="rosiel"', txt)
+        achados = re.findall(r'class="cartao-projeto"[^>]*data-slug="([^"]+)"', txt)
+        self.assertEqual(achados, [p.slug for p in self.visiveis])
 
     def test_resultado_omitido_quando_none(self):
         for p in self.visiveis:
@@ -153,7 +150,7 @@ class TestPortfolio(Base):
 
     def test_linha_mono_do_case(self):
         txt = ler(self.saida / "projetos/heisuca/index.html")
-        self.assertIn("app · 2026 · Caio Guerras · no ar", txt)
+        self.assertIn("app · 2026 · no ar", txt)
 
 
 class TestPerfis(Base):
@@ -165,10 +162,21 @@ class TestPerfis(Base):
         for slug in ("caio", "rosiel"):
             self.assertIn('data-molde="perfil"', ler(self.saida / slug / "index.html"))
 
-    def test_perfil_lista_so_os_projetos_do_autor(self):
-        txt = ler(self.saida / "rosiel/index.html")
-        self.assertIn("/projetos/prosup/", txt)
-        self.assertNotIn("/projetos/heisuca/", txt)
+    def test_perfil_lista_todos_os_projetos_sob_fizemos_juntos(self):
+        links = {}
+        for slug in ("caio", "rosiel"):
+            txt = ler(self.saida / slug / "index.html")
+            secao = re.search(r'<section class="perfil-projetos".*?</section>', txt, re.S).group(0)
+            self.assertRegex(secao, r"<h2>[^<]*Fizemos juntos[^<]*</h2>")
+            links[slug] = set(re.findall(r'href="(/projetos/[^/"]+/)"', secao))
+        self.assertEqual(links["caio"], links["rosiel"])
+        self.assertEqual(links["caio"], {f"/projetos/{p.slug}/" for p in self.visiveis})
+
+    def test_nenhuma_pagina_tem_selo_de_autor(self):
+        for arq in self.saida.rglob("*.html"):
+            txt = ler(arq)
+            for marca in ("selo-caio", "selo-rosiel", "data-autor"):
+                self.assertNotIn(marca, txt, f"{marca} em {arq}")
 
 
 class TestVetado(unittest.TestCase):
@@ -176,7 +184,7 @@ class TestVetado(unittest.TestCase):
         raiz = gerar_copia(self, lambda ps: ps + [
             modelo(ps, slug="visivel-ok", nome="Visivel Ok", rascunho=False),
             modelo(ps, slug="segredo-vetado", nome="Segredo Vetado", visivel=False, destaque=True,
-                   rascunho=False, autores=["caio", "rosiel"])])
+                   rascunho=False)])
         # controle positivo: o visível aparece em todos os pontos
         visivel = "visivel-ok"
         for pagina in ("index.html", "projetos/index.html", "caio/index.html", "sitemap.xml"):
@@ -244,11 +252,11 @@ class TestAno(unittest.TestCase):
             modelo(ps, slug="sem-ano", nome="Sem Ano", ano=None, rascunho=False),
             modelo(ps, slug="com-ano", nome="Com Ano", ano=2031, rascunho=False)])
         txt = ler(raiz / "projetos/sem-ano/index.html")
-        self.assertIn("app · Caio Guerras · no ar", txt)
+        self.assertIn("app · no ar", txt)
         self.assertNotIn("None", txt)
         self.assertNotIn("· 2026", txt)
         com = ler(raiz / "projetos/com-ano/index.html")
-        self.assertIn("app · 2031 · Caio Guerras · no ar", com)
+        self.assertIn("app · 2031 · no ar", com)
         ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', txt, re.S).group(1)
         self.assertNotRegex(ld, r"\b(19|20)\d\d\b")
         self.assertNotIn("None", ler(raiz / "projetos/index.html"))
@@ -308,8 +316,11 @@ class TestPerfilConteudo(Base):
 class TestServicosSemSeloDePessoa(Base):
     """Decisão 1: serviço é da equipe; selo de pessoa só em projeto, case e hero."""
 
-    def test_quem_toca_continua_nos_dados(self):
-        self.assertTrue(all(s.quem_toca for s in self.dados.servicos))
+    def test_servico_tem_tipo_e_nao_quem_toca(self):
+        mapa = {"criacao-de-sites-institucionais": "site", "landing-page-conversao": "site",
+                "aplicativo-mobile-react-native": "app", "bots-whatsapp-automacao": "automacao",
+                "automacoes-integracoes-api": "automacao", "desenvolvimento-mvp-startups": "produto"}
+        self.assertEqual({s.slug: s.tipo for s in self.dados.servicos}, mapa)
 
     def test_cartoes_de_servico_da_home_sem_selo_nem_degrade(self):
         txt = ler(self.saida / "index.html")
@@ -337,12 +348,6 @@ class TestServicosSemSeloDePessoa(Base):
             self.assertRegex(txt, r'class="breadcrumb-current">[^<]+</span>\s*</div>\s*<section class="servico-hero">', s.slug)
         css = ler(REPO / "css" / "site.css")
         self.assertIn("main > .breadcrumb + section { border-top: 0; }", css)
-
-    def test_selo_de_autor_continua_nos_projetos(self):
-        txt = ler(self.saida / "index.html")
-        destaque = re.search(r'<article class="cartao-destaque[^"]*"[^>]*data-slug="prosup".*?</article>', txt, re.S)
-        self.assertIsNotNone(destaque)
-        self.assertIn('class="selo selo-rosiel"', destaque.group(0))
 
 
 class TestTextosNovos(Base):
@@ -481,7 +486,6 @@ class TestCasesReais(Base):
             self.assertFalse(p.rascunho, slug)
             self.assertTrue(p.destaque, slug)
             self.assertTrue(p.visivel, slug)
-            self.assertEqual(p.autores, ("rosiel",), slug)
 
     def test_heisuca_continua_rascunho_sem_link_nem_imagens(self):
         h = self.proj("heisuca")
@@ -501,7 +505,7 @@ class TestCasesReais(Base):
     def test_fakly(self):
         p = self.proj("fakly")
         self.assertEqual((p.tipo, p.situacao, p.ano, p.link),
-                         ("ferramenta", "no ar", 2025, "https://misterioso013.github.io/fakly/"))
+                         ("produto", "no ar", 2025, "https://misterioso013.github.io/fakly/"))
         self.assertEqual(p.stack, ("HTML", "CSS", "JavaScript"))
         self.assertEqual(len(p.fizemos), 4)
         self.assertEqual(p.imagens, ("assets/images/fakly.png",))
@@ -517,10 +521,10 @@ class TestCasesReais(Base):
         self.assertEqual(p.imagens, ("assets/images/sendany.png",))
 
     def test_linha_mono_e_botao_de_cada_case(self):
-        esperado = {"prosup": ("app · 2026 · Rosiel Victor · no ar", "Ver ProsUp no ar", "https://prosup.app"),
-                    "fakly": ("ferramenta · 2025 · Rosiel Victor · no ar", "Ver Fakly no ar",
+        esperado = {"prosup": ("app · 2026 · no ar", "Ver ProsUp no ar", "https://prosup.app"),
+                    "fakly": ("produto · 2025 · no ar", "Ver Fakly no ar",
                               "https://misterioso013.github.io/fakly/"),
-                    "sendany": ("produto · 2025 · Rosiel Victor · no ar", "Ver SendAny no ar",
+                    "sendany": ("produto · 2025 · no ar", "Ver SendAny no ar",
                                 "https://sendany.all.dev.br")}
         for slug, (linha, botao, url) in esperado.items():
             txt = ler(self.saida / "projetos" / slug / "index.html")
@@ -535,10 +539,14 @@ class TestCasesReais(Base):
         self.assertIn('<meta name="robots" content="noindex">', ler(self.saida / "projetos/heisuca/index.html"))
         self.assertNotIn("/projetos/heisuca/", mapa)
 
-    def test_sem_amott_em_lugar_nenhum(self):
+    def test_amott_so_como_case(self):
+        if not any(p.slug == "amott" for p in self.dados.projetos):
+            self.skipTest("o case amott chega na Task 2")
+        permitidos = {"index.html", "projetos/index.html", "assets/paleta.json"}
         for arq in self.saida.rglob("*"):
-            if arq.is_file() and arq.suffix in {".html", ".xml", ".txt", ".json"}:
-                self.assertNotIn("amott", ler(arq).lower(), arq)
+            rel = arq.relative_to(self.saida).as_posix()
+            if arq.is_file() and arq.suffix in {".html", ".xml", ".txt", ".json"} and "amott" in ler(arq).lower():
+                self.assertTrue(rel in permitidos or rel.startswith("projetos/amott/") or rel == "sitemap.xml", rel)
 
 
 class TestImagensDosCases(Base):

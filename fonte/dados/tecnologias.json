@@ -1,0 +1,70 @@
+[
+  {
+    "nome": "HTML",
+    "grupo": "front"
+  },
+  {
+    "nome": "CSS",
+    "grupo": "front"
+  },
+  {
+    "nome": "JavaScript",
+    "grupo": "front"
+  },
+  {
+    "nome": "TypeScript",
+    "grupo": "front"
+  },
+  {
+    "nome": "React",
+    "grupo": "front"
+  },
+  {
+    "nome": "Next.js",
+    "grupo": "front"
+  },
+  {
+    "nome": "Tailwind CSS",
+    "grupo": "front"
+  },
+  {
+    "nome": "React Native",
+    "grupo": "mobile"
+  },
+  {
+    "nome": "Node.js",
+    "grupo": "back"
+  },
+  {
+    "nome": "AWS Lambda",
+    "grupo": "nuvem"
+  },
+  {
+    "nome": "API Gateway",
+    "grupo": "nuvem"
+  },
+  {
+    "nome": "Cognito",
+    "grupo": "nuvem"
+  },
+  {
+    "nome": "SNS",
+    "grupo": "nuvem"
+  },
+  {
+    "nome": "S3",
+    "grupo": "nuvem"
+  },
+  {
+    "nome": "Secrets Manager",
+    "grupo": "nuvem"
+  },
+  {
+    "nome": "DynamoDB",
+    "grupo": "dados"
+  },
+  {
+    "nome": "PostgreSQL",
+    "grupo": "dados"
+  }
+]
