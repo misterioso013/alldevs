@@ -24,8 +24,12 @@ if [ -n "$ENSAIO" ]; then
   echo "rsync -a --delete --dry-run -e 'ssh -p $P' $T/ $V:$DEST"
   exit 0
 fi
-ssh -p $P $V "mkdir -p $DEST"
+QD="$(printf %q "$DEST")"
+ssh -p $P $V "mkdir -p $QD"
 rsync -a --delete -e "ssh -p $P" "$T/" "$V:$DEST"
-ssh -p $P $V 'chmod -R a+rX /var/www/alldevs-previa'
-curl -s -o /dev/null -w "alldevs.docaio.com.br → HTTP %{http_code}\n" "$SITE"
-curl -sI "$SITE" | grep -i '^x-robots-tag' || echo "AVISO: sem X-Robots-Tag (falta o server_name no nginx?)"
+ssh -p $P $V "chmod -R a+rX $QD"
+COD="$(curl -s -o /dev/null -w '%{http_code}' "$SITE" || true)"
+echo "alldevs.docaio.com.br → HTTP $COD"
+[ "$COD" = "200" ] || { echo "ERRO: esperava HTTP 200, veio $COD" >&2; exit 1; }
+curl -sI "$SITE" | grep -qi '^x-robots-tag:.*noindex' || { echo "ERRO: sem X-Robots-Tag noindex (falta o server_name no nginx?)" >&2; exit 1; }
+echo "ok: 200 e x-robots-tag noindex"

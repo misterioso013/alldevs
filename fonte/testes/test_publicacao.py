@@ -4,7 +4,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 CONFIG = REPO / "_config.yml"
-EXCLUIDOS = ["docs", "bancada", "fonte", "README.md"]
+EXCLUIDOS = ["docs", "bancada", "bin", "fonte", "README.md"]
 
 
 class PublicacaoTest(unittest.TestCase):

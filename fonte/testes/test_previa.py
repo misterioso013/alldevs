@@ -29,15 +29,17 @@ class PublicarPreviaTest(unittest.TestCase):
         self.assertIn("--dry-run", r.stdout)
         self.assertIn("/var/www/alldevs-previa/", r.stdout)
 
+    def test_verifica_200_e_noindex_e_quota_o_destino(self):
+        t = SCRIPT.read_text("utf-8")
+        self.assertIn("printf %q", t)
+        self.assertIn("noindex", t.split("rsync -a --delete -e")[1])
+        self.assertIn("exit 1", t.split("rsync -a --delete -e")[1])
+
     def test_recusa_destino_fora_da_previa(self):
         for d in ("/var/www/outro/", "/var/www/alldevs-previa/../x/", "/var/www/alldevs-previa"):
             r = rodar("--ensaio", DEST=d)
             self.assertNotEqual(r.returncode, 0, d)
             self.assertIn("destino inesperado", r.stderr)
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 class BancadaMetasTest(unittest.TestCase):
@@ -54,3 +56,7 @@ class BancadaMetasTest(unittest.TestCase):
         self.assertIn("setCPUThrottlingRate", self.t)
         self.assertIn("fps >= 50", self.t)
         self.assertIn("fps:", self.t)
+
+
+if __name__ == "__main__":
+    unittest.main()
