@@ -873,8 +873,8 @@ html.lenis body { height: auto; }
   font-size: 0.95rem;
   line-height: 1.45;
 }
-.balao-a { justify-self: start; border-color: var(--roxo-claro); border-bottom-left-radius: 4px; }
-.balao-b { justify-self: end; border-color: var(--laranja-claro); border-bottom-right-radius: 4px; }
+.balao-a { justify-self: start; border-bottom-left-radius: 4px; }   /* o lado distingue quem fala; sem cor por sócio */
+.balao-b { justify-self: end; border-bottom-right-radius: 4px; background: var(--fundo); }
 
 .ideia-rabisco { display: block; width: 100%; max-width: 440px; height: auto; }
 .ideia-rabisco path,
@@ -911,12 +911,27 @@ html.lenis body { height: auto; }
   overflow-x: auto;
   border: 1px solid var(--linha);
   border-radius: 12px;
-  background: var(--fundo-2);
+  background-color: var(--fundo-2);
   font-family: var(--fonte-mono);
   font-size: 0.8rem;
   line-height: 1.6;
   color: var(--texto);
 }
+/* Rolagem horizontal visível: sombra na borda que ainda tem código para ler (some quando a rolagem chega ao fim). */
+.ideia-codigo {
+  background-image:
+    linear-gradient(to right, var(--fundo-2) 30%, transparent),
+    linear-gradient(to left, var(--fundo-2) 30%, transparent),
+    linear-gradient(to right, color-mix(in srgb, var(--texto) 28%, transparent), transparent),
+    linear-gradient(to left, color-mix(in srgb, var(--texto) 28%, transparent), transparent);
+  background-position: left center, right center, left center, right center;
+  background-size: 32px 100%, 32px 100%, 14px 100%, 14px 100%;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
+.ideia-estagio:focus-visible { outline: 2px solid var(--roxo-claro); outline-offset: 6px; border-radius: 4px; }
+.ideia-codigo:focus-visible { outline: 2px solid var(--roxo-claro); outline-offset: 2px; }
+@media (max-width: 539px) { .ideia-codigo { padding: 16px; font-size: 0.72rem; } }
 .ideia-codigo code { display: block; font-family: inherit; width: max-content; min-width: 100%; }
 
 .ideia-visual:has(.ideia-frente) { display: grid; gap: 24px; align-items: center; justify-items: start; }
@@ -944,3 +959,6 @@ html.lenis body { height: auto; }
 .ideia-pin .ideia-estagios { flex: 1; gap: 0; }
 .ideia-pin .ideia-estagio { grid-area: 1 / 1; opacity: 0; }
 .ideia-pin .ideia-estagio:not(.ativo) { pointer-events: none; }
+/* Cabe em 1280×600: a figura (captura da loja) é limitada pela altura da janela; width/height do <img> seguram o CLS. */
+.ideia-pin .ideia-frente { width: fit-content; max-width: 100%; }
+.ideia-pin .ideia-frente img { width: auto; max-width: 100%; max-height: min(52vh, 440px); }

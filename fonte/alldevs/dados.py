@@ -231,6 +231,11 @@ def _por_tras(rot, pt, raiz, e):
         return
     if tipo != "codigo":
         return
+    _trecho(rot, arq, raiz, e)
+
+
+def _trecho(rot, arq, raiz, e):
+    """Limites (24 linhas, 72 colunas) e varredura de segredos de um trecho de código (por_tras e ideia.json)."""
     linhas = (raiz / arq).read_text(encoding="utf-8").splitlines()
     if not any(l.strip() for l in linhas):
         e(f"{rot}: {arq} sem nenhuma linha com código")
@@ -242,6 +247,54 @@ def _por_tras(rot, pt, raiz, e):
         for classe, padrao in RE_SEGREDO:
             if padrao.search(linha):
                 e(f"{rot}: {arq}:{n} parece conter {classe}")
+
+
+ESTAGIOS_IDEIA = ["conversa", "encontro", "prototipo", "codigo", "no-ar"]
+PASTA_TRECHOS = "fonte/conteudo/por-tras/"
+
+
+def validar_ideia(dados: Dados, raiz: Path) -> list:
+    """Erros de fonte/conteudo/ideia.json (lista vazia = ok). Sem o arquivo, a seção não existe e não há o que validar."""
+    ideia, raiz, erros = dados.ideia, Path(raiz), []
+    if not ideia:
+        return erros
+    e = lambda m: erros.append(f"ideia.json: {m}")
+    proj = next((p for p in dados.projetos if p.slug == ideia.get("projeto")), None)
+    if proj is None:
+        e(f"projeto inexistente: {ideia.get('projeto')!r}")
+    elif not proj.visivel:
+        e(f"projeto {proj.slug} não é visível")
+    estagios = ideia.get("estagios")
+    if not isinstance(estagios, list) or [x.get("chave") if isinstance(x, dict) else None for x in estagios] != ESTAGIOS_IDEIA:
+        e(f"estágios devem ser, nesta ordem: {', '.join(ESTAGIOS_IDEIA)}")
+        return erros
+    for x in estagios:
+        for k in ("titulo", "texto"):
+            if not (isinstance(x.get(k), str) and x[k].strip()):
+                e(f"estágio {x['chave']}: campo {k} ausente ou vazio")
+    campos = {"prototipo": ("fonte",), "codigo": ("arquivo",), "no-ar": ("link", "resultado")}
+    for x in estagios:
+        for k in campos.get(x["chave"], ()):
+            if not (isinstance(x.get(k), str) and x[k].strip()):
+                e(f"estágio {x['chave']}: campo {k} ausente ou vazio")
+    msgs = estagios[0].get("mensagens")
+    if not (isinstance(msgs, list) and msgs and all(isinstance(m, dict) and m.get("de") and m.get("texto") for m in msgs)):
+        e("estágio conversa: mensagens deve ser uma lista não vazia de {de, texto}")
+    elif len({m["de"] for m in msgs}) > 2:
+        e(f"estágio conversa: no máximo 2 interlocutores (vieram {len({m['de'] for m in msgs})})")
+    link = estagios[4].get("link")
+    if isinstance(link, str) and link and not link.startswith("https://"):
+        e(f"estágio no-ar: link deve começar com https:// (veio {link!r})")
+    arq = estagios[3].get("arquivo")
+    if isinstance(arq, str) and arq:
+        rot = "ideia.json estágio codigo"
+        if ".." in Path(arq).parts or Path(arq).is_absolute() or not (arq.startswith(PASTA_TRECHOS) and arq.endswith(".txt")):
+            erros.append(f"{rot}: arquivo deve ser .txt em {PASTA_TRECHOS} (veio {arq!r})")
+        elif not (raiz / arq).is_file():
+            erros.append(f"{rot}: arquivo inexistente: {arq}")
+        else:
+            _trecho(rot, arq, raiz, erros.append)
+    return erros
 
 
 def validar(dados: Dados, raiz: Path):
@@ -347,4 +400,5 @@ def validar(dados: Dados, raiz: Path):
 
     if not (raiz / "assets" / "og" / "site.png").is_file():
         a("falta assets/og/site.png")
+    erros += validar_ideia(dados, raiz)
     return erros, avisos

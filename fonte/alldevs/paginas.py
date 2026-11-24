@@ -1,11 +1,13 @@
 """Monta as páginas do site a partir dos dados e dos moldes."""
 import json
+import re
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
 from . import contato, seo
-from .dados import Dados
+from . import dados as dados_mod
+from .dados import Dados, ErroDeDados
 from .dados import ler_por_tras, visiveis
 from .modelos import Seguro, esc, render
 
@@ -271,7 +273,7 @@ def _est_codigo(raiz: Path, e: dict) -> str:
     texto = (Path(raiz) / e["arquivo"]).read_text(encoding="utf-8")
     # "#" vira entidade: o checar.py varre o HTML atrás de cor solta (#fff) e um comentário de código não é cor.
     return (f'<pre class="ideia-codigo" role="region" aria-label="Trecho do código" tabindex="0">'
-            f'<code>{esc(texto.replace("#", chr(0xE000))).replace(chr(0xE000), "&#35;")}</code></pre>')
+            f'<code>{re.sub(r"(?<!&)#", "&#35;", esc(texto))}</code></pre>')
 
 
 def _est_no_ar(proj, e: dict, raiz: Path) -> str:
@@ -293,6 +295,9 @@ def _ideia(dados: Dados, raiz: Path) -> Seguro:
     ideia = dados.ideia
     if not ideia:
         return Seguro("")
+    erros = dados_mod.validar_ideia(dados, raiz)
+    if erros:
+        raise ErroDeDados("; ".join(erros))
     proj = next(p for p in dados.projetos if p.slug == ideia["projeto"])
     itens = []
     for e in ideia["estagios"]:

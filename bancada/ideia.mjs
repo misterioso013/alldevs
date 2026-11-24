@@ -1,5 +1,5 @@
 // Bancada da seção "Da ideia ao ar". Uso: node bancada/ideia.mjs --url <base> [--capturas <pasta>] [--so <regex>]
-// Cenários: desktop-pin, celular-sem-pin, reduzido, cls. Um por linha ("ok" ou "FALHA"); rc 1 se algum falhar.
+// Cenários: desktop-pin, estados-por-progresso, estado-inicial, foco-vaza, foco-teclado, cabe-1280x600, codigo-celular, celular-sem-pin, reduzido, sem-js, cls. Um por linha ("ok" ou "FALHA"); rc 1 se algum falhar.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -40,13 +40,18 @@ async function abre(opts, fn) {
   } finally { await ctx.close(); }
 }
 
-// Rola até a fração (0..1) do percurso do pin (desktop) e espera o scrub assentar.
+// Rola até a fração (0..1) do percurso do pin (desktop) e espera o scrub assentar (timeline alcança o progresso do scroll).
+const assenta = (p) => p.waitForFunction(() => {
+  const st = window.ScrollTrigger.getAll().find((s) => s.pin);
+  return Math.abs(st.animation.progress() - st.progress) < 0.004;
+}, null, { timeout: 8000 });
 const noPin = async (p, f) => {
   await p.evaluate((f) => {
     const st = window.ScrollTrigger.getAll().find((s) => s.pin);
-    window.scrollTo(0, st.start + (st.end - st.start) * f);
+    window.scrollTo({ top: st.start + (st.end - st.start) * f, behavior: 'instant' });
   }, f);
-  await dorme(1200);
+  await p.waitForTimeout(80);
+  await assenta(p);
 };
 const info = (p) => p.evaluate((SEC) => {
   const s = document.querySelector(SEC), r = s.getBoundingClientRect();
@@ -61,6 +66,7 @@ const info = (p) => p.evaluate((SEC) => {
   };
 }, SEC);
 
+const clipAberto = (c) => !!c && /^inset\(/.test(c) && c.slice(6, -1).split(/\s+/).every((v) => /^0(px|%)?$/.test(v));
 const defs = [];
 const cena = (nome, fn) => defs.push([nome, fn]);
 
@@ -75,6 +81,132 @@ cena('desktop-pin', (det) => abre(DESK, async (p) => {
   det(`presa (fixed, top ${a.top}); ativo ${a.ativo} -> ${b.ativo} -> ${c.ativo}; opacidades no meio ${b.op.join('/')}`);
 }));
 
+cena('estados-por-progresso', (det) => abre(DESK, async (p) => {
+  const ativos = [], cod = [];
+  for (const f of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+    await noPin(p, f);
+    const i = await info(p);
+    ativos.push(i.ativo);
+    cod.push(await p.evaluate(() => {
+      const c = document.querySelector('#ideia .ativo .ideia-codigo code');
+      return c ? getComputedStyle(c).clipPath : null;
+    }));
+    const op = i.op[i.ativo];
+    if (op !== '1.00') throw new Error(`estágio ${i.ativo} com opacidade ${op} em ${f}`);
+  }
+  if (ativos.join() !== '0,1,2,3,4') throw new Error('ativos por progresso: ' + ativos.join());
+  const c3 = cod[3];
+  if (!clipAberto(c3)) throw new Error('código não está 100% revelado no estágio do código: ' + c3);
+  det(`ativo ${ativos.join('/')}; clip-path do código no estágio 3: ${c3}`);
+}));
+
+cena('estado-inicial', (det) => abre(DESK, async (p) => {
+  await noPin(p, 0.9);
+  await p.reload({ waitUntil: 'networkidle' });
+  await esperaPreloader(p);
+  await p.waitForFunction(() => document.querySelector('#ideia.ideia-pin'));
+  await assenta(p);
+  const r = await p.evaluate(() => {
+    const lis = [...document.querySelectorAll('#ideia .ideia-estagio')];
+    const a = document.querySelector('#ideia .ideia-estagio[data-chave="no-ar"] a');
+    const b = a.getBoundingClientRect();
+    const el = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+    return { ativo: lis.findIndex((e) => e.classList.contains('ativo')), noAr: lis[4].classList.contains('ativo'), link: el === a || a.contains(el), top: Math.round(b.top), y: Math.round(scrollY) };
+  });
+  if (!r.noAr || !r.link) throw new Error('reload rolado: estado inicial errado ' + JSON.stringify(r));
+  det(`reload a 90%: ativo ${r.ativo}, elementFromPoint no link = link (scrollY ${r.y})`);
+}));
+
+cena('foco-vaza', (det) => abre(DESK, async (p) => {
+  await p.waitForFunction(() => document.querySelector('#ideia.ideia-pin'));
+  await p.setViewportSize({ width: 800, height: 900 });
+  await p.waitForFunction(() => !document.querySelector('#ideia.ideia-pin'));
+  const antes = await p.evaluate(() => scrollY);
+  await p.evaluate(() => document.querySelector('#ideia .ideia-codigo').focus({ preventScroll: true }));
+  await p.waitForTimeout(400);
+  const depois = await p.evaluate(() => scrollY);
+  if (Math.abs(antes - depois) > 1) throw new Error(`o foco rolou a página depois do cleanup (${antes} -> ${depois})`);
+  det(`scrollY ${antes} -> ${depois} ao focar o pre a 800 px`);
+}));
+
+cena('foco-teclado', (det) => abre(DESK, async (p) => {
+  await p.waitForFunction(() => document.querySelector('#ideia.ideia-pin'));
+  // elemento focável imediatamente antes da seção
+  await p.evaluate(() => {
+    const sec = document.querySelector('#ideia');
+    const todos = [...document.querySelectorAll('a[href], button, input, [tabindex]:not([tabindex="-1"])')];
+    const ant = todos.filter((e) => !sec.contains(e) && (sec.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_PRECEDING) && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden').pop();
+    ant.focus({ preventScroll: true });
+    if (document.activeElement !== ant) throw new Error('não consegui focar o elemento anterior à seção');
+    window.__ant = ant;
+  });
+  const estado = () => p.evaluate(() => {
+    const a = document.activeElement, sec = document.querySelector('#ideia');
+    const li = a && a.closest ? a.closest('.ideia-estagio') : null;
+    const cod = li && li.querySelector('.ideia-codigo code');
+    const vis = (() => {
+      if (!li) return null;
+      const r = a.getBoundingClientRect();
+      return r.width > 0 && r.top >= 0 && r.bottom <= innerHeight + 1;
+    })();
+    return { tag: a.tagName.toLowerCase() + (a.className ? '.' + String(a.className).split(' ')[0] : ''), dentro: sec.contains(a),
+      chave: li && li.dataset.chave, ativo: !!(li && li.classList.contains('ativo')), op: li ? getComputedStyle(li).opacity : null,
+      clip: cod ? getComputedStyle(cod).clipPath : null, vis };
+  });
+  const visitas = [];
+  let achouPre = null, achouLink = null;
+  for (let t = 0; t < 20 && !(achouPre && achouLink); t++) {
+    await p.keyboard.press('Tab');
+    await p.waitForTimeout(80);
+    await assenta(p);
+    const e = await estado();
+    visitas.push(`${e.chave || 'fora'}:${e.tag}`);
+    if (e.tag === 'pre.ideia-codigo') achouPre = e;
+    if (e.tag === 'a.ideia-ver' || (e.chave === 'no-ar' && e.tag.startsWith('a'))) achouLink = e;
+  }
+  if (!achouPre) throw new Error('Tab não alcançou o pre do código: ' + visitas.join(' > '));
+  if (!achouPre.ativo || achouPre.op !== '1' || !clipAberto(achouPre.clip) || !achouPre.vis)
+    throw new Error('pre focado sem estágio 100% legível: ' + JSON.stringify(achouPre));
+  if (!achouLink) throw new Error('Tab não alcançou o link: ' + visitas.join(' > '));
+  if (!achouLink.ativo || achouLink.op !== '1' || !achouLink.vis) throw new Error('link focado sem estágio legível: ' + JSON.stringify(achouLink));
+  // Shift+Tab volta ao pre
+  await p.keyboard.press('Shift+Tab'); await p.waitForTimeout(80); await assenta(p);
+  const volta = await estado();
+  det(`Tab: ${visitas.join(' > ')}; pre ativo, opacidade 1, clip ${achouPre.clip}; link ativo, opacidade 1; Shift+Tab volta a ${volta.chave}:${volta.tag}`);
+}));
+
+cena('cabe-1280x600', (det) => abre({ viewport: { width: 1280, height: 600 } }, async (p) => {
+  await p.waitForFunction(() => document.querySelector('#ideia.ideia-pin'));
+  await noPin(p, 0.9);
+  const r = await p.evaluate(() => {
+    const a = document.querySelector('#ideia .ideia-estagio[data-chave="no-ar"] a'), b = a.getBoundingClientRect();
+    const f = document.querySelector('#ideia .ideia-estagio[data-chave="no-ar"] .ideia-frente');
+    const fr = f ? f.getBoundingClientRect() : null;
+    return { bottom: Math.round(b.bottom), alt: innerHeight, figTop: fr && Math.round(fr.top), figBottom: fr && Math.round(fr.bottom) };
+  });
+  if (r.bottom > r.alt || (r.figBottom !== null && r.figBottom > r.alt)) throw new Error('o estágio no-ar (link ou figura) passa do viewport: ' + JSON.stringify(r));
+  det(`link bottom ${r.bottom} <= ${r.alt}; figura ${r.figTop}..${r.figBottom}`);
+}));
+
+cena('codigo-celular', async (det) => {
+  const partes = [];
+  for (const w of [430, 360]) {
+    await abre(MOVEL(w), async (p) => {
+      const r = await p.evaluate(() => {
+        const pre = document.querySelector('#ideia .ideia-codigo');
+        const c = getComputedStyle(pre);
+        return { sw: pre.scrollWidth, cw: pre.clientWidth, tab: pre.getAttribute('tabindex'), rotulo: pre.getAttribute('aria-label'),
+          grad: (c.backgroundImage.match(/gradient/g) || []).length, fonte: c.fontSize };
+      });
+      const cabe = r.sw <= r.cw;
+      const indicador = r.grad >= 2 && r.tab === '0' && !!r.rotulo;
+      if (!cabe && !indicador) throw new Error(`${w} px: código corta e sem indicador/foco: ` + JSON.stringify(r));
+      partes.push(`${w} px: ${cabe ? 'cabe' : `rola (${r.sw}>${r.cw}), ${r.grad} gradientes de borda, tabindex ${r.tab}`}, fonte ${r.fonte}`);
+    });
+  }
+  det(partes.join('; '));
+});
+
 cena('celular-sem-pin', (det) => abre(MOVEL(360), async (p) => {
   const total = await p.evaluate(() => document.documentElement.scrollHeight);
   for (let y = 0; y < total; y += 300) { await p.evaluate((y) => window.scrollTo(0, y), y); await dorme(120); }
@@ -87,6 +219,11 @@ cena('celular-sem-pin', (det) => abre(MOVEL(360), async (p) => {
 }));
 
 cena('reduzido', (det) => abre({ ...DESK, reducedMotion: 'reduce' }, async (p) => {
+  await p.evaluate(() => document.querySelector('#ideia').scrollIntoView({ behavior: 'instant' }));
+  await p.waitForFunction(() => { const h = document.querySelector('#ideia h2'); return h && Number(getComputedStyle(h).opacity) === 1; }, null, { timeout: 5000 })
+    .catch(() => { throw new Error('h2 da seção não chegou a opacidade 1 com reduced-motion'); });
+  const cab = await p.evaluate(() => ['#ideia h2', '#ideia .ideia-intro'].map((q) => { const e = document.querySelector(q), c = getComputedStyle(e), b = e.getBoundingClientRect(); return [q, c.opacity, b.height > 0]; }));
+  if (cab.some((x) => x[1] !== '1' || !x[2])) throw new Error('cabeçalho da seção invisível com reduced-motion: ' + JSON.stringify(cab));
   const i = await info(p);
   const r = await p.evaluate((SEC) => [...document.querySelectorAll(SEC + ' .ideia-estagio')].map((e) => {
     const c = getComputedStyle(e), cod = e.querySelector('.ideia-codigo'), b = e.getBoundingClientRect();
@@ -94,8 +231,24 @@ cena('reduzido', (det) => abre({ ...DESK, reducedMotion: 'reduce' }, async (p) =
   }), SEC);
   if (i.pin || i.spacer || i.oculto || i.visto) throw new Error('animação ligada com reduced-motion: ' + JSON.stringify(i));
   if (r.length !== 5 || r.some((x) => !x.vis || x.op !== '1' || x.tr !== 'none' || x.clip !== 'none')) throw new Error('estágios não estão estáticos: ' + JSON.stringify(r));
-  det('5 estágios visíveis, opacidade 1, sem transform, sem clip-path, sem pin');
+  det('5 estágios, h2 e intro visíveis com opacidade 1, sem transform, sem clip-path, sem pin');
 }));
+
+cena('sem-js', async (det) => {
+  const ctx = await navegador.newContext({ ...DESK, javaScriptEnabled: false });
+  try {
+    const p = await ctx.newPage();
+    await p.goto(base + '/', { waitUntil: 'load' });
+    const r = await p.evaluate(() => {
+      const sec = document.querySelector('#ideia');
+      const vis = (e) => { const c = getComputedStyle(e), b = e.getBoundingClientRect(); return c.visibility !== 'hidden' && c.display !== 'none' && b.height > 0 && Number(c.opacity) > 0.99; };
+      return { estagios: [...sec.querySelectorAll('.ideia-estagio')].map((e) => vis(e) && !e.hasAttribute('inert') && e.getAttribute('aria-hidden') !== 'true'),
+        h2: vis(sec.querySelector('h2')), intro: vis(sec.querySelector('.ideia-intro')), pin: sec.classList.contains('ideia-pin') };
+    });
+    if (r.estagios.length !== 5 || r.estagios.some((v) => !v) || !r.h2 || !r.intro || r.pin) throw new Error('sem JS a seção não ficou legível: ' + JSON.stringify(r));
+    det('JS desligado: 5 estágios, h2 e intro visíveis, sem pin');
+  } finally { await ctx.close(); }
+});
 
 cena('cls', async (det) => {
   const medidas = [];
@@ -116,8 +269,16 @@ cena('cls', async (det) => {
 async function tiraCapturas(pasta) {
   fs.mkdirSync(pasta, { recursive: true });
   await abre(DESK, async (p) => {
-    await noPin(p, 0.7);   // estágio do código, no meio da digitação
-    await p.screenshot({ path: path.join(pasta, 'ideia-1440.png') });
+    const chaves = ['conversa', 'encontro', 'prototipo', 'codigo', 'no-ar'];
+    for (let i = 0; i < 5; i++) {
+      await noPin(p, (i + 0.6) / 5);   // estágio i 100% revelado
+      await p.screenshot({ path: path.join(pasta, `ideia-1440-${chaves[i]}.png`) });
+    }
+  });
+  await abre({ viewport: { width: 1280, height: 600 } }, async (p) => {
+    await p.waitForFunction(() => document.querySelector('#ideia.ideia-pin'));
+    await noPin(p, 0.9);
+    await p.screenshot({ path: path.join(pasta, 'ideia-1280x600-no-ar.png') });
   });
   for (const w of [430, 360]) {
     await abre(MOVEL(w), async (p) => {

@@ -1,6 +1,7 @@
 """Seção #ideia, "Da ideia ao ar" (Task 5): HTML de _ideia, js/ideia.js, o carregamento de ideia.json e a correção do título no site.js."""
 import json
 import re
+import dataclasses
 import html as html_lib
 import shutil
 import tempfile
@@ -22,11 +23,109 @@ def _secao() -> str:
     return str(paginas._ideia(dados_mod.carregar(REPO), REPO))
 
 
+class _Lis(HTMLParser):
+    """Extrai cada <li class="ideia-estagio"> inteiro, da abertura ao </li> correspondente (os <li> dos balões aninham)."""
+    def __init__(self, html):
+        super().__init__()
+        self.html, self.achados, self.prof, self.ini, self.chave = html, {}, 0, None, None
+        self.ls = [0]
+        for linha in html.splitlines(keepends=True):
+            self.ls.append(self.ls[-1] + len(linha))
+        self.feed(html)
+
+    def _pos(self):
+        l, c = self.getpos()
+        return self.ls[l - 1] + c
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "li":
+            return
+        a = dict(attrs)
+        if self.prof == 0 and "ideia-estagio" in (a.get("class") or "").split():
+            self.ini, self.chave = self._pos(), a.get("data-chave")
+        if self.ini is not None:
+            self.prof += 1
+
+    def handle_endtag(self, tag):
+        if tag == "li" and self.ini is not None:
+            self.prof -= 1
+            if self.prof == 0:
+                fim = self.html.index(">", self._pos()) + 1
+                self.achados[self.chave] = self.html[self.ini:fim]
+                self.ini = self.chave = None
+
+
 def _estagio(html: str, chave: str) -> str:
-    """O <li> de um estágio, do início até o próximo estágio (ou o fim da lista)."""
-    i = html.index(f'data-chave="{chave}"')
-    prox = html.find('class="ideia-estagio"', i)
-    return html[i:prox if prox > 0 else len(html)]
+    """O <li class="ideia-estagio"> de uma chave, inteiro."""
+    return _Lis(html).achados[chave]
+
+
+def _pin_so_no_ramo_desk(js: str) -> list:
+    """Problemas de `pin:` em ideia.js: precisa estar dentro do ramo `ctx.conditions.desk`, antes do `return` do cleanup."""
+    ini = js.index("if (ctx.conditions.desk) {")
+    i = js.index("{", ini)
+    prof, fim = 0, None
+    for k in range(i, len(js)):
+        prof += (js[k] == "{") - (js[k] == "}")
+        if prof == 0:
+            fim = k
+            break
+    ramo = js[i:fim]
+    corte = ramo.index("return function")
+    erros = []
+    for m in re.finditer(r"\bpin\s*:", js):
+        if not (i < m.start() < i + corte):
+            erros.append(f"pin: fora do ramo desk, antes do cleanup (posição {m.start()})")
+    if not re.search(r"\bpin\s*:", js[i:i + corte]):
+        erros.append("o ramo desk não tem pin:")
+    return erros
+
+
+ANIMAVEIS = {"opacity", "x", "y", "scaleX", "scaleY", "clipPath", "duration", "ease", "clearProps", "scrollTrigger", "defaults"}
+
+
+def _chaves_animadas(js: str) -> set:
+    """Chaves de 1º nível dos objetos passados a to/fromTo/set/timeline em ideia.js."""
+    chaves = set()
+    for m in re.finditer(r"\b(?:tl|g|gsap)\.(?:to|fromTo|set|timeline)\(|\bg\.(?:to|fromTo|set|timeline)\(", js):
+        i, prof, ini = m.end(), 1, None
+        while i < len(js) and prof > 0:
+            c = js[i]
+            if c in "{[(":
+                if c == "{" and prof == 1:
+                    ini = i
+                prof += 1
+            elif c in "}])":
+                prof -= 1
+                if c == "}" and prof == 1 and ini is not None:
+                    chaves |= _chaves_de_nivel1(js[ini:i + 1])
+                    ini = None
+            i += 1
+    return chaves
+
+
+def _chaves_de_nivel1(obj: str) -> set:
+    out, prof = set(), 0
+    for m in re.finditer(r"[{}\[\]()]|([A-Za-z_]\w*)\s*:(?!:)", obj):
+        t = m.group(0)
+        if t in "{[(":
+            prof += 1
+        elif t in "}])":
+            prof -= 1
+        elif prof == 1 and m.group(1):
+            out.add(m.group(1))
+    return out
+
+
+def _estagios_ocultos(html: str) -> list:
+    """Estágios (li, .ideia-texto, .ideia-visual) marcados como ocultos no HTML gerado."""
+    achados = []
+    for t, a in Tags(html).tags:
+        classes = (a.get("class") or "").split()
+        if t in ("li", "div") and {"ideia-estagio", "ideia-texto", "ideia-visual"} & set(classes):
+            if "hidden" in a or "inert" in a or a.get("aria-hidden") == "true":
+                achados.append((t, classes))
+    return achados
 
 
 class Tags(HTMLParser):
@@ -62,6 +161,19 @@ class TestIdeiaHtml(unittest.TestCase):
         # a lista é filha direta da seção: nenhum invólucro entre as duas
         self.assertRegex(self.html, r'</header>\s*<ol class="ideia-estagios"')
 
+    def test_estagio_extrai_o_li_inteiro(self):
+        for i, chave in enumerate(CHAVES):
+            li = _estagio(self.html, chave)
+            self.assertTrue(li.startswith('<li class="ideia-estagio"'), chave)
+            self.assertTrue(li.endswith("</li>"), chave)
+            self.assertEqual(li.count('data-chave='), 1, chave)
+            for outra in CHAVES:
+                if outra != chave:
+                    self.assertNotIn(f'data-chave="{outra}"', li)
+        self.assertEqual(_estagio(self.html, "conversa").count('class="balao '), 4)
+        self.assertIn("</a>", _estagio(self.html, "no-ar"))
+        self.assertNotIn("<li", _estagio(self.html, "no-ar").replace('<li class="ideia-estagio" data-chave="no-ar">', "", 1))
+
     def test_rotulo_reconstrucao_no_chat(self):
         chat = _estagio(self.html, "conversa")
         self.assertRegex(chat, r'<p class="rotulo-mono ideia-reconstrucao">reconstrução</p>')
@@ -70,7 +182,7 @@ class TestIdeiaHtml(unittest.TestCase):
 
     def test_sem_telegram_no_chat(self):
         chat = _estagio(self.html, "conversa")
-        self.assertNotIn("telegram", chat.lower())
+        self.assertNotIn("telegram", self.html.lower())   # a seção inteira, não só o chat
         self.assertNotIn("<svg", chat)
         self.assertNotIn("<img", chat)
 
@@ -144,6 +256,10 @@ class TestIdeiaHtml(unittest.TestCase):
             self.assertNotIn("hidden", attrs)
             self.assertNotIn("inert", attrs)
         self.assertNotIn(" style=", self.html)
+        self.assertEqual(_estagios_ocultos(self.html), [])
+        # o detector pega um estágio escondido (aria-hidden="true" também esconde de quem usa leitor de tela)
+        ruim = self.html.replace('<li class="ideia-estagio" data-chave="codigo"', '<li class="ideia-estagio" aria-hidden="true" data-chave="codigo"', 1)
+        self.assertEqual(len(_estagios_ocultos(ruim)), 1)
         # cada estágio mostra o título e o texto dos dados
         for chave in CHAVES:
             li = _estagio(self.html, chave)
@@ -167,6 +283,114 @@ class TestIdeiaHtml(unittest.TestCase):
         self.assertNotRegex(fora.lower(), r"caio|rosiel")
 
 
+class TestIdeiaValidacao(unittest.TestCase):
+    """validar_ideia: ideia.json errado vira ErroDeDados/erro de validação com mensagem clara (nada de KeyError no gerador)."""
+    @classmethod
+    def setUpClass(cls):
+        cls.dados = dados_mod.carregar(REPO)
+
+    def com(self, **mudar):
+        ideia = json.loads(json.dumps(self.dados.ideia))
+        ideia.update(mudar)
+        return dataclasses.replace(self.dados, ideia=ideia)
+
+    def estagios(self):
+        return json.loads(json.dumps(self.dados.ideia["estagios"]))
+
+    def erros(self, d, raiz=REPO):
+        return dados_mod.validar_ideia(d, raiz)
+
+    def test_dados_reais_validam(self):
+        self.assertEqual(self.erros(self.dados), [])
+        self.assertEqual(dados_mod.validar(self.dados, REPO)[0], [])
+
+    def test_projeto_inexistente(self):
+        e = self.erros(self.com(projeto="nao-existe"))
+        self.assertTrue(any("projeto inexistente" in x and "nao-existe" in x for x in e), e)
+
+    def test_projeto_invisivel(self):
+        projs = [dataclasses.replace(p, visivel=False) if p.slug == "heisuca" else p for p in self.dados.projetos]
+        e = self.erros(dataclasses.replace(self.dados, projetos=projs))
+        self.assertTrue(any("não é visível" in x for x in e), e)
+
+    def test_falta_estagio(self):
+        est = [x for x in self.estagios() if x["chave"] != "codigo"]
+        e = self.erros(self.com(estagios=est))
+        self.assertTrue(any("estágios devem ser" in x for x in e), e)
+
+    def test_estagios_fora_de_ordem(self):
+        est = self.estagios()
+        est[1], est[2] = est[2], est[1]
+        e = self.erros(self.com(estagios=est))
+        self.assertTrue(any("estágios devem ser" in x for x in e), e)
+
+    def test_mais_de_dois_interlocutores(self):
+        est = self.estagios()
+        est[0]["mensagens"][1]["de"] = "um-terceiro"
+        est[0]["mensagens"].append({"de": "outro", "texto": "oi"})
+        e = self.erros(self.com(estagios=est))
+        self.assertTrue(any("no máximo 2 interlocutores" in x for x in e), e)
+
+    def test_link_sem_https(self):
+        est = self.estagios()
+        est[4]["link"] = "http://play.google.com/store/apps/details?id=app.heisuca.player"
+        e = self.erros(self.com(estagios=est))
+        self.assertTrue(any("https://" in x for x in e), e)
+
+    def test_arquivo_do_codigo_fora_da_pasta(self):
+        for fora in ("fonte/dados/estudio.json", "fonte/conteudo/por-tras/../../dados/estudio.json", "/etc/passwd"):
+            est = self.estagios()
+            est[3]["arquivo"] = fora
+            e = self.erros(self.com(estagios=est))
+            self.assertTrue(any("fonte/conteudo/por-tras/" in x for x in e), (fora, e))
+
+    def test_trecho_do_codigo_respeita_limites_e_segredos(self):
+        with tempfile.TemporaryDirectory() as t:
+            raiz = Path(t)
+            (raiz / "fonte/conteudo/por-tras").mkdir(parents=True)
+            est = self.estagios()
+            est[3]["arquivo"] = "fonte/conteudo/por-tras/x.txt"
+            d = self.com(estagios=est)
+            casos = {
+                "linhas": ("a\n" * 30, "linhas"),
+                "colunas": ("x" * 90 + "\n", "colunas"),
+                "segredo": ("senha = 1\n", "credencial"),
+            }
+            for nome, (texto, achado) in casos.items():
+                (raiz / "fonte/conteudo/por-tras/x.txt").write_text(texto, encoding="utf-8")
+                e = self.erros(d, raiz)
+                self.assertTrue(any(achado in x for x in e), (nome, e))
+
+    def test_ideia_levanta_erro_de_dados_em_vez_de_keyerror(self):
+        est = self.estagios()
+        est[4]["link"] = "http://x"
+        with self.assertRaises(dados_mod.ErroDeDados) as c:
+            paginas._ideia(self.com(estagios=est), REPO)
+        self.assertIn("https://", str(c.exception))
+
+    def test_validar_inclui_os_erros_da_ideia(self):
+        est = self.estagios()
+        est[4]["link"] = "http://x"
+        self.assertTrue(any("ideia.json" in x for x in dados_mod.validar(self.com(estagios=est), REPO)[0]))
+
+
+class TestCodigoEscape(unittest.TestCase):
+    def test_cada_caractere_sai_certo(self):
+        texto = "a\ue000b # c ' d & e < f > g \" h\n"
+        with tempfile.TemporaryDirectory() as t:
+            (Path(t) / "fonte/conteudo/por-tras").mkdir(parents=True)
+            (Path(t) / "fonte/conteudo/por-tras/c.txt").write_text(texto, encoding="utf-8")
+            out = paginas._est_codigo(Path(t), {"arquivo": "fonte/conteudo/por-tras/c.txt"})
+        m = re.search(r"<code>(.*?)</code>", out, re.S)
+        bruto = m.group(1)
+        self.assertEqual(html_lib.unescape(bruto), texto)
+        self.assertIn("\ue000", bruto)                   # o caractere do uso privado não vira "#"
+        self.assertEqual(bruto.count("&#35;"), 1)          # só o "#" do texto
+        for ent in ("&#x27;", "&amp;", "&lt;", "&gt;", "&quot;"):
+            self.assertIn(ent, bruto)
+        self.assertNotRegex(bruto, r"#(?!x?\d+;)")        # nenhum "#" solto (checar.py reprova cor hex)
+
+
 class TestIdeiaNaHome(unittest.TestCase):
     def test_secao_logo_abaixo_do_hero(self):
         doc = str(paginas._home(dados_mod.carregar(REPO), REPO, False).corpo)
@@ -188,18 +412,32 @@ class TestIdeiaJs(unittest.TestCase):
     def test_pin_so_desktop(self):
         self.assertIn("gsap.matchMedia", self.js)
         self.assertIn("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", self.js)
-        # todo "pin:" mora dentro do bloco da consulta de desktop
-        corpo = self.js[self.js.index("(min-width: 1024px) and (prefers-reduced-motion: no-preference)"):]
-        for m in re.finditer(r"\bpin\s*:", self.js):
-            self.assertGreaterEqual(m.start(), len(self.js) - len(corpo))
+        self.assertEqual(_pin_so_no_ramo_desk(self.js), [])
+
+    def test_pin_no_ramo_movel_reprova(self):
+        ruim = self.js.replace("var io = new IntersectionObserver(", "var pin_falso = { pin: true }; var io = new IntersectionObserver(", 1)
+        self.assertNotEqual(ruim, self.js)
+        self.assertTrue(_pin_so_no_ramo_desk(ruim))
+        # e um pin depois do cleanup do ramo desk também reprova
+        ruim2 = self.js.replace("   return function () {\n    sec.classList.remove", "   var x = { pin: true };\n   return function () {\n    sec.classList.remove", 1)
+        self.assertEqual(_pin_so_no_ramo_desk(ruim2), [])  # antes do return: ainda dentro do ramo
+        ruim3 = self.js.replace("sec.classList.remove(\"ideia-pin\");", "sec.classList.remove(\"ideia-pin\"); var y = { pin: true };", 1)
+        self.assertTrue(_pin_so_no_ramo_desk(ruim3))
 
     def test_celular_usa_intersection_observer_e_reduced_motion_fica_estatico(self):
         self.assertIn("IntersectionObserver", self.js)
         self.assertIn("(max-width: 1023px) and (prefers-reduced-motion: no-preference)", self.js)
 
     def test_so_anima_transform_opacity_e_clip_path(self):
-        for prop in ("top", "left", "width", "height", "margin", "background", "color"):
-            self.assertNotRegex(self.js, r"(?<![-\w])" + prop + r"\s*:\s*[\d\"']", prop)
+        chaves = _chaves_animadas(self.js)
+        self.assertTrue({"opacity", "clipPath", "scaleX", "y"} <= chaves, chaves)
+        self.assertEqual(chaves - ANIMAVEIS, set())
+
+    def test_so_anima_pega_propriedade_fora_da_lista(self):
+        for extra in ("rotation: 3", "left: 4", "width: 10", "backgroundColor: 1"):
+            ruim = self.js.replace("{ opacity: 0, y: 28 }", "{ opacity: 0, y: 28, " + extra + " }", 1)
+            self.assertNotEqual(ruim, self.js)
+            self.assertNotEqual(_chaves_animadas(ruim) - ANIMAVEIS, set(), extra)
 
     def test_codigo_digita_por_clip_path_sem_reescrever_texto(self):
         self.assertIn("clipPath", self.js)
