@@ -77,6 +77,43 @@ class TestPerfis(Base):
         self.assertIn("min-height: 44px", regra)
         for token in re.findall(r"#[0-9a-fA-F]{3,8}\b|rgba?\(", regra):
             self.fail(f"cor fora dos tokens: {token}")
+        i = css.index(".perfil-historia {")
+        self.assertIn("min-height: 44px", css[i:css.index("}", i)])
+
+    def test_foto_sem_decoding_async_e_com_prioridade(self):
+        for slug in PERFIS:
+            img = re.search(r'<img class="perfil-foto"[^>]*>', self.perfil(slug)).group(0)
+            self.assertNotIn("decoding", img)
+            self.assertIn('fetchpriority="high"', img)
+
+    def test_titulos_com_webfont_sem_ch(self):
+        css = ler(REPO / "css" / "site.css")
+        for sel in (".perfil-frase {", ".closing-title {"):
+            i = css.index(sel)
+            self.assertNotRegex(css[i:css.index("}", i)], r"max-width:\s*[\d.]+ch", sel)
+
+    def test_brilhos_da_historia_somem_antes_da_borda(self):
+        css = ler(REPO / "css" / "site.css")
+        for sel in (".hist-hero-bg {", ".closing-glow {"):
+            i = css.index(sel)
+            regra = css[i:css.index("}", i)]
+            self.assertIn("transparent", regra, sel)
+            m = re.search(r"transparent (\d+)%", regra)
+            self.assertTrue(m and int(m.group(1)) <= 60, sel)
+
+    def test_css_cobre_as_classes_dos_depoimentos(self):
+        from dataclasses import replace
+        from alldevs.dados import Depoimento
+        from alldevs.paginas import _depoimentos
+        dados = replace(self.dados, depoimentos=(Depoimento("Fulana", "Cliente", "Texto de exemplo", True),))
+        html = str(_depoimentos(dados))
+        classes = {c for g in re.findall(r'class="([^"]+)"', html) for c in g.split()}
+        css = ler(REPO / "css" / "site.css")
+        self.assertTrue(classes)
+        for c in classes:
+            self.assertIn("." + c, css, c)
+        self.assertIn(".depoimento figcaption", css)
+        self.assertIn(".depoimento blockquote", css)
 
     def test_wa_do_perfil_com_origem(self):
         for slug in PERFIS:

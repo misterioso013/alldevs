@@ -592,12 +592,18 @@ main > .faixa { padding-block: 32px; }
   border-radius: 2px;
 }
 
+.depoimentos-lista { display: grid; gap: 16px; margin-top: 32px; }
+.depoimento { margin: 0; padding: 24px; border: 1px solid var(--linha); border-radius: 4px; }
+.depoimento blockquote { margin: 0 0 16px; font-size: 1.1rem; }
+.depoimento figcaption { color: var(--texto-2); }
+
 .faq-home .faq-section { max-width: 760px; }
 @media (min-width: 640px) {
   .passos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 1024px) {
   .passos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .depoimentos-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .img-captura {
@@ -636,7 +642,7 @@ main > .faixa { padding-block: 32px; }
   font-weight: 600;
   font-size: clamp(1.3rem, 3vw, 1.9rem);
   line-height: 1.25;
-  max-width: 32ch;
+  max-width: 30rem;
   margin-top: 24px;
 }
 .perfil-faz ul { max-width: 60ch; }
@@ -855,7 +861,7 @@ main > .faixa { padding-block: 32px; }
   inset: 0;
   pointer-events: none;
 }
-.hist-hero-bg { background: radial-gradient(60% 80% at 100% 0%, color-mix(in srgb, var(--roxo) 22%, transparent), transparent 70%); }
+.hist-hero-bg { background: radial-gradient(ellipse closest-side at 72% 45%, color-mix(in srgb, var(--roxo) 22%, transparent), transparent 60%); }
 .hist-hero-lines {
   background-image: linear-gradient(to right, var(--linha) 1px, transparent 1px);
   background-size: 25% 100%;
@@ -955,7 +961,7 @@ main > .faixa { padding-block: 32px; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(50% 70% at 0% 100%, color-mix(in srgb, var(--laranja) 14%, transparent), transparent 70%);
+  background: radial-gradient(ellipse closest-side at 25% 55%, color-mix(in srgb, var(--laranja) 14%, transparent), transparent 60%);
 }
 .closing-inner { position: relative; }
 .closing-title {
@@ -964,7 +970,7 @@ main > .faixa { padding-block: 32px; }
   font-size: clamp(1.7rem, 4vw, 2.6rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  max-width: 18ch;
+  max-width: 20rem;
   margin-bottom: 16px;
 }
 .closing-sub { color: var(--texto-2); max-width: 56ch; }
