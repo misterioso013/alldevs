@@ -703,13 +703,31 @@ def _historia(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     return Pagina(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, doc, dados.estudio.atualizado, ())
 
 
+CHEVRON_DO_FAQ = '<svg class="faq-chevron" '   # o conteúdo traz a seta sem aria-hidden; o gerador a marca como decorativa
+
+
+def _projetos_do_tipo(s, dados: Dados, raiz: Path) -> tuple:
+    """(HTML, há cartão com revelação) do fim do serviço: os cartões dos projetos visíveis do mesmo tipo;
+    sem nenhum, só o link para /projetos/ (nada de frase inventada)."""
+    vis = [p for p in visiveis(dados.projetos) if p.tipo == s.tipo]
+    if not vis:
+        return Seguro('\n  <p><a href="/projetos/" class="link-seta">Ver todos os projetos</a></p>'), False
+    cartoes = "\n".join(str(_cartao_projeto(p, raiz, 3)) for p in vis)
+    return Seguro(f'\n  <div class="grade-projetos">\n{cartoes}\n  </div>'), any(p.por_tras for p in vis)
+
+
 def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
+    projetos, revela = _projetos_do_tipo(s, dados, raiz)
+    conteudo = _ler_conteudo(
+        raiz, ("servicos", f"{s.slug}.html"),
+        _bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug))
+    conteudo = Seguro(conteudo.replace(CHEVRON_DO_FAQ, CHEVRON_DO_FAQ + 'aria-hidden="true" focusable="false" '))
     corpo = render(
         "servico", **_cabecalho_e_rodape(dados),
-        nome=s.nome,
-        conteudo=_ler_conteudo(
-            raiz, ("servicos", f"{s.slug}.html"),
-            _bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug)),
+        nome=s.nome, conteudo=conteudo,
+        rotulo_tipo=TIPO_ROTULO[s.tipo].lower(), projetos=projetos,
+        contato=_bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug, com_id=False),
+        revelar=Seguro('\n<script src="/js/revelar.js" defer></script>' if revela else ""),
     )
     caminho = f"servicos/{s.slug}/index.html"
     ld = (seo.json_ld_servico(s),)

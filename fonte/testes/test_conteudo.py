@@ -532,7 +532,9 @@ class TestCasesReais(Base):
         (REPO / "fonte" / "dados" / "projetos.json").read_text(encoding="utf-8"))), "o case amott chega na Task 2")
     def test_amott_so_como_case(self):
         permitidos = {"index.html", "projetos/index.html", "assets/paleta.json", "sitemap.xml",
-                      "caio/index.html", "rosiel/index.html"}  # perfis listam todos os projetos; Task 8 soma serviços
+                      "caio/index.html", "rosiel/index.html",   # perfis listam todos os projetos
+                      "servicos/criacao-de-sites-institucionais/index.html",   # os serviços de site (tipo do Amott) listam
+                      "servicos/landing-page-conversao/index.html"}            # os projetos do tipo (Task 8)
         for arq in self.saida.rglob("*"):
             rel = arq.relative_to(self.saida).as_posix()
             if arq.is_file() and arq.suffix in {".html", ".xml", ".txt", ".json"} and "amott" in ler(arq).lower():

@@ -18,6 +18,7 @@ Use o `gzserver.py`, não o `python3 -m http.server`: sem compressão o JS de ve
 Lighthouse sobe uns 600 ms nas páginas com foto (`/`, `/caio/`, `/rosiel/`), o que não acontece em produção.
 Aviso: não gere a prévia dentro do repo (`dist-previa/`): `checar.py` varre o repo e a cor `rgba()` dos estáticos o reprova
 (`dist-previa/` agora é ignorada pelo `checar.py`, mas mantenha a prévia fora). Não mexa na prévia durante a rodada.
+Para medir só uma parte do site, acrescente `--so /servicos/` (só os caminhos que começam com esse prefixo).
 Gera `RELATORIO.md` (resumo + uma tabela por meta) e as capturas PNG (ignoradas pelo git). Sai com rc 1 se alguma meta falhar.
 Páginas medidas: as do `sitemap.xml` mais os links internos `.html`/diretório achados nelas (um nível).
 

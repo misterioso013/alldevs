@@ -1,8 +1,7 @@
 /* Visual do ALL.dev v2: base de identidade (Syne, roxo e laranja do estúdio), grade de 12 colunas até 1280 px,
    calha de 16 px. Cores, tempos e fontes vêm de css/tokens.css (carregado antes); aqui só se usam as variáveis.
    Animam só transform, opacity e clip-path. Sem JS tudo fica visível; js/site.js liga a revelação.
-   A home (hero, faixa, ideia, projetos, serviços, passos, tecnologias, FAQ, contato) é do v2; "Páginas atuais" estiliza só o
-   marcado que as Tasks 7 e 8 ainda vão trocar (serviço, projetos, perfis, história). */
+   A home, /projetos/, os cases e os serviços são do v2; "Páginas atuais" estiliza só o que a Task 9 ainda troca (perfis, história). */
 
 *,
 *::before,
@@ -704,21 +703,29 @@ main > .faixa { padding-block: 32px; }
 .contato h2 { max-width: 20ch; }
 .cta-buttons { margin-top: 24px; }
 
-/* ---------- Serviço ---------- */
+/* ---------- Serviço ----------
+   O HTML de conteúdo (fonte/conteudo/servicos/) usa estas classes; o molde acrescenta "Projetos de <tipo>" e o contato no fim. */
 .breadcrumb {
-  padding-block: 16px;
+  min-height: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-block: 8px;
   font-family: var(--fonte-mono);
   font-size: 0.8rem;
   color: var(--texto-2);
 }
-.breadcrumb a { color: var(--texto-2); }
+.breadcrumb a { color: var(--texto-2); display: inline-flex; align-items: center; min-height: 44px; }
+.breadcrumb a:hover { color: var(--roxo-claro); }
 .breadcrumb-sep { margin-inline: 8px; }
 .breadcrumb-current { color: var(--texto); }
 .servico-hero { padding-block: 48px 32px; }
 .servico-tag {
   font-family: var(--fonte-mono);
   font-size: 0.8rem;
-  color: var(--texto-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--laranja-claro);
   margin-bottom: 16px;
 }
 .servico-h1 { font-size: clamp(1.7rem, 5.5vw, 3.6rem); max-width: 22ch; } /* Syne é larga: "Desenvolvimento" cabe em 430 px */
@@ -727,13 +734,19 @@ main > .faixa { padding-block: 32px; }
   display: inline-block;
   margin-top: 8px;
   padding: 6px 14px;
-  border: 1px solid var(--linha);
+  border: 1px solid var(--roxo);
   border-radius: 999px;
   font-family: var(--fonte-mono);
   font-size: 0.85rem;
 }
 .servico-body { padding-bottom: 64px; }
-.servico-body > h2 { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--linha); }
+.servico-body > h2 {
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid var(--linha);
+  font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+  max-width: 28ch;
+}
 .servico-body > p { max-width: 68ch; }
 .processo-steps { display: grid; gap: 16px; }
 @media (min-width: 768px) {
@@ -746,7 +759,7 @@ main > .faixa { padding-block: 32px; }
   border: 1px solid var(--linha);
   border-radius: 4px;
 }
-.step-num { font-family: var(--fonte-mono); color: var(--texto-2); }
+.step-num { font-family: var(--fonte-mono); color: var(--laranja-claro); }
 .step-content h3 { font-size: 1.15rem; }
 .step-content p { margin: 0; color: var(--texto-2); }
 .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -768,7 +781,7 @@ main > .faixa { padding-block: 32px; }
   padding-block: 8px;
   border-bottom: 1px solid var(--linha);
 }
-.benefit-icon { font-family: var(--fonte-mono); color: var(--texto-2); }
+.benefit-icon { font-family: var(--fonte-mono); color: var(--laranja-claro); }
 .faq-section { margin-top: 16px; }
 .faq-item { border-bottom: 1px solid var(--linha); }
 .faq-question {
@@ -803,8 +816,12 @@ main > .faixa { padding-block: 32px; }
   padding: 32px;
   border: 1px solid var(--linha);
   border-radius: 4px;
+  background: var(--fundo-2);
 }
-.relacionado-card { text-decoration: none; gap: 8px; }
+.servico-cta h2 { font-size: clamp(1.4rem, 3vw, 2rem); max-width: 28ch; }
+.servicos-relacionados h2 { font-size: clamp(1.4rem, 3vw, 2rem); }
+.projetos-do-tipo .link-seta { display: inline-flex; align-items: center; min-height: 44px; }
+.relacionado-card { text-decoration: none; gap: 8px; min-height: 44px; }
 .relacionado-icon { font-size: 1.4rem; }
 .relacionado-nome { font-family: var(--fonte-titulo); font-weight: 600; font-size: 1.2rem; }
 .relacionado-preco { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }

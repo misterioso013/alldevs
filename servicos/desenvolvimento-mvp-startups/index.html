@@ -134,35 +134,35 @@
     <div class="faq-item">
       <button type="button" class="faq-question" aria-expanded="true" disabled>
         O que exatamente é um MVP?
-        <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        <svg class="faq-chevron" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>MVP (Produto Mínimo Viável) é a versão mais simples do seu produto que já entrega valor real aos primeiros usuários e permite validar suas hipóteses de negócio antes de investir no produto completo.</p></div>
     </div>
     <div class="faq-item">
       <button type="button" class="faq-question" aria-expanded="true" disabled>
         Quanto custa desenvolver um MVP?
-        <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        <svg class="faq-chevron" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>O valor depende da complexidade das funcionalidades, integrações e número de telas. O orçamento é definido após o discovery, mas projetos de MVP web geralmente partem de R$ 5.000.</p></div>
     </div>
     <div class="faq-item">
       <button type="button" class="faq-question" aria-expanded="true" disabled>
         Em quanto tempo o MVP fica pronto?
-        <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        <svg class="faq-chevron" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>A maioria dos MVPs é entregue em 4 a 8 semanas. Projetos com mais integrações ou fluxos complexos podem levar mais tempo, definido na proposta.</p></div>
     </div>
     <div class="faq-item">
       <button type="button" class="faq-question" aria-expanded="true" disabled>
         O MVP vai escalar quando crescer?
-        <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        <svg class="faq-chevron" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Sim. A arquitetura é pensada para crescimento: banco de dados relacional, autenticação segura e API desacoplada. Adicionar funcionalidades no futuro é parte do plano.</p></div>
     </div>
     <div class="faq-item">
       <button type="button" class="faq-question" aria-expanded="true" disabled>
         Vocês dão suporte após o lançamento?
-        <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        <svg class="faq-chevron" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="faq-answer"><p>Sim. Oferecemos suporte técnico por 30 dias após o lançamento e planos de manutenção mensais para evolução contínua do produto.</p></div>
     </div>
@@ -205,7 +205,80 @@
 </section>
 
 
+<section class="projetos-do-tipo" data-secao="projetos-do-tipo">
+  <p class="rotulo-mono">// projetos</p>
+  <h2 class="titulo-revela">Projetos de produto</h2>
+  <div class="grade-projetos">
+    <article class="projeto-cartao" data-slug="fakly" data-tipo="produto" data-revela>
+      <figure class="projeto-tela" data-revela-cartao data-cursor="ver por trás"><img src="/assets/frente/fakly.webp" width="960" height="600" alt="Captura de tela de Fakly" loading="lazy" decoding="async">
+      <div class="cartao-por-tras" aria-hidden="true"><pre><code>  const schemaJson = {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;FAQPage&quot;,
+    mainEntity: data.map((item) =&gt; ({
+      &quot;@type&quot;: &quot;Question&quot;,
+      name: item.question,
+      acceptedAnswer: {
+        &quot;@type&quot;: &quot;Answer&quot;,
+        text: item.answer,
+  const schemaJson = {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;FAQPage&quot;,
+    mainEntity: data.map((item) =&gt; ({
+      &quot;@type&quot;: &quot;Question&quot;,
+      name: item.question,
+      acceptedAnswer: {
+        &quot;@type&quot;: &quot;Answer&quot;,
+        text: item.answer,</code></pre><span class="cartao-origem">fakly · main.js@4c3ea1a</span></div>
+      </figure>
+      <p class="rotulo-mono">Produto · 2025 · no ar</p>
+      <h3><a href="/projetos/fakly/">Fakly</a></h3>
+      <p>Gerador gratuito e de código aberto de FAQs elegantes, com widget para colar em qualquer página e schema para o Google.</p>
+      <a class="link-seta" href="https://misterioso013.github.io/fakly/" target="_blank" rel="noopener">Ver Fakly no ar<span class="so-leitor"> (abre em nova aba)</span></a>
+    </article>
+    <article class="projeto-cartao" data-slug="sendany" data-tipo="produto" data-revela>
+      <figure class="projeto-tela" data-revela-cartao data-cursor="ver por trás"><img src="/assets/frente/sendany.webp" width="960" height="600" alt="Captura de tela de SendAny" loading="lazy" decoding="async">
+      <div class="cartao-por-tras" aria-hidden="true"><pre><code>export interface WorkspaceFile {
+  id: string;
+  workspace_id: string;
+  filename: string;
+  content?: string;
+  file_type: &quot;text&quot; | &quot;code&quot; | &quot;markdown&quot; | &quot;file&quot;;
+  language?: string;
+  file_size?: number;
+  file_url?: string;
+export interface WorkspaceFile {
+  id: string;
+  workspace_id: string;
+  filename: string;
+  content?: string;
+  file_type: &quot;text&quot; | &quot;code&quot; | &quot;markdown&quot; | &quot;file&quot;;
+  language?: string;
+  file_size?: number;
+  file_url?: string;</code></pre><span class="cartao-origem">sendany · src/lib/database.ts@1117310</span></div>
+      </figure>
+      <p class="rotulo-mono">Produto · 2025 · no ar</p>
+      <h3><a href="/projetos/sendany/">SendAny</a></h3>
+      <p>Plataforma para compartilhar texto, código e arquivos num só lugar, na linha do Gist, do Pastebin e do Drive.</p>
+      <a class="link-seta" href="https://sendany.all.dev.br" target="_blank" rel="noopener">Ver SendAny no ar<span class="so-leitor"> (abre em nova aba)</span></a>
+    </article>
+  </div>
+</section>
+
+<section class="contato" data-secao="contato">
+  <p class="rotulo-mono">// contato</p>
+<div class="cta-buttons">
+  <a href="https://wa.me/558189477459?text=Ol%C3%A1%2C%20AllDevs%21%20Tenho%20interesse%20em%20%2AMVP%20para%20startups%2A.%20%5Bsite%C2%B7servico%C2%B7desenvolvimento-mvp-startups%5D" target="_blank" rel="noopener" class="btn btn-cheio">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Solicitar orçamento pelo WhatsApp
+  </a>
+  <a href="mailto:rosielvictor.dev@gmail.com?subject=Or%C3%A7amento%20%5Bsite%C2%B7servico%C2%B7desenvolvimento-mvp-startups%5D" class="btn btn-linha">Enviar e-mail</a>
+  <a href="https://t.me/m/PYdcFSXtNjZh" target="_blank" rel="noopener" class="btn btn-linha">Telegram</a>
+</div>
+
+</section>
+
 </main>
+<script src="/js/revelar.js" defer></script>
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">

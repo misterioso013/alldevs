@@ -11,7 +11,7 @@ import { medePaleta, esperaPreloader } from './paleta.mjs';
 const arg = (n) => { const i = process.argv.indexOf('--' + n); return i > 0 ? process.argv[i + 1] : null; };
 const base = (arg('url') || '').replace(/\/+$/, '');
 const saida = arg('saida');
-if (!base || !saida) { console.error('uso: node bancada/rodar.mjs --url <base> --saida <pasta>'); process.exit(2); }
+if (!base || !saida) { console.error('uso: node bancada/rodar.mjs --url <base> --saida <pasta> [--so <prefixo>]'); process.exit(2); }
 fs.mkdirSync(saida, { recursive: true });
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const origem = new URL(base).origin;
@@ -47,7 +47,8 @@ for (const p of [...paginas]) {
   if (r.status === 200) refs(await r.text()).map((h) => reescreve(h, p)).filter((u) => u && (u.endsWith('.html') || u.endsWith('/')))
     .forEach((u) => extra.add(new URL(u).origin + new URL(u).pathname));
 }
-const lista = [...new Set([...paginas, ...extra])].sort();
+const so = arg('so'); // opcional: só as páginas cujo caminho começa com este prefixo (ex.: /servicos/)
+const lista = [...new Set([...paginas, ...extra])].sort().filter((u) => !so || new URL(u).pathname.startsWith(so));
 console.log(`${lista.length} páginas`);
 const rot = (u) => new URL(u).pathname;
 

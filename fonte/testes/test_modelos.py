@@ -43,7 +43,7 @@ class TestModelos(unittest.TestCase):
 
     def test_render_moldes_servico_e_historia(self):
         c = RAIZ_FONTE / "conteudo"
-        s = render("servico", cabecalho=Seguro(""), rodape=Seguro(""), nome="Landing page", quem_toca=Seguro("<i>q</i>"),
+        s = render("servico", cabecalho=Seguro(""), rodape=Seguro(""), nome="Landing page", rotulo_tipo="site", projetos=Seguro(""), revelar=Seguro(""),
                    conteudo=Seguro((c / "servicos" / "landing-page-conversao.html").read_text(encoding="utf-8")),
                    contato=Seguro("<!--contato-->"))
         self.assertIn("<!--contato-->", s)
