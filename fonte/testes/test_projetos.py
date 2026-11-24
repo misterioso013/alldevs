@@ -149,11 +149,10 @@ class TestCase(Base):
 
 
 class TestCss(unittest.TestCase):
-    def test_sticky_so_no_desktop_e_filtro_hidden(self):
+    def test_sem_sticky_e_filtro_hidden(self):
         from testes.test_paginas import REPO
         css = ler(REPO / "css/site.css")
-        m = re.search(r"@media \(min-width: 1024px\)[^{]*\{[^@]*?\.case-texto\s*\{[^}]*position: sticky", css, re.S)
-        self.assertTrue(m, "sticky do .case-texto só a partir de 1024 px")
+        self.assertNotIn("position: sticky", css.split("/* Case:")[1].split("/* ---------- Contato")[0], "o texto do case (1200 a 1800 px) nunca cabe na janela: sem sticky")
         self.assertRegex(css, r"\.projeto-cartao\[hidden\]\s*\{\s*display: none")
         self.assertRegex(css, r"\.filtro-tipos button\s*\{[^}]*min-height: 44px")
         # oculto, o filtro guarda o lugar (sem salto de layout quando o JS o abre) e some da leitura
@@ -186,10 +185,6 @@ class TestRodada1(Base):
         css = ler(REPO / "css/site.css")
         self.assertRegex(css, r"\.case:not\(\.case-unica\)\s*\{[^}]*display: grid")
         self.assertRegex(css, r"\.case-unica \.case-palco\s*\{[^}]*max-width: 960px")
-        # sticky só em janela alta o bastante para a coluna de texto caber (nunca texto preso fora da janela)
-        m = re.search(r"@media \(min-width: 1024px\) and \(min-height: (\d+)px\)[^{]*\{[^@]*?position: sticky", css, re.S)
-        self.assertTrue(m)
-        self.assertGreaterEqual(int(m.group(1)), 1000)
 
     def test_css_retratos_lado_a_lado_em_qualquer_telas(self):
         from testes.test_paginas import REPO

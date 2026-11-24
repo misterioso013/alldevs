@@ -1,5 +1,5 @@
 // Bancada de /projetos/ e dos cases. Uso: node bancada/projetos.mjs --url <base> --capturas <pasta>
-// Cenários: filtro (com JS), sem-js, palco (hover a 1440), sticky (1440x900), 360 sem rolagem horizontal; capturas.
+// Cenários: filtro (com JS), sem-js, palco (hover a 1440), grade e fim do texto alcançável (1440x900 e 1440x1200), coluna única sem grade, 360 sem rolagem horizontal; capturas rolando a página.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -22,7 +22,13 @@ async function abre(url, opts, fn, js = true) {
   try { await p.goto(base + url, { waitUntil: 'networkidle' }); if (js) await esperaPreloader(p); await fn(p); if (erros.length) throw new Error(erros[0]); }
   finally { await ctx.close().catch(() => {}); }
 }
-const cap = (p, nome) => pasta ? p.screenshot({ path: path.join(pasta, nome), fullPage: true }) : null;
+const rolaTudo = async (p) => {
+  await p.evaluate(async () => { const h = document.documentElement.scrollHeight; for (let y = 0; y < h; y += 300) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); } scrollTo(0, h); await new Promise((r) => setTimeout(r, 300)); });
+  await p.waitForLoadState('networkidle').catch(() => {});
+  await p.evaluate(async () => { await Promise.all([...document.images].map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; }))); scrollTo(0, 0); });
+  await p.waitForTimeout(500);
+};
+const cap = async (p, nome) => { if (!pasta) return; await rolaTudo(p); await p.screenshot({ path: path.join(pasta, nome), fullPage: true }); };
 const vis = (p) => p.evaluate(() => [...document.querySelectorAll('[data-lista-projetos] > article')].filter((a) => !a.hidden && a.offsetParent).map((a) => a.dataset.tipo));
 
 for (const w of [1440, 430]) {
@@ -49,24 +55,46 @@ await abre('/projetos/', { viewport: { width: 360, height: 800 } }, async (p) =>
   rel('sem-rolagem-h-360-lista', (await p.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 0);
 });
 
+const info = (p) => p.evaluate(() => {
+  const c = document.querySelector('.case'), t = document.querySelector('.case-texto');
+  const cs = getComputedStyle(c), ts = getComputedStyle(t);
+  const fim = [...t.querySelectorAll('a, button')].pop();
+  return { unica: c.classList.contains('case-unica'), grade: cs.display === 'grid', pos: ts.position, th: t.offsetHeight, topo: t.getBoundingClientRect().top, temFim: !!fim, ih: innerHeight, palcoW: (document.querySelector('.case-palco') || { offsetWidth: 0 }).offsetWidth };
+});
+const fimAlcancavel = (p) => p.evaluate(async () => {
+  const t = document.querySelector('.case-texto'); const fim = [...t.querySelectorAll('a, button')].pop();
+  if (!fim) return { ok: false, r: 'sem link/botao no fim' };
+  fim.scrollIntoView({ block: 'center', behavior: 'instant' }); await new Promise((r) => setTimeout(r, 400));
+  const r = fim.getBoundingClientRect();
+  return { ok: r.top >= 0 && r.bottom <= innerHeight, r: Math.round(r.top) + '..' + Math.round(r.bottom) + ' de ' + innerHeight };
+});
 for (const slug of ['amott', 'prosup', 'heisuca', 'cgflix-lite', 'fakly', 'sendany']) {
   for (const w of [1440, 430, 360]) {
     await abre(`/projetos/${slug}/`, { viewport: { width: w, height: 900 } }, async (p) => {
       const sx = await p.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       rel(`case-${slug}-sem-rolagem-h-${w}`, sx <= 0, String(sx));
-      if (w !== 360 && ['amott', 'prosup'].includes(slug)) await cap(p, `case-${slug}-${w}.png`);
+      if (w !== 360 && ['amott', 'prosup', 'heisuca'].includes(slug)) await cap(p, `case-${slug}-${w}.png`);
+      const i = await info(p);
       if (w === 1440) {
-        const pos = await p.evaluate(() => getComputedStyle(document.querySelector('.case-texto')).position);
-        const a = await p.evaluate(() => document.querySelector('.case-texto').getBoundingClientRect().top);
-        await p.evaluate(() => scrollTo(0, 300)); await p.waitForTimeout(300);
-        const b = await p.evaluate(() => document.querySelector('.case-texto').getBoundingClientRect().top);
-        // o preso só tem o que fazer quando a coluna das capturas é mais alta que a do texto; senão a coluna do texto define a linha e rola junto
-        const util = await p.evaluate(() => { const t = document.querySelector('.case-texto'), c = document.querySelector('.case'); const col2 = [...c.children].find((e) => e !== t); return col2 && col2.offsetHeight > t.offsetHeight + 100; });
-        rel(`case-${slug}-sticky-1440`, pos === 'sticky' && (!util || (b >= 0 && b <= 40)), `pos=${pos} util=${util} topo ${Math.round(a)}->${Math.round(b)}`);
+        const f = await fimAlcancavel(p);
+        rel(`case-${slug}-fim-do-texto-alcancavel-1440x900`, f.ok, f.r);
+        if (i.unica) {
+          rel(`case-${slug}-coluna-unica-sem-grade-nem-sticky`, !i.grade && i.pos !== 'sticky' && i.palcoW > 800 && i.palcoW <= 960, `grade=${i.grade} pos=${i.pos} palco=${i.palcoW}`);
+        } else {
+          rel(`case-${slug}-duas-colunas-com-grade`, i.grade);
+          rel(`case-${slug}-sem-sticky-1440x900`, i.pos !== 'sticky', `pos=${i.pos} texto=${i.th} janela=${i.ih}`);
+        }
       }
-      if (w === 430) rel(`case-${slug}-sem-sticky-430`, (await p.evaluate(() => getComputedStyle(document.querySelector('.case-texto')).position)) !== 'sticky');
+      if (w === 430) rel(`case-${slug}-sem-sticky-430`, i.pos !== 'sticky' && !i.grade);
     });
   }
+  // janela alta (1440x1200): ainda sem sticky e o fim do texto alcançável; coluna única segue sem grade
+  await abre(`/projetos/${slug}/`, { viewport: { width: 1440, height: 1200 } }, async (p) => {
+    const i = await info(p);
+    rel(`case-${slug}-sem-sticky-1440x1200`, i.pos !== 'sticky' && (i.unica ? !i.grade : i.grade), `pos=${i.pos} grade=${i.grade}`);
+    const f = await fimAlcancavel(p);
+    rel(`case-${slug}-fim-do-texto-alcancavel-1440x1200`, f.ok, f.r);
+  });
 }
 await abre('/projetos/amott/', { viewport: { width: 1440, height: 900 } }, async (p) => {
   const f = p.locator('.case-palco'); await f.scrollIntoViewIfNeeded(); const b = await f.boundingBox();

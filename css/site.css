@@ -668,7 +668,7 @@ main > .faixa { padding-block: 32px; }
 .filtro-tipos button[aria-pressed="true"] { background: var(--roxo); border-color: var(--roxo); color: var(--texto); }
 
 /* Case: uma coluna no celular. A partir de 1024 px, texto e capturas lado a lado; sem capturas próprias (.case-unica) fica uma
-   coluna só e o palco "Por trás" alarga. O texto só fica preso (sticky) em janela alta o bastante para a coluna caber inteira. */
+   coluna só e o palco "Por trás" alarga. Sem sticky: a coluna de texto (1200 a 1800 px) é sempre a mais alta e nunca cabe na janela. */
 .case-texto > section { padding-block: 24px; }
 .case-texto > .case-topo { padding-top: 0; }
 .case p,
@@ -692,9 +692,6 @@ main > .faixa { padding-block: 32px; }
 .case-loja figcaption { flex-basis: 100%; font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
 @media (min-width: 1024px) {
   .case:not(.case-unica) { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; }
-}
-@media (min-width: 1024px) and (min-height: 1100px) {
-  .case:not(.case-unica) .case-texto { position: sticky; top: 24px; }
 }
 
 /* ---------- Contato ---------- */
