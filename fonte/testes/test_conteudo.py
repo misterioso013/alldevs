@@ -374,8 +374,10 @@ class TestCasesReais(Base):
         for slug in ("prosup", "fakly", "sendany"):
             p = self.proj(slug)
             self.assertFalse(p.rascunho, slug)
-            self.assertTrue(p.destaque, slug)
             self.assertTrue(p.visivel, slug)
+        # 24/11: o ForjaDev tomou o lugar do SendAny na home; o SendAny segue publicado em /projetos/.
+        self.assertTrue(self.proj("prosup").destaque and self.proj("fakly").destaque)
+        self.assertFalse(self.proj("sendany").destaque)
 
     def test_heisuca_publicado_com_a_loja(self):
         h = self.proj("heisuca")

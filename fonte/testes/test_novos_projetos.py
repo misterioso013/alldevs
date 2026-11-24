@@ -1,4 +1,4 @@
-"""Projetos ForjaDev e Huntar (24/11): entram em /projetos/, ganham case e aparecem nos serviços do tipo, mas não na home."""
+"""Projetos ForjaDev e Huntar (24/11): entram em /projetos/, ganham case e aparecem nos serviços do tipo, e o ForjaDev substitui o SendAny na home."""
 import re
 
 from testes.test_conteudo import Base, ler
@@ -29,11 +29,12 @@ class TestNovosProjetos(Base):
             self.assertIn(f"/assets/images/{slug}-3.webp", txt)
             self.assertIn(f"/assets/og/{slug}.png", txt)
 
-    def test_fora_da_home(self):
+    def test_home_troca_sendany_por_forjadev(self):
+        """24/11: o ForjaDev entra na home no lugar do SendAny (a home ordena por nome); o Huntar fica só em /projetos/."""
         home = ler(self.saida / "index.html")
         cartoes = [s for s, _ in slugs_dos_cartoes(home)]
-        for slug in NOVOS:
-            self.assertNotIn(slug, cartoes)
+        self.assertEqual(cartoes, ["amott", "cgflix-lite", "fakly", "forjadev", "heisuca", "prosup"])
+        self.assertIn("sendany", [s for s, _ in slugs_dos_cartoes(ler(self.saida / "projetos/index.html"))])
 
     def test_nos_servicos_do_tipo(self):
         for slug, (_, tipo, _) in NOVOS.items():

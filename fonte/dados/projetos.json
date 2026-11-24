@@ -105,7 +105,7 @@
     "imagens": [
       "assets/images/sendany.webp"
     ],
-    "destaque": true,
+    "destaque": false,
     "visivel": true,
     "rascunho": false,
     "atualizado": "2026-11-23",
@@ -240,7 +240,7 @@
   },
   {
     "resultado": null,
-    "destaque": false,
+    "destaque": true,
     "visivel": true,
     "rascunho": false,
     "atualizado": "2026-11-24",
