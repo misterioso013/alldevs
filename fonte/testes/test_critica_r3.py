@@ -181,6 +181,7 @@ class VaziosDesktop(unittest.TestCase):
     def test_tecnologias_sem_coluna_vazia(self):
         c = " ".join(regras(r"[^{}]*\.tec-grupos[^{}]*", desktop()))
         self.assertIn("column-count: 3", c)
+        self.assertNotRegex(CSS, r"\n\.tec-grupos \{[^}]*display: grid")   # a regra base não pode vencer a do desktop
         self.assertIn("break-inside: avoid", " ".join(regras(r"[^{}]*\.tec-grupo\b[^{}]*", desktop())))
 
     def test_servico_430_sem_vao_entre_selo_e_divisor(self):
@@ -197,3 +198,46 @@ class VaziosDesktop(unittest.TestCase):
         m = re.search(r"@media \(hover: none\), \(pointer: coarse\) \{\s*\[data-cursor=\"ver por trás\"\]::after \{([^}]*)\}", CSS)
         self.assertTrue(m)
         self.assertIn("content: attr(data-cursor)", m.group(1))
+
+
+class ComputadoNoNavegador(unittest.TestCase):
+    """Lê o valor computado no Chromium (a cascata decide), não só a string do CSS."""
+    @classmethod
+    def setUpClass(cls):
+        import os, shutil, subprocess, json
+        cls.ok = shutil.which("node") is not None and (REPO / "bancada/node_modules/playwright").exists()
+        if not cls.ok:
+            return
+        script = (REPO / "bancada/_computado.mjs")
+        script.write_text(r"""
+import { chromium } from 'playwright';
+import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path';
+const raiz = process.argv[2];
+const srv = http.createServer((q, r) => { let f = path.join(raiz, decodeURIComponent(q.url.split('?')[0])); if (f.endsWith('/')) f += 'index.html';
+  fs.readFile(f, (e, d) => { if (e) { r.statusCode = 404; r.end(); return; } r.setHeader('content-type', f.endsWith('.css') ? 'text/css' : f.endsWith('.js') ? 'text/javascript' : 'text/html'); r.end(d); }); }).listen(0);
+const base = 'http://127.0.0.1:' + srv.address().port;
+const env = { ...process.env, LD_LIBRARY_PATH: [process.env.BANCADA_LIBS, process.env.LD_LIBRARY_PATH].filter(Boolean).join(':') };
+const nav = await chromium.launch({ env }); const out = {};
+const ctx = await nav.newContext({ viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage();
+await p.goto(base + '/', { waitUntil: 'load' });
+out.tec = await p.evaluate(() => { const e = document.querySelector('.tec-grupos'); const c = getComputedStyle(e); return [c.display, c.columnCount]; });
+out.pesoHome = await p.evaluate(() => { const c = getComputedStyle(document.querySelector('.projeto-titulo')); return [c.fontWeight, c.fontSize, c.lineHeight, c.fontFamily]; });
+await p.goto(base + '/projetos/', { waitUntil: 'load' });
+out.pesoProj = await p.evaluate(() => { const c = getComputedStyle(document.querySelector('.projeto-titulo')); return [c.fontWeight, c.fontSize, c.lineHeight, c.fontFamily]; });
+await nav.close(); srv.close(); console.log(JSON.stringify(out));
+""")
+        env = dict(os.environ, BANCADA_LIBS=os.path.expanduser("~/.local/lib/chromium-deps"))
+        try:
+            r = subprocess.run(["node", str(script), str(REPO)], cwd=REPO / "bancada", env=env, capture_output=True, text=True, timeout=120)
+            cls.d = json.loads(r.stdout.strip().splitlines()[-1])
+        finally:
+            script.unlink(missing_ok=True)
+
+    def test_tecnologias_1440_em_colunas(self):
+        if not self.ok: self.skipTest("sem playwright")
+        self.assertEqual(self.d["tec"], ["block", "3"])
+
+    def test_titulo_de_projeto_igual_na_home_e_em_projetos(self):
+        if not self.ok: self.skipTest("sem playwright")
+        self.assertEqual(self.d["pesoHome"], self.d["pesoProj"])
+        self.assertEqual(self.d["pesoHome"][0], "700")

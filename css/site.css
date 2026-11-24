@@ -156,7 +156,7 @@ main > .breadcrumb + section { border-top: 0; }
   .cartoes-pessoas > .cartao-pessoa > :nth-child(3) { grid-column: 2; grid-row: 3; }
   /* Tecnologias: os cinco grupos em colunas */
   .tec-grupos { display: block; column-count: 3; column-gap: 40px; }   /* os grupos fluem em 3 colunas pelo número de itens: nenhuma coluna quase vazia */
-  .tec-grupo { break-inside: avoid; margin-bottom: 32px; }
+  .tec-grupo { break-inside: avoid; }
   /* FAQ: o título à esquerda, as perguntas à direita */
   .faq-home { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); column-gap: 56px; align-items: start; }
   .faq-home > .rotulo-mono, .faq-home > h2 { grid-column: 1; }
@@ -319,7 +319,6 @@ main > .breadcrumb + section { border-top: 0; }
   @media (prefers-reduced-motion: no-preference) {
     .barra-wa { transition: transform var(--dur-media) var(--curva-saida), opacity var(--dur-media) var(--curva-saida); }
   }
-  body { padding-bottom: 72px; }
   main { padding-bottom: 72px; }   /* o fim do conteúdo (ex.: "Ver Heisuca na loja") ganha o respiro da altura da barra */
 }
 
@@ -503,7 +502,8 @@ html.pre-1a .preloader span {
 }
 /* Mobile (r3): o botão sai de cima do código do palco e a frase tem lugar reservado no fluxo (nada pendurado sobre o respiro do hero). */
 @media (max-width: 959px) {
-  .hero-palco { margin-bottom: 128px; }
+  .hero { padding-bottom: 40px; }
+  .hero-palco { margin-bottom: 136px; }
   .hero-ver-por-tras { bottom: -52px; right: auto; left: 0; }
   .hero-frase { top: calc(100% + 60px); margin-top: 0; }
 }
@@ -602,7 +602,7 @@ main > .faixa { padding-block: 32px; }
 }
 .projeto-cartao:hover::after { opacity: 1; }
 /* Um só estilo de título de projeto, na home e em /projetos/ */
-.projeto-titulo { margin-bottom: 8px; font-family: var(--fonte-titulo); font-size: 1.5rem; }
+.projeto-titulo { margin-bottom: 8px; font-family: var(--fonte-titulo); font-size: 1.5rem; font-weight: 700; line-height: 1.15; }   /* igual em h2 (/projetos/) e h3 (home) */
 .projeto-titulo a { text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
 .projeto-cartao .link-seta { display: inline-flex; align-items: center; min-height: 44px; }
 .projeto-cartao p { color: var(--texto-2); }
@@ -669,7 +669,8 @@ main > .faixa { padding-block: 32px; }
 .passo p { margin: 0; color: var(--texto-2); }
 .passo-num { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--laranja-claro); }
 
-.tec-grupos { display: grid; gap: 24px; margin-top: 32px; }
+.tec-grupos { margin-top: 32px; }   /* uma regra só: bloco; no desktop (media) vira 3 colunas de fluxo */
+.tec-grupo { margin-bottom: 24px; }
 .tec-grupo .rotulo-mono { margin-bottom: 8px; }
 .tec-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .tecnologia {
