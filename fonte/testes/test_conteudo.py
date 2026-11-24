@@ -36,8 +36,6 @@ class TestPaginas(Base):
     def test_titulos_exatos(self):
         esperado = {
             "index.html": "AllDevs — Estúdio de software: sites, apps e automações",
-            "caio/index.html": "Caio Guerras — AllDevs",
-            "rosiel/index.html": "Rosiel Victor — AllDevs",
             "projetos/index.html": "Projetos — AllDevs",
         }
         for caminho, t in esperado.items():
@@ -72,8 +70,7 @@ class TestPaginas(Base):
             self.assertIn('id="contato"', txt, arq)
 
     def test_rodape_sem_pular_nivel_de_titulo(self):
-        for rel in ("index.html", "caio/index.html", "rosiel/index.html", "projetos/index.html",
-                    "projetos/prosup/index.html"):
+        for rel in ("index.html", "projetos/index.html", "projetos/prosup/index.html"):
             niveis = [int(n) for n in re.findall(r"<h([1-6])\b", ler(self.saida / rel))]
             self.assertEqual(niveis[0], 1, rel)
             for a, b in zip(niveis, niveis[1:]):
@@ -108,17 +105,20 @@ class TestPaginas(Base):
                 for palavra in self.PROIBIDAS:
                     self.assertNotIn(palavra.lower(), txt.lower(), f"{slug} {onde}: {palavra}")
 
-    def test_sitemap_tem_perfis_projetos_e_cases(self):
+    def test_sitemap_tem_projetos_e_historia_e_sem_perfis(self):
         mapa = ler(self.saida / "sitemap.xml")
-        for u in ("/caio/", "/rosiel/", "/projetos/", "/historia.html"):
+        for u in ("/projetos/", "/historia.html"):
             self.assertIn(f"<loc>https://all.dev.br{u}</loc>", mapa)
+        for u in ("/caio/", "/rosiel/"):
+            self.assertNotIn(u, mapa)
 
-    def test_json_ld_de_perfil_e_case(self):
+    def test_json_ld_das_pessoas_na_home_e_do_case(self):
         def ld(arq):
             m = re.search(r'<script type="application/ld\+json">(.*?)</script>', ler(self.saida / arq), re.S)
             return json.loads(m.group(1))
-        self.assertEqual(ld("caio/index.html")[0]["@id"], "https://all.dev.br/#caio-guerras")
-        self.assertEqual(ld("rosiel/index.html")[0]["@id"], "https://all.dev.br/#rosiel-victor")
+        home = ld("index.html")
+        self.assertEqual(home[1]["@id"], "https://all.dev.br/#caio-guerras")
+        self.assertEqual(home[2]["@id"], "https://all.dev.br/#rosiel-victor")
         case = ld("projetos/heisuca/index.html")[0]
         self.assertEqual(case["@type"], "SoftwareApplication")
         self.assertEqual(case["creator"], {"@id": "https://all.dev.br/#organizacao"})
@@ -145,14 +145,6 @@ class TestPortfolio(Base):
         self.assertIn("app · 2026 · no ar", txt)
 
 
-class TestPerfis(Base):
-    def test_perfil_sem_kicker_por_socio(self):
-        for slug in ("caio", "rosiel"):
-            nome = next(p.nome for p in self.dados.pessoas if p.slug == slug)
-            txt = ler(self.saida / slug / "index.html")
-            self.assertNotRegex(txt, rf"(?i)projetos de\s+{re.escape(nome)}")
-            self.assertNotRegex(txt, rf"(?i)projetos de\s+{re.escape(nome.split()[0])}")
-
     def test_nenhuma_pagina_tem_selo_de_autor(self):
         for arq in self.saida.rglob("*.html"):
             txt = ler(arq)
@@ -168,7 +160,7 @@ class TestVetado(unittest.TestCase):
                    rascunho=False)])
         # controle positivo: o visível aparece em todos os pontos
         visivel = "visivel-ok"
-        for pagina in ("index.html", "projetos/index.html", "caio/index.html", "sitemap.xml"):
+        for pagina in ("index.html", "projetos/index.html", "sitemap.xml"):
             self.assertIn(f"/projetos/{visivel}/", ler(raiz / pagina), pagina)
         self.assertTrue((raiz / "projetos" / visivel / "index.html").is_file())
         # vetado: nem página nem menção
@@ -268,29 +260,6 @@ class TestControlesPositivos(unittest.TestCase):
         port = ler(raiz / "projetos/index.html")
         self.assertIn('data-slug="discreto"', port)
         self.assertIn('data-slug="vitrine"', port)
-
-
-class TestPerfilConteudo(Base):
-    def test_faz_com_tres_itens_nos_dois_perfis(self):
-        for slug in ("caio", "rosiel"):
-            txt = ler(self.saida / slug / "index.html")
-            m = re.search(r'<section[^>]*data-secao="faz".*?</section>', txt, re.S)
-            self.assertIsNotNone(m, slug)
-            self.assertIn("O que eu faço", m.group(0))
-            lista = re.search(r"<ul>.*?</ul>", m.group(0), re.S).group(0)   # os links, quando há, vêm em outra <ul>
-            self.assertEqual(len(re.findall(r"<li>", lista)), 3, slug)
-
-    def test_link_para_historia_so_no_rosiel(self):
-        self.assertIn('class="link-seta perfil-historia" href="/historia.html"',
-                      ler(self.saida / "rosiel/index.html"))
-        self.assertNotIn("perfil-historia", ler(self.saida / "caio/index.html"))
-
-    def test_dados_exigem_exatamente_tres_faz(self):
-        from dataclasses import replace
-        d = D.carregar(REPO)
-        ruim = replace(d, pessoas=(replace(d.pessoas[0], faz=("a", "b")), *d.pessoas[1:]))
-        erros = D.validar(ruim, REPO)[0]
-        self.assertTrue([e for e in erros if "faz" in e and "3" in e], erros)
 
 
 class TestServicosSemSeloDePessoa(Base):
@@ -410,40 +379,24 @@ class TestRosielReal(Base):
     def pessoa(self, slug):
         return next(p for p in self.dados.pessoas if p.slug == slug)
 
-    def test_frase_nova(self):
-        r = self.pessoa("rosiel")
-        self.assertEqual(r.frase, "Transformo ideia em produto no ar, do protótipo à automação.")
-        self.assertIn(r.frase, ler(self.saida / "rosiel/index.html"))
-        self.assertNotIn("Sócio do estúdio", ler(self.saida / "rosiel/index.html"))
-
     def test_sete_links_na_ordem_dada_todos_https(self):
         links = [(l["rotulo"], l["url"]) for l in self.pessoa("rosiel").links]
         self.assertEqual(links, self.LINKS)
         self.assertTrue(all(u.startswith("https://") for _, u in links))
 
-    def test_links_renderizados_na_ordem(self):
-        txt = ler(self.saida / "rosiel/index.html")
-        ul = re.search(r'<ul class="perfil-links">(.*?)</ul>', txt, re.S).group(1)
-        achados = re.findall(r'<a href="([^"]+)" rel="noopener">([^<]+)</a>', ul)
-        self.assertEqual([(r, u) for u, r in achados], self.LINKS)
-
     def test_json_ld_same_as_com_os_sete(self):
-        txt = ler(self.saida / "rosiel/index.html")
+        txt = ler(self.saida / "index.html")
         ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', txt, re.S).group(1))
-        self.assertEqual(ld[0]["sameAs"], [u for _, u in self.LINKS])
+        self.assertEqual(ld[2]["sameAs"], [u for _, u in self.LINKS])
 
     def test_nunca_o_whatsapp_pessoal(self):
         for l in self.pessoa("rosiel").links:
             self.assertNotIn("wa.me", l["url"])
-        perfil = ler(self.saida / "rosiel/index.html")
-        ul = re.search(r'<ul class="perfil-links">(.*?)</ul>', perfil, re.S).group(1)
-        self.assertNotIn("wa.me", ul)
 
     def test_papel_do_rosiel_e_o_caio_ficam_como_estavam(self):
         r, c = self.pessoa("rosiel"), self.pessoa("caio")
-        self.assertEqual((r.papel, r.papel_mono), ("Produto, web e automação", "rosiel · produto, web, automação"))
+        self.assertEqual(r.papel, "Produto, web e automação")
         self.assertEqual(c.links, ())
-        self.assertEqual(c.frase, "Sócio do estúdio. Cuida da infraestrutura, da mídia e dos apps.")
 
 
 class TestCasesReais(Base):
@@ -714,9 +667,9 @@ class TestConteudoV2(unittest.TestCase):
             for n in (1, 2, 3):
                 self.assertTrue((REPO / f"assets/loja/{slug}-{n}.webp").is_file(), (slug, n))
 
-    def test_ideia_tem_os_5_estagios_na_ordem(self):
+    def test_ideia_tem_os_3_estagios_na_ordem(self):
         self.assertEqual([e["chave"] for e in self.ideia["estagios"]],
-                         ["conversa", "encontro", "prototipo", "codigo", "no-ar"])
+                         ["prototipo", "codigo", "no-ar"])
         self.assertIn(self.ideia["projeto"], self.por_slug)
         for e in self.ideia["estagios"]:
             self.assertTrue(e["titulo"].strip() and e["texto"].strip(), e["chave"])
@@ -725,19 +678,6 @@ class TestConteudoV2(unittest.TestCase):
         no_ar = next(e for e in self.ideia["estagios"] if e["chave"] == "no-ar")
         self.assertTrue(no_ar["link"].startswith("https://") and no_ar["resultado"].strip())
         self.assertEqual(no_ar["link"], self.por_slug[self.ideia["projeto"]].loja)
-        enc = next(e for e in self.ideia["estagios"] if e["chave"] == "encontro")
-        self.assertIn("nos víamos e pensávamos", enc["texto"].lower())
-
-    def test_conversa_marcada_como_reconstrucao(self):
-        conv = self.ideia["estagios"][0]
-        self.assertIs(conv["reconstrucao"], True)
-        self.assertGreaterEqual(len(conv["mensagens"]), 2)
-        self.assertEqual({m["de"] for m in conv["mensagens"]}, {"caio", "rosiel"})
-        for m in conv["mensagens"]:
-            self.assertLessEqual(len(m["texto"]), 120)
-            self.assertNotIn("telegram", m["texto"].lower())
-        for campo in ("titulo", "texto"):
-            self.assertNotIn("telegram", conv[campo].lower())
 
     def test_trechos_por_tras_cabem_em_24x72(self):
         arqs = sorted((REPO / "fonte/conteudo/por-tras").glob("*.txt"))

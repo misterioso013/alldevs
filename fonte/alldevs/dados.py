@@ -50,14 +50,10 @@ class Pessoa:
     slug: str
     nome: str
     papel: str
-    papel_mono: str
-    frase: str
     foto: str
     links: tuple
     cor: str
     atualizado: str
-    faz: tuple = ()
-    link_historia: bool = False
 
 
 @dataclass(frozen=True)
@@ -283,7 +279,7 @@ def _trecho(rot, arq, raiz, e):
                 e(f"{rot}: {arq}:{n} parece conter {classe}")
 
 
-ESTAGIOS_IDEIA = ["conversa", "encontro", "prototipo", "codigo", "no-ar"]
+ESTAGIOS_IDEIA = ["prototipo", "codigo", "no-ar"]
 PASTA_TRECHOS = "fonte/conteudo/por-tras/"
 
 
@@ -311,15 +307,10 @@ def validar_ideia(dados: Dados, raiz: Path) -> list:
         for k in campos.get(x["chave"], ()):
             if not (isinstance(x.get(k), str) and x[k].strip()):
                 e(f"estágio {x['chave']}: campo {k} ausente ou vazio")
-    msgs = estagios[0].get("mensagens")
-    if not (isinstance(msgs, list) and msgs and all(isinstance(m, dict) and m.get("de") and m.get("texto") for m in msgs)):
-        e("estágio conversa: mensagens deve ser uma lista não vazia de {de, texto}")
-    elif len({m["de"] for m in msgs}) > 2:
-        e(f"estágio conversa: no máximo 2 interlocutores (vieram {len({m['de'] for m in msgs})})")
-    link = estagios[4].get("link")
+    link = estagios[2].get("link")
     if isinstance(link, str) and link and not link.startswith("https://"):
         e(f"estágio no-ar: link deve começar com https:// (veio {link!r})")
-    arq = estagios[3].get("arquivo")
+    arq = estagios[1].get("arquivo")
     if isinstance(arq, str) and arq:
         rot = "ideia.json estágio codigo"
         if ".." in Path(arq).parts or Path(arq).is_absolute() or not (arq.startswith(PASTA_TRECHOS) and arq.endswith(".txt")):
@@ -368,16 +359,11 @@ def validar(dados: Dados, raiz: Path):
         if p.cor not in CORES:
             e(f"{rot}: cor inválida: {p.cor!r}")
         data(rot, p.atualizado)
-        if len(p.faz) != 3 or not all(isinstance(x, str) and x for x in p.faz):
-            e(f"{rot}: faz deve ter exatamente 3 textos (veio {len(p.faz)})")
-        if not isinstance(p.link_historia, bool):
-            e(f"{rot}: link_historia deve ser booleano")
         if not (raiz / p.foto).is_file():
             e(f"{rot}: foto inexistente: {p.foto}")
         for l in p.links:
             https(f"{rot} link", l.get("url"))
-        if not (raiz / "assets" / "og" / f"{p.slug}.png").is_file():
-            a(f"{rot}: falta assets/og/{p.slug}.png")
+
 
     for p in dados.projetos:
         rot = f"projeto {p.slug}"

@@ -54,11 +54,6 @@ class QuemSomos(unittest.TestCase):
         self.assertIsNotNone(m)
         self.assertTrue(320 <= int(m.group(1)) <= 360)
 
-    def test_perfil_foto_na_largura_da_coluna(self):
-        corpo = regras(r"\.perfil-foto")[0]   # a regra base, a de 430 px
-        self.assertRegex(corpo, r"width:\s*100%")
-        self.assertNotIn("360px", corpo)
-
 
 class SecoesDensas(unittest.TestCase):
     def test_tecnologias_em_colunas(self):
@@ -99,3 +94,54 @@ class Heisuca(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MenuESocios(unittest.TestCase):
+    def test_cabecalho_tem_socios_e_nao_caio_rosiel(self):
+        c = (REPO / "fonte/modelos/cabecalho.html").read_text(encoding="utf-8")
+        self.assertIn('<a href="/#quem-somos">Sócios</a>', c)
+        self.assertNotIn("/caio/", c)
+        self.assertNotIn("/rosiel/", c)
+
+
+class SemPerfisDosSocios(unittest.TestCase):
+    """Decisão do Caio (24/11): nada que nos divida. /caio/ e /rosiel/ saíram; os cartões só levam foto, nome e 'Sócio do estúdio.'"""
+    PAGINAS = ["index.html", "historia.html", *(f"{d}/{n}/index.html" for d, ns in (
+        ("projetos", ("", "amott", "cgflix-lite", "fakly", "heisuca", "prosup", "sendany")),
+        ("servicos", ("aplicativo-mobile-react-native", "automacoes-integracoes-api", "bots-whatsapp-automacao",
+                      "criacao-de-sites-institucionais", "desenvolvimento-mvp-startups", "landing-page-conversao"))) for n in ns)]
+
+    def textos(self):
+        for rel in self.PAGINAS:
+            arq = REPO / rel.replace("//", "/")
+            self.assertTrue(arq.is_file(), rel)
+            yield rel, arq.read_text(encoding="utf-8")
+
+    def test_paginas_dos_socios_nao_existem(self):
+        self.assertFalse((REPO / "caio").exists())
+        self.assertFalse((REPO / "rosiel").exists())
+        self.assertFalse((REPO / "fonte/modelos/perfil.html").exists())
+        mapa = (REPO / "sitemap.xml").read_text(encoding="utf-8")
+        for u in ("/caio/", "/rosiel/"):
+            self.assertNotIn(u, mapa)
+            self.assertNotIn(u, (REPO / "assets/paleta.json").read_text(encoding="utf-8"))
+
+    def test_nenhuma_pagina_liga_para_os_perfis_nem_tem_rotulo_ou_frase(self):
+        proibidos = ("/caio/", "/rosiel/", "Ver perfil", "caio · infraestrutura", "rosiel · produto",
+                     "Cuida da infraestrutura", "Transformo ideia em produto")
+        for rel, txt in self.textos():
+            for x in proibidos:
+                self.assertNotIn(x, txt, f"{rel}: {x}")
+
+    def test_cartoes_so_com_foto_nome_e_socio_do_estudio(self):
+        txt = (REPO / "index.html").read_text(encoding="utf-8")
+        cartoes = re.findall(r'<article class="cartao-pessoa".*?</article>', txt, re.S)
+        self.assertEqual(len(cartoes), 2)
+        for c in cartoes:
+            self.assertEqual(re.findall(r"<(\w+)", c)[1:], ["img", "h3", "p"])
+            self.assertIn("<p>Sócio do estúdio.</p>", c)
+            self.assertNotIn("<a ", c)
+
+    def test_rodape_e_cabecalho_com_socios(self):
+        for rel, txt in self.textos():
+            self.assertEqual(txt.count('<a href="/#quem-somos">Sócios</a>'), 2, rel)   # cabeçalho e rodapé

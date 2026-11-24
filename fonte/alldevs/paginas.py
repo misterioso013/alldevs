@@ -101,13 +101,12 @@ def _com_ano(tipo, ano) -> list:
 
 def _cartao_pessoa(p) -> str:
     # Foto em 4/5 (retrato inteiro), abaixo do hero: lazy, para não disputar banda com a frente (LCP). A única prioridade alta da home é a da frente do hero.
+    # Só foto, nome e o mesmo texto nos dois (decisão do Caio, 24/11): nada que separe um sócio do outro.
     return (
         f'    <article class="cartao-pessoa" data-slug="{esc(p.slug)}">\n'
         f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="512" height="640" loading="lazy" decoding="async">\n'
         f'      <h3>{esc(p.nome)}</h3>\n'
-        f'      <p class="rotulo-mono">{esc(p.papel_mono)}</p>\n'
-        f'      <p>{esc(p.frase)}</p>\n'
-        f'      <a href="/{esc(p.slug)}/" class="link-seta">Ver perfil de {esc(p.nome)}</a>\n'
+        f'      <p>Sócio do estúdio.</p>\n'
         f'    </article>'
     )
 
@@ -296,18 +295,6 @@ def _hero(dados: Dados, raiz: Path) -> Seguro:
 </section>''')
 
 
-# Rabisco do estágio "encontro": dois vultos à mesa, um caderno no meio e a ideia sobre eles. Traço simples, cores só por classe (css/site.css).
-RABISCO_ENCONTRO = (
-    '<svg class="ideia-rabisco" viewBox="0 0 320 200" aria-hidden="true" focusable="false">'
-    '<path class="rb-mesa" d="M24 150H296M56 150V188M264 150V188"/>'
-    '<circle class="rb-gente" cx="98" cy="88" r="16"/><path class="rb-gente" d="M98 104V150M98 120L136 142"/>'
-    '<circle class="rb-gente" cx="222" cy="88" r="16"/><path class="rb-gente" d="M222 104V150M222 120L184 142"/>'
-    '<path class="rb-mesa" d="M146 150L151 128H169L174 150"/>'
-    '<circle class="rb-ideia" cx="160" cy="76" r="3"/><circle class="rb-ideia" cx="160" cy="62" r="5"/>'
-    '<ellipse class="rb-ideia" cx="160" cy="30" rx="44" ry="20"/>'
-    '<path class="rb-ideia" d="M134 30q8-12 16 0t16 0t16 0"/>'
-    '</svg>')
-
 # Wireframe do estágio "protótipo": blocos que lembram a tela de um player, sem título, pôster ou marca.
 WIREFRAME = (
     '<div class="ideia-wire" aria-hidden="true">'
@@ -316,26 +303,6 @@ WIREFRAME = (
     '<span class="wire-prog"><span></span></span>'
     '<span class="wire-fileira"><span></span><span></span><span></span></span>'
     '</div>')
-
-
-def _primeiro_nome(dados: Dados, slug: str) -> str:
-    p = next((x for x in dados.pessoas if x.slug == slug), None)
-    return p.nome.split()[0] if p else slug
-
-
-def _est_conversa(dados: Dados, e: dict) -> str:
-    # O lado do balão (a ou b) é a ordem em que cada voz aparece; a cor vem do lado e nenhuma classe cita a pessoa.
-    lados = {}
-    baloes = []
-    for m in e["mensagens"]:
-        if m["de"] not in lados:
-            lados[m["de"]] = "ab"[len(lados)]
-        lado = lados[m["de"]]
-        baloes.append(
-            f'<li class="balao balao-{lado}"><span class="so-leitor">{esc(_primeiro_nome(dados, m["de"]))}: </span>'
-            f'{esc(m["texto"])}</li>')
-    return ('<p class="rotulo-mono ideia-reconstrucao">reconstrução</p>\n'
-            '   <ul class="ideia-baloes">\n    ' + "\n    ".join(baloes) + '\n   </ul>')
 
 
 def _est_codigo(raiz: Path, e: dict) -> str:
@@ -360,7 +327,7 @@ def _est_no_ar(proj, e: dict, raiz: Path) -> str:
 
 
 def _ideia(dados: Dados, raiz: Path) -> Seguro:
-    """Seção #ideia, "Da ideia ao ar": a história de um projeto em 5 estágios (ideia.json). Legível sem JS; js/ideia.js só anima."""
+    """Seção #ideia, "Da ideia ao ar": a história de um projeto em 3 estágios (ideia.json). Legível sem JS; js/ideia.js só anima."""
     ideia = dados.ideia
     if not ideia:
         return Seguro("")
@@ -371,11 +338,7 @@ def _ideia(dados: Dados, raiz: Path) -> Seguro:
     itens = []
     for e in ideia["estagios"]:
         chave = e["chave"]
-        if chave == "conversa":
-            visual = _est_conversa(dados, e)
-        elif chave == "encontro":
-            visual = RABISCO_ENCONTRO
-        elif chave == "prototipo":
+        if chave == "prototipo":
             visual = f'{WIREFRAME}\n   <p class="ideia-fonte">{esc(e["fonte"])}</p>'
         elif chave == "codigo":
             visual = _est_codigo(raiz, e)
@@ -530,40 +493,6 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, corpo, ld, previa, _barra_wa(est, "home"),
                      head_extra=_preload_frente(dados, raiz))
     return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ld)
-
-
-def _perfil(p, dados: Dados, raiz: Path, previa: bool) -> Pagina:
-    """Um molde para os dois sócios: as mesmas seções, as mesmas classes, a mesma foto e os mesmos projetos
-    (todos os visíveis, na ordem de /projetos/). Só o conteúdo de `pessoas.json` muda."""
-    vis = visiveis(dados.projetos)
-    projetos = "\n".join(str(_cartao_projeto(x, raiz, 3)) for x in vis)
-    if not projetos:
-        projetos = '    <p class="secao-intro">Em breve.</p>'
-    links = ""
-    if p.links:
-        itens = "\n".join(
-            f'    <li><a href="{esc(l["url"])}" rel="noopener">{esc(l.get("rotulo", l["url"]))}</a></li>' for l in p.links)
-        links = f'\n  <ul class="perfil-links">\n{itens}\n  </ul>'
-    faz = "\n".join(f"    <li>{esc(x)}</li>" for x in p.faz)
-    historia = ""
-    if p.link_historia:
-        historia = '\n  <p><a class="link-seta perfil-historia" href="/historia.html">Leia a história</a></p>'
-    foto_w, foto_h = _tamanho_webp(Path(raiz) / p.foto)
-    corpo = render(
-        "perfil", **_cabecalho_e_rodape(dados), faz=Seguro(faz), historia=Seguro(historia),
-        nome=p.nome, papel=p.papel, papel_mono=p.papel_mono, frase=p.frase, foto=p.foto,
-        foto_w=str(foto_w), foto_h=str(foto_h),
-        links=Seguro(links), projetos=Seguro(projetos),
-        revelar=Seguro('\n<script src="/js/revelar.js" defer></script>' if any(x.por_tras for x in vis) else ""),
-        contato=_bloco_contato(dados.estudio, "perfil", alvo=p.nome, slug=p.slug),
-    )
-    caminho = f"{p.slug}/index.html"
-    titulo = f"{p.nome} — AllDevs"
-    descricao = f"{p.nome}, sócio da AllDevs: {p.papel.lower()}."
-    ld = (seo.json_ld_pessoa(p),)
-    doc = _documento(caminho, titulo, descricao, corpo, json_ld=ld, previa=previa,
-                     barra=_barra_wa(dados.estudio, "perfil", alvo=p.nome, slug=p.slug))
-    return Pagina(caminho, titulo, descricao, doc, p.atualizado, ld)
 
 
 def _filtro_tipos(vis) -> Seguro:
@@ -746,7 +675,6 @@ def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
 def montar_todas(dados: Dados, raiz: Path, previa: bool) -> list:
     """Todas as páginas, ordenadas por caminho. Na `previa` cada uma leva a meta noindex."""
     paginas = [_home(dados, raiz, previa), _historia(dados, raiz, previa), _projetos(dados, raiz, previa)]
-    paginas += [_perfil(p, dados, raiz, previa) for p in dados.pessoas]
     paginas += [_case(x, dados, raiz, previa) for x in visiveis(dados.projetos)]
     paginas += [_servico(s, dados, raiz, previa) for s in dados.servicos]
     return sorted(paginas, key=lambda p: p.caminho)
@@ -754,12 +682,11 @@ def montar_todas(dados: Dados, raiz: Path, previa: bool) -> list:
 
 def paleta(dados: Dados) -> list:
     """Entradas da paleta de comandos (assets/paleta.json), nesta ordem: projetos visíveis (a ordem de /projetos/),
-    serviços, pessoas e contato. Só o que tem página ou link real; o contato vem dos campos do `Estudio`.
+    serviços e contato (as páginas dos sócios saíram do site em 24/11). Só o que tem página ou link real; o contato vem dos campos do `Estudio`.
     `termos` só entra quando o rótulo não cobre a busca ("email" não está em "E-mail"); o tipo também é buscável no JS."""
     est = dados.estudio
     itens = [{"rotulo": x.nome, "tipo": "projeto", "url": f"/projetos/{x.slug}/"} for x in visiveis(dados.projetos)]
     itens += [{"rotulo": x.nome, "tipo": "servico", "url": f"/servicos/{x.slug}/"} for x in dados.servicos]
-    itens += [{"rotulo": x.nome, "tipo": "pessoa", "url": f"/{x.slug}/"} for x in dados.pessoas]
     itens += [
         {"rotulo": "Pedir orçamento", "tipo": "contato", "url": "/#contato"},
         {"rotulo": "WhatsApp", "tipo": "contato",

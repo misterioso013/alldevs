@@ -40,16 +40,13 @@ class TestPaletaJson(Base):
             if "termos" in i:
                 self.assertEqual(i["termos"], i["termos"].lower(), i)
 
-    def test_paleta_tem_os_6_servicos_e_2_pessoas(self):
+    def test_paleta_tem_os_6_servicos_e_nenhuma_pessoa(self):
         servicos = self.por_tipo("servico")
         self.assertEqual(len(self.dados.servicos), 6)
         self.assertEqual(len(servicos), 6)
         self.assertEqual([i["rotulo"] for i in servicos], [s.nome for s in self.dados.servicos])
         self.assertEqual([i["url"] for i in servicos], [f"/servicos/{s.slug}/" for s in self.dados.servicos])
-        pessoas = self.por_tipo("pessoa")
-        self.assertEqual(len(self.dados.pessoas), 2)
-        self.assertEqual([i["rotulo"] for i in pessoas], [p.nome for p in self.dados.pessoas])
-        self.assertEqual([i["url"] for i in pessoas], [f"/{p.slug}/" for p in self.dados.pessoas])
+        self.assertEqual(self.por_tipo("pessoa"), [])   # as páginas dos sócios saíram do site (24/11)
 
     def test_projetos_visiveis_na_mesma_ordem_de_projetos(self):
         projetos = self.por_tipo("projeto")

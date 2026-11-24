@@ -60,16 +60,6 @@
     "url": "/servicos/landing-page-conversao/"
   },
   {
-    "rotulo": "Caio Guerras",
-    "tipo": "pessoa",
-    "url": "/caio/"
-  },
-  {
-    "rotulo": "Rosiel Victor",
-    "tipo": "pessoa",
-    "url": "/rosiel/"
-  },
-  {
     "rotulo": "Pedir orçamento",
     "tipo": "contato",
     "url": "/#contato"

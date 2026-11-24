@@ -15,7 +15,7 @@ from alldevs import paginas
 REPO = Path(__file__).resolve().parent.parent.parent
 IDEIA_JS = REPO / "js" / "ideia.js"
 SITE_JS = REPO / "js" / "site.js"
-CHAVES = ["conversa", "encontro", "prototipo", "codigo", "no-ar"]
+CHAVES = ["prototipo", "codigo", "no-ar"]
 PROIBIDAS = ("CGSERVER", "servidor", "Whatbox", "torrent", "tracker", "acervo", "Jellyfin", "Plex", "nuvem", "Emby")
 
 
@@ -153,7 +153,7 @@ class TestIdeiaHtml(unittest.TestCase):
         self.assertEqual(self.dados.ideia["projeto"], "heisuca")
         self.assertEqual([e["chave"] for e in self.dados.ideia["estagios"]], CHAVES)
 
-    def test_cinco_estagios_na_ordem(self):
+    def test_tres_estagios_na_ordem(self):
         self.assertTrue(self.html.lstrip().startswith('<section id="ideia"'))
         self.assertEqual(len(self.achar("ol", **{"class": "ideia-estagios"})), 1)
         lis = self.achar("li", **{"class": "ideia-estagio"})
@@ -170,41 +170,13 @@ class TestIdeiaHtml(unittest.TestCase):
             for outra in CHAVES:
                 if outra != chave:
                     self.assertNotIn(f'data-chave="{outra}"', li)
-        self.assertEqual(_estagio(self.html, "conversa").count('class="balao '), 4)
+        self.assertNotIn("balao", self.html)
+        self.assertNotIn("ideia-rabisco", self.html)
         self.assertIn("</a>", _estagio(self.html, "no-ar"))
         self.assertNotIn("<li", _estagio(self.html, "no-ar").replace('<li class="ideia-estagio" data-chave="no-ar">', "", 1))
 
-    def test_rotulo_reconstrucao_no_chat(self):
-        chat = _estagio(self.html, "conversa")
-        self.assertRegex(chat, r'<p class="rotulo-mono ideia-reconstrucao">reconstrução</p>')
-        self.assertEqual(chat.count("<ul"), 1)
-        self.assertEqual(chat.count('class="balao'), len(self.est["conversa"]["mensagens"]))
-
-    def test_sem_telegram_no_chat(self):
-        chat = _estagio(self.html, "conversa")
-        self.assertNotIn("telegram", self.html.lower())   # a seção inteira, não só o chat
-        self.assertNotIn("<svg", chat)
-        self.assertNotIn("<img", chat)
-
-    def test_chat_nao_amarra_socio_a_cor(self):
-        # a cor é do lado do balão (1º e 2º a falar), nunca do nome; a classe e os atributos não citam sócio algum
-        chat = _estagio(self.html, "conversa")
-        marcas = re.findall(r'<[a-z]+[^>]*>', chat)
-        for m in marcas:
-            self.assertNotRegex(m.lower(), r"caio|rosiel")
-        lados = re.findall(r'class="balao balao-(\w)"', chat)
-        self.assertEqual(lados, ["a", "b", "a", "b"])
-        # as falas aparecem inteiras e escapadas
-        for m in self.est["conversa"]["mensagens"]:
-            self.assertIn(paginas.esc(m["texto"]), chat)
-
-    def test_encontro_e_rabisco_svg_inline(self):
-        enc = _estagio(self.html, "encontro")
-        self.assertEqual(enc.count("<svg"), 1)
-        self.assertRegex(enc, r'<svg[^>]*aria-hidden="true"')
-        self.assertIn(paginas.esc(self.est["encontro"]["texto"]), enc)
-        self.assertNotIn("<img", enc)
-        self.assertNotIn("href=", enc)
+    def test_sem_telegram_na_secao(self):
+        self.assertNotIn("telegram", self.html.lower())
 
     def test_prototipo_wireframe_com_fonte_em_mono(self):
         proto = _estagio(self.html, "prototipo")
@@ -278,9 +250,13 @@ class TestIdeiaHtml(unittest.TestCase):
         for palavra in PROIBIDAS:
             self.assertNotIn(palavra.lower(), baixo, palavra)
 
-    def test_so_um_estudio_sem_nome_de_socio_fora_do_chat(self):
-        fora = self.html.replace(_estagio(self.html, "conversa"), "")
-        self.assertNotRegex(fora.lower(), r"caio|rosiel")
+    def test_so_um_estudio_sem_nome_de_socio(self):
+        self.assertNotRegex(self.html.lower(), r"caio|rosiel")
+
+    def test_conversa_e_encontro_removidos(self):
+        for chave in ("conversa", "encontro"):
+            self.assertNotIn(f'data-chave="{chave}"', self.html)
+        self.assertNotIn("Nos víamos", self.html)
 
 
 class TestIdeiaValidacao(unittest.TestCase):
@@ -324,23 +300,16 @@ class TestIdeiaValidacao(unittest.TestCase):
         e = self.erros(self.com(estagios=est))
         self.assertTrue(any("estágios devem ser" in x for x in e), e)
 
-    def test_mais_de_dois_interlocutores(self):
-        est = self.estagios()
-        est[0]["mensagens"][1]["de"] = "um-terceiro"
-        est[0]["mensagens"].append({"de": "outro", "texto": "oi"})
-        e = self.erros(self.com(estagios=est))
-        self.assertTrue(any("no máximo 2 interlocutores" in x for x in e), e)
-
     def test_link_sem_https(self):
         est = self.estagios()
-        est[4]["link"] = "http://play.google.com/store/apps/details?id=app.heisuca.player"
+        est[2]["link"] = "http://play.google.com/store/apps/details?id=app.heisuca.player"
         e = self.erros(self.com(estagios=est))
         self.assertTrue(any("https://" in x for x in e), e)
 
     def test_arquivo_do_codigo_fora_da_pasta(self):
         for fora in ("fonte/dados/estudio.json", "fonte/conteudo/por-tras/../../dados/estudio.json", "/etc/passwd"):
             est = self.estagios()
-            est[3]["arquivo"] = fora
+            est[1]["arquivo"] = fora
             e = self.erros(self.com(estagios=est))
             self.assertTrue(any("fonte/conteudo/por-tras/" in x for x in e), (fora, e))
 
@@ -349,7 +318,7 @@ class TestIdeiaValidacao(unittest.TestCase):
             raiz = Path(t)
             (raiz / "fonte/conteudo/por-tras").mkdir(parents=True)
             est = self.estagios()
-            est[3]["arquivo"] = "fonte/conteudo/por-tras/x.txt"
+            est[1]["arquivo"] = "fonte/conteudo/por-tras/x.txt"
             d = self.com(estagios=est)
             casos = {
                 "linhas": ("a\n" * 30, "linhas"),
@@ -363,14 +332,14 @@ class TestIdeiaValidacao(unittest.TestCase):
 
     def test_ideia_levanta_erro_de_dados_em_vez_de_keyerror(self):
         est = self.estagios()
-        est[4]["link"] = "http://x"
+        est[2]["link"] = "http://x"
         with self.assertRaises(dados_mod.ErroDeDados) as c:
             paginas._ideia(self.com(estagios=est), REPO)
         self.assertIn("https://", str(c.exception))
 
     def test_validar_inclui_os_erros_da_ideia(self):
         est = self.estagios()
-        est[4]["link"] = "http://x"
+        est[2]["link"] = "http://x"
         self.assertTrue(any("ideia.json" in x for x in dados_mod.validar(self.com(estagios=est), REPO)[0]))
 
 

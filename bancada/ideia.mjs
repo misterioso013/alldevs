@@ -83,7 +83,7 @@ cena('desktop-pin', (det) => abre(DESK, async (p) => {
 
 cena('estados-por-progresso', (det) => abre(DESK, async (p) => {
   const ativos = [], cod = [];
-  for (const f of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+  for (const f of [0.1, 0.5, 0.9]) {
     await noPin(p, f);
     const i = await info(p);
     ativos.push(i.ativo);
@@ -94,10 +94,10 @@ cena('estados-por-progresso', (det) => abre(DESK, async (p) => {
     const op = i.op[i.ativo];
     if (op !== '1.00') throw new Error(`estágio ${i.ativo} com opacidade ${op} em ${f}`);
   }
-  if (ativos.join() !== '0,1,2,3,4') throw new Error('ativos por progresso: ' + ativos.join());
-  const c3 = cod[3];
+  if (ativos.join() !== '0,1,2') throw new Error('ativos por progresso: ' + ativos.join());
+  const c3 = cod[1];
   if (!clipAberto(c3)) throw new Error('código não está 100% revelado no estágio do código: ' + c3);
-  det(`ativo ${ativos.join('/')}; clip-path do código no estágio 3: ${c3}`);
+  det(`ativo ${ativos.join('/')}; clip-path do código no estágio 1: ${c3}`);
 }));
 
 cena('estado-inicial', (det) => abre(DESK, async (p) => {
@@ -111,7 +111,7 @@ cena('estado-inicial', (det) => abre(DESK, async (p) => {
     const a = document.querySelector('#ideia .ideia-estagio[data-chave="no-ar"] a');
     const b = a.getBoundingClientRect();
     const el = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
-    return { ativo: lis.findIndex((e) => e.classList.contains('ativo')), noAr: lis[4].classList.contains('ativo'), link: el === a || a.contains(el), top: Math.round(b.top), y: Math.round(scrollY) };
+    return { ativo: lis.findIndex((e) => e.classList.contains('ativo')), noAr: lis[2].classList.contains('ativo'), link: el === a || a.contains(el), top: Math.round(b.top), y: Math.round(scrollY) };
   });
   if (!r.noAr || !r.link) throw new Error('reload rolado: estado inicial errado ' + JSON.stringify(r));
   det(`reload a 90%: ativo ${r.ativo}, elementFromPoint no link = link (scrollY ${r.y})`);
@@ -214,7 +214,7 @@ cena('celular-sem-pin', (det) => abre(MOVEL(360), async (p) => {
   const i = await info(p);
   const fixos = await p.evaluate((SEC) => [...document.querySelectorAll(SEC + ', ' + SEC + ' *')].filter((e) => getComputedStyle(e).position === 'fixed').length, SEC);
   if (i.pin || i.spacer || i.pos === 'fixed' || fixos) throw new Error('há pin no celular: ' + JSON.stringify({ ...i, fixos }));
-  if (i.visto !== 5) throw new Error(`entraram ${i.visto} de 5 estágios ao rolar`);
+  if (i.visto !== 3) throw new Error(`entraram ${i.visto} de 3 estágios ao rolar`);
   det(`sem pin-spacer, ${fixos} elementos fixed na seção; ${i.visto} estágios entraram pelo IntersectionObserver`);
 }));
 
@@ -230,8 +230,8 @@ cena('reduzido', (det) => abre({ ...DESK, reducedMotion: 'reduce' }, async (p) =
     return { op: c.opacity, tr: c.transform, vis: b.width > 0 && b.height > 0 && c.visibility !== 'hidden', clip: cod ? getComputedStyle(cod).clipPath : 'none' };
   }), SEC);
   if (i.pin || i.spacer || i.oculto || i.visto) throw new Error('animação ligada com reduced-motion: ' + JSON.stringify(i));
-  if (r.length !== 5 || r.some((x) => !x.vis || x.op !== '1' || x.tr !== 'none' || x.clip !== 'none')) throw new Error('estágios não estão estáticos: ' + JSON.stringify(r));
-  det('5 estágios, h2 e intro visíveis com opacidade 1, sem transform, sem clip-path, sem pin');
+  if (r.length !== 3 || r.some((x) => !x.vis || x.op !== '1' || x.tr !== 'none' || x.clip !== 'none')) throw new Error('estágios não estão estáticos: ' + JSON.stringify(r));
+  det('3 estágios, h2 e intro visíveis com opacidade 1, sem transform, sem clip-path, sem pin');
 }));
 
 cena('sem-js', async (det) => {
@@ -245,8 +245,8 @@ cena('sem-js', async (det) => {
       return { estagios: [...sec.querySelectorAll('.ideia-estagio')].map((e) => vis(e) && !e.hasAttribute('inert') && e.getAttribute('aria-hidden') !== 'true'),
         h2: vis(sec.querySelector('h2')), intro: vis(sec.querySelector('.ideia-intro')), pin: sec.classList.contains('ideia-pin') };
     });
-    if (r.estagios.length !== 5 || r.estagios.some((v) => !v) || !r.h2 || !r.intro || r.pin) throw new Error('sem JS a seção não ficou legível: ' + JSON.stringify(r));
-    det('JS desligado: 5 estágios, h2 e intro visíveis, sem pin');
+    if (r.estagios.length !== 3 || r.estagios.some((v) => !v) || !r.h2 || !r.intro || r.pin) throw new Error('sem JS a seção não ficou legível: ' + JSON.stringify(r));
+    det('JS desligado: 3 estágios, h2 e intro visíveis, sem pin');
   } finally { await ctx.close(); }
 });
 
@@ -269,9 +269,9 @@ cena('cls', async (det) => {
 async function tiraCapturas(pasta) {
   fs.mkdirSync(pasta, { recursive: true });
   await abre(DESK, async (p) => {
-    const chaves = ['conversa', 'encontro', 'prototipo', 'codigo', 'no-ar'];
-    for (let i = 0; i < 5; i++) {
-      await noPin(p, (i + 0.6) / 5);   // estágio i 100% revelado
+    const chaves = ['prototipo', 'codigo', 'no-ar'];
+    for (let i = 0; i < 3; i++) {
+      await noPin(p, (i + 0.6) / 3);   // estágio i 100% revelado
       await p.screenshot({ path: path.join(pasta, `ideia-1440-${chaves[i]}.png`) });
     }
   });

@@ -15,7 +15,7 @@ python3 bancada/gzserver.py 8765 $PREVIA &          # com gzip, como o GitHub Pa
 node bancada/rodar.mjs --url http://127.0.0.1:8765 --saida bancada/relatorios/<AAAA-MM-DD>
 ```
 Use o `gzserver.py`, não o `python3 -m http.server`: sem compressão o JS de vendor chega inteiro e o LCP do
-Lighthouse sobe uns 600 ms nas páginas com foto (`/`, `/caio/`, `/rosiel/`), o que não acontece em produção.
+Lighthouse sobe uns 600 ms nas páginas com foto (`/`), o que não acontece em produção.
 Aviso: não gere a prévia dentro do repo (`dist-previa/`): `checar.py` varre o repo e a cor `rgba()` dos estáticos o reprova
 (`dist-previa/` agora é ignorada pelo `checar.py`, mas mantenha a prévia fora). Não mexa na prévia durante a rodada.
 Para medir só uma parte do site, acrescente `--so /servicos/` (só os caminhos que começam com esse prefixo).

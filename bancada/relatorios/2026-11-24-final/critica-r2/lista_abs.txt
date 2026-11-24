@@ -29,8 +29,6 @@
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-1440-12.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-1440-13.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-1440-14.png
-/mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-1440-15.png
-/mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-1440-16.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-360-00.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-360-01.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-360-02.png
@@ -51,7 +49,6 @@
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-360-17.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-360-18.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-360-19.png
-/mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-360-20.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-430-00.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-430-01.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-430-02.png
@@ -69,7 +66,6 @@
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-430-14.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-430-15.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-430-16.png
-/mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/home-430-17.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/projetos-1440-00.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/projetos-1440-01.png
 /mnt/nvme4n1/caioguerras/TMP/alldevs-estudo/repo/bancada/relatorios/2026-11-24-final/critica-r2/projetos-1440-02.png

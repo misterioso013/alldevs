@@ -1,4 +1,4 @@
-/* "Da ideia ao ar" (ALL.dev v2). Sem JS os 5 estagios ficam empilhados e legiveis.
+/* "Da ideia ao ar" (ALL.dev v2). Sem JS os 3 estagios ficam empilhados e legiveis.
    Desktop com movimento: a secao fica presa (pin) e a rolagem (scrub) troca o estagio; o codigo "digita" por clip-path.
    Os estagios inativos ficam fora da arvore de acessibilidade e do foco (inert); o Tab anda de estagio em estagio.
    Celular com movimento: cada estagio entra ao aparecer (IntersectionObserver). Reduced-motion: nada se anima. */

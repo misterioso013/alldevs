@@ -1,9 +1,9 @@
-// Controles (botões, CTAs, pílula, filtros, links de perfil, FAQ, menu) a 412 px: altura mínima por página.
-// Uso: node bancada/alvos.mjs http://127.0.0.1:8765 / /rosiel/ /servicos/...   (V=1 lista os tipos; BANCADA_LIBS como no rodar.mjs)
+// Controles (botões, CTAs, pílula, filtros, FAQ, menu) a 412 px: altura mínima por página.
+// Uso: node bancada/alvos.mjs http://127.0.0.1:8765 / /historia.html /servicos/...   (V=1 lista os tipos; BANCADA_LIBS como no rodar.mjs)
 import { chromium } from 'playwright';
 const [base, ...paths] = process.argv.slice(2);
 const env = { ...process.env, LD_LIBRARY_PATH: [process.env.BANCADA_LIBS, process.env.LD_LIBRARY_PATH].filter(Boolean).join(':') };
-const SEL = 'button, summary, input, select, textarea, [role=button], .btn, .nav-cta, .paleta-gatilho, .nav-links a, .perfil-links a, .faq-question, .menu-toggle, .nav-toggle';
+const SEL = 'button, summary, input, select, textarea, [role=button], .btn, .nav-cta, .paleta-gatilho, .nav-links a, .faq-question, .menu-toggle, .nav-toggle';
 const b = await chromium.launch({ env });
 let falhas = 0;
 for (const p of paths) {

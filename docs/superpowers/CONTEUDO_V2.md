@@ -21,13 +21,16 @@ No site, o campo `origem` do cgflix-lite traz só `CgflixPalette.kt@8aa925d`: o 
 - fakly e sendany (assets/images/): PNG de 2549 e 1352 px trocados por WebP de 960 px; os PNG antigos foram para ~/Arquivos_Obsoletos/2026-11-23_alldevs_v1/.
 
 ## Lojas (assets/loja/, 540 px)
-Heisuca: 1 = cabeçalho da loja (nome, ícone, AllDevs, classificação e downloads); 2 = imagem individual de captura publicada pela página (tela de temas, 540x960); 3 = ícone oficial (512 px). CGFLIX Lite: 1 = cabeçalho da loja; 2 = ícone do app (512 px); 3 = recorte do topo do cabeçalho. Nenhuma captura de carrossel. Nenhuma das capturas individuais do CGFLIX Lite foi usada, porque todas mostram títulos, pôsteres ou nomes que não podem aparecer. Fonte: app.heisuca.player e br.com.docaio.cgflix.lite (página da Google Play, 2026-11-23, desenvolvedor AllDevs).
+Heisuca: 1 = cabeçalho da loja (nome, ícone, AllDevs, classificação e downloads); 2 = imagem individual de captura (tela de temas, 540x960; saiu da página em 24/11 para o print aparecer uma vez só, arquivo mantido); 3 = ícone oficial (512 px). CGFLIX Lite: 1 = cabeçalho da loja; 2 = ícone do app (512 px); 3 = recorte do topo do cabeçalho. Nenhuma captura de carrossel. Nenhuma das capturas individuais do CGFLIX Lite foi usada, porque todas mostram títulos, pôsteres ou nomes que não podem aparecer. Fonte: app.heisuca.player e br.com.docaio.cgflix.lite (página da Google Play, 2026-11-23, desenvolvedor AllDevs).
 
 ## Ideia (fonte/conteudo/ideia.json)
-Projeto Heisuca. A conversa é reconstrução (marcada `reconstrucao: true`), com falas curtas inventadas só como ilustração; nada vem de mensagem real. O estágio `prototipo` é fato com fonte: o primeiro commit do `tema_hisui.dart` no repositório do Heisuca é 612b0a6, de 2026-10-20 (primeiro app em Flutter); o site web do Heisuca começou em 2026-10-18 (e512785). O resultado "Publicado na Google Play." é fato verificado.
+Projeto Heisuca. Decisão do Caio (24/11): saíram os estágios `conversa` (conversa reconstruída) e `encontro` ("Nos víamos e pensávamos." e o desenho dos bonecos na mesa), porque Caio (Rio de Janeiro) e Rosiel (Pernambuco) nunca se encontraram pessoalmente. Ficam `prototipo`, `codigo` e `no-ar`, com os textos atuais; não há mais falas inventadas. O estágio `prototipo` é fato com fonte: o primeiro commit do `tema_hisui.dart` no repositório do Heisuca é 612b0a6, de 2026-10-20 (primeiro app em Flutter); o site web do Heisuca começou em 2026-10-18 (e512785). O resultado "Publicado na Google Play." é fato verificado.
 
 ## Pendências
-- Caio e Rosiel devem aprovar ou reescrever as quatro falas da conversa e o texto do protótipo (ideia.json).
+- Caio e Rosiel devem aprovar ou reescrever o texto do protótipo (ideia.json). As falas da conversa não existem mais (decisão de 24/11).
+- O texto de abertura da seção "Da ideia ao ar" ainda diz "do primeiro papo ao app na loja"; decidir com o Caio se fica.
+- Menu do topo (24/11): "Caio" e "Rosiel" viraram "Sócios" (/#quem-somos); o rodapé também (um item só, "Sócios").
+- Decisão do Caio (24/11), "remover toda citação que nos divide": as páginas /caio/ e /rosiel/ saíram do site (e do sitemap e da paleta); os cartões de "Quem somos" ficam só com foto, nome e "Sócio do estúdio."; saíram o rótulo por pessoa, a frase e o link "Ver perfil". Pendente com o Caio: historia.html e o e-mail de contato (mailto do Rosiel); o JSON-LD ainda leva o cargo (`papel`) e os links de cada sócio.
 - Os textos de amott, cgflix-lite (problema) e heisuca (problema/fizemos, já existentes) merecem leitura do autor.
 - Capturas de frente de fakly e sendany mostram caixas no lugar de emojis (fonte de emoji ausente no Chromium da bancada); refazer num navegador com fonte de emoji.
 - A captura de frente do sendany é só a abertura do site, quase vazia.

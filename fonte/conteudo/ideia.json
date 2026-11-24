@@ -2,23 +2,6 @@
   "projeto": "heisuca",
   "estagios": [
     {
-      "chave": "conversa",
-      "titulo": "A conversa",
-      "texto": "Reconstruímos a conversa que deu início ao app. As falas são resumidas.",
-      "reconstrucao": true,
-      "mensagens": [
-        {"de": "caio", "texto": "Todo player que a gente testa funciona num aparelho e quebra em outro."},
-        {"de": "rosiel", "texto": "E se as cores e as regras viessem de um conjunto só, igual no celular, na TV e no navegador?"},
-        {"de": "caio", "texto": "Fechado. Cada cor com nome, num único lugar."},
-        {"de": "rosiel", "texto": "Eu desenho o tema, você monta o primeiro app."}
-      ]
-    },
-    {
-      "chave": "encontro",
-      "titulo": "O encontro",
-      "texto": "Nos víamos e pensávamos."
-    },
-    {
       "chave": "prototipo",
       "titulo": "O protótipo",
       "texto": "O primeiro app em Flutter entrou no repositório em 20/10/2026, já com o tema Hisui, de cores fixas e nomeadas.",

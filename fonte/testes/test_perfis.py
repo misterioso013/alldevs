@@ -1,4 +1,4 @@
-"""Perfis e história (Task 9): os dois perfis têm o mesmo peso, "Fizemos juntos" é o de /projetos/, a história entra byte a byte."""
+"""História (Task 9): "Fizemos juntos" e a história entram byte a byte. As páginas de perfil saíram em 24/11 (decisão do Caio)."""
 import re
 import unittest
 from urllib.parse import unquote
@@ -21,74 +21,9 @@ def slugs_da_secao(txt):
 
 
 class TestPerfis(Base):
-    def perfil(self, slug):
-        return ler(self.saida / slug / "index.html")
-
-    def test_perfis_mesmo_peso(self):
-        def estrutura(slug):
-            txt = self.perfil(slug)
-            return (re.findall(r'<section[^>]*data-secao="([^"]+)"', txt),
-                    re.findall(r'<(?:section|img|ul|p|h1|h2|a)[^>]*class="([^"]+)"', txt))
-        a, b = estrutura("caio"), estrutura("rosiel")
-        self.assertEqual(a[0], b[0])
-        self.assertEqual(a[0], ["apresentacao", "faz", "projetos", "contato"])
-        # as mesmas classes; a única diferença é o link "Leia a história" (só quem tem link_historia)
-        # (links externos e "Leia a história" só saem para quem tem o dado; hoje o Caio não tem links)
-        solto = ("link-seta perfil-historia", "perfil-links")
-        self.assertEqual([c for c in a[1] if c not in solto], [c for c in b[1] if c not in solto])
-        for slug in PERFIS:
-            txt = self.perfil(slug)
-            self.assertIn('data-molde="perfil"', txt)
-            self.assertNotIn("data-pessoa", txt)
-            self.assertEqual(len(re.findall(r"<h1[ >]", txt)), 1)
-
-    def test_foto_igual_nos_dois_e_com_a_proporcao_real(self):
-        tamanhos = set()
-        for p in self.dados.pessoas:
-            img = re.search(r'<img class="perfil-foto"[^>]+>', self.perfil(p.slug)).group(0)
-            w, h = (int(x) for x in re.search(r'width="(\d+)" height="(\d+)"', img).groups())
-            rw, rh = _tamanho_webp(REPO / p.foto)
-            self.assertEqual((w, h), (rw, rh), p.slug)
-            tamanhos.add((w, h))
-            self.assertNotIn('loading="lazy"', img)   # a foto é o LCP do perfil
-            self.assertIn('fetchpriority="high"', img)
-        self.assertEqual(len(tamanhos), 1)
-
-    def test_fizemos_juntos_igual_nos_dois(self):
-        da_lista = slugs_da_secao(ler(self.saida / "projetos/index.html"))
-        self.assertEqual(da_lista, [p.slug for p in self.visiveis])
-        for slug in PERFIS:
-            sec = secao(self.perfil(slug), "projetos")
-            self.assertRegex(sec, r"<h2[^>]*>[^<]*Fizemos juntos[^<]*</h2>")
-            self.assertEqual(slugs_da_secao(sec), da_lista, slug)
-            self.assertEqual(re.findall(r"<h3>", sec).__len__(), len(da_lista))
-
-    def test_revelar_so_com_cartao_que_revela(self):
-        for slug in PERFIS:
-            txt = self.perfil(slug)
-            self.assertEqual("/js/revelar.js" in txt, "data-revela-cartao" in txt, slug)
-
-    def test_links_do_perfil_44px(self):
-        css = ler(REPO / "css" / "site.css")
-        i = css.index(".perfil-links a {")
-        regra = css[i:css.index("}", i)]
-        self.assertIn("display: inline-flex", regra)
-        self.assertIn("align-items: center", regra)
-        self.assertIn("min-height: 44px", regra)
-        for token in re.findall(r"#[0-9a-fA-F]{3,8}\b|rgba?\(", regra):
-            self.fail(f"cor fora dos tokens: {token}")
-        i = css.index(".perfil-historia {")
-        self.assertIn("min-height: 44px", css[i:css.index("}", i)])
-
-    def test_foto_sem_decoding_async_e_com_prioridade(self):
-        for slug in PERFIS:
-            img = re.search(r'<img class="perfil-foto"[^>]*>', self.perfil(slug)).group(0)
-            self.assertNotIn("decoding", img)
-            self.assertIn('fetchpriority="high"', img)
-
     def test_titulo_do_fecho_sem_ch(self):
         css = ler(REPO / "css" / "site.css")
-        for sel in (".closing-title {",):  # .perfil-frase fica em ch: em rem o LCP do /caio/ sobe 2482 -> 2555 ms (ver relatório)
+        for sel in (".closing-title {",):
             i = css.index(sel)
             self.assertNotRegex(css[i:css.index("}", i)], r"max-width:\s*[\d.]+ch", sel)
 
@@ -114,12 +49,6 @@ class TestPerfis(Base):
             self.assertIn("." + c, css, c)
         self.assertIn(".depoimento figcaption", css)
         self.assertIn(".depoimento blockquote", css)
-
-    def test_wa_do_perfil_com_origem(self):
-        for slug in PERFIS:
-            txt = self.perfil(slug)
-            self.assertIn(f"%5Bsite%C2%B7perfil%C2%B7{slug}%5D", txt)
-            self.assertIn(f"[site·perfil·{slug}]", unquote(secao(txt, "contato")))
 
     def test_css_sem_cor_nem_estilo_por_pessoa(self):
         css = ler(REPO / "css" / "site.css")

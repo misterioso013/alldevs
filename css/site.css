@@ -156,15 +156,13 @@ main > .breadcrumb + section { border-top: 0; }
   .cartoes-pessoas > .cartao-pessoa {
     display: grid;
     grid-template-columns: 340px minmax(0, 1fr);
-    grid-template-rows: 1fr auto auto auto auto 1fr;
+    grid-template-rows: 1fr auto auto 1fr;
     column-gap: 48px;
     padding: 32px;
   }
   .cartoes-pessoas > .cartao-pessoa > img { grid-column: 1; grid-row: 1 / -1; margin: 0; }
   .cartoes-pessoas > .cartao-pessoa > :nth-child(2) { grid-column: 2; grid-row: 2; }
   .cartoes-pessoas > .cartao-pessoa > :nth-child(3) { grid-column: 2; grid-row: 3; }
-  .cartoes-pessoas > .cartao-pessoa > :nth-child(4) { grid-column: 2; grid-row: 4; max-width: 52ch; }
-  .cartoes-pessoas > .cartao-pessoa > :nth-child(5) { grid-column: 2; grid-row: 5; margin-top: 16px; justify-self: start; }
   /* Tecnologias: os cinco grupos em colunas */
   .tec-grupos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 40px; }
   /* FAQ: o título à esquerda, as perguntas à direita */
@@ -306,8 +304,7 @@ main > .breadcrumb + section { border-top: 0; }
 .link-seta:hover { border-color: var(--laranja-claro); color: var(--laranja-claro); }
 
 .hero-ctas,
-.cta-buttons,
-.perfil-links {
+.cta-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -544,7 +541,6 @@ html.pre-1a .preloader span {
   border-radius: 2px;
   margin-bottom: 16px;
 }
-.cartao-pessoa .link-seta { margin-top: auto; align-self: flex-start; }
 
 /* ---------- Home completa (Task 6) ---------- */
 .faixa-lista {
@@ -694,55 +690,6 @@ main > .faixa { padding-block: 32px; }
   max-width: 240px;
   height: auto;
   border: 1px solid var(--linha);
-}
-
-/* ---------- Perfil (um molde para os dois sócios: nada aqui muda por pessoa) ---------- */
-.perfil-apresentacao {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 32px;
-  align-items: end;
-  padding-block: 48px 64px;
-}
-.perfil-foto {
-  display: block;
-  width: 100%;   /* a foto ocupa a largura da coluna em qualquer largura de tela */
-  height: auto;   /* a proporção vem do width/height do HTML (a do arquivo) */
-  object-fit: cover;
-  border-radius: 4px;
-  border: 1px solid var(--linha);
-  background: var(--fundo-2);
-}
-.perfil-apresentacao h1 { margin-bottom: 8px; }
-.perfil-papel { font-family: var(--fonte-mono); font-size: 0.9rem; color: var(--texto-2); }
-.perfil-frase {
-  font-family: var(--fonte-titulo);
-  font-weight: 600;
-  font-size: clamp(1.3rem, 3vw, 1.9rem);
-  line-height: 1.25;
-  max-width: 32ch;
-  margin-top: 24px;
-}
-.perfil-faz ul { max-width: 60ch; }
-.perfil-faz li { margin-bottom: 8px; }
-.perfil-links { list-style: none; padding: 0; margin: 24px 0 0; }
-.perfil-links a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  min-width: 44px;
-  padding-inline: 16px;
-  border: 1px solid var(--linha);
-  border-radius: 4px;
-  text-decoration: none;
-  transition: border-color var(--dur-curta) var(--curva-saida);
-}
-.perfil-links a:hover { border-color: var(--laranja-claro); }
-.perfil-historia { display: inline-flex; align-items: center; min-height: 44px; margin-top: 16px; }
-@media (min-width: 768px) {
-  .perfil-apresentacao { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; }
-  .perfil-foto { width: 100%; }
 }
 
 /* ---------- Projetos e cases ---------- */
@@ -1158,9 +1105,9 @@ html.lenis body { height: auto; }
 }
 
 /* ---------- Da ideia ao ar (#ideia, js/ideia.js) ----------
-   Sem JS os 5 estágios ficam empilhados e legíveis. No desktop o JS acrescenta .ideia-pin: a seção fica presa e os estágios
+   Sem JS os 3 estágios ficam empilhados e legíveis. No desktop o JS acrescenta .ideia-pin: a seção fica presa e os estágios
    se sobrepõem na mesma célula (a rolagem troca o ativo). No celular só entram ao rolar (.ideia-oculto/.ideia-visto).
-   Só opacity, transform e clip-path se animam. As cores dos balões são dos LADOS (a, b), nunca de uma pessoa. */
+   Só opacity, transform e clip-path se animam. */
 .so-leitor {
   position: absolute;
   width: 1px;
@@ -1181,28 +1128,6 @@ html.lenis body { height: auto; }
 @media (min-width: 768px) {
   .ideia-estagio { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 48px; }
 }
-
-.ideia-reconstrucao { margin-bottom: 12px; }
-.ideia-baloes { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.balao {
-  max-width: 85%;
-  padding: 12px 16px;
-  border: 1px solid var(--linha);
-  border-radius: 18px;
-  background: var(--fundo-2);
-  font-size: 0.95rem;
-  line-height: 1.45;
-}
-.balao-a { justify-self: start; border-bottom-left-radius: 4px; }   /* o lado distingue quem fala; sem cor por sócio */
-.balao-b { justify-self: end; border-bottom-right-radius: 4px; background: var(--fundo); }
-
-.ideia-rabisco { display: block; width: 100%; max-width: 440px; height: auto; }
-.ideia-rabisco path,
-.ideia-rabisco circle,
-.ideia-rabisco ellipse { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.rb-mesa { stroke: var(--texto-2); }
-.rb-gente { stroke: var(--texto); }
-.rb-ideia { stroke: var(--laranja-claro); }
 
 .ideia-wire {
   display: grid;
