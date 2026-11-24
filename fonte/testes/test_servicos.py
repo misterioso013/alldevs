@@ -92,6 +92,28 @@ class TestServicos(Base):
             self.assertEqual(doc.count("<h1"), 1, slug)
             self.assertRegex(secao_projetos(doc), r'<h2 class="titulo-revela">', slug)
 
+    def test_secoes_do_molde_tem_nome_acessivel(self):
+        for slug in TITULOS:
+            doc = self.pagina(slug)
+            main = doc[doc.index("<main"):doc.index("</main>")]
+            ini = main.index('<section class="projetos-do-tipo"')
+            for m in re.finditer(r"<section\b([^>]*)>(.*?)</section>", main[ini:], re.S):
+                self.assertTrue("<h2" in m.group(2) or "aria-label=" in m.group(1), f"{slug}: {m.group(1)}")
+            self.assertIn('<section class="contato" data-secao="contato" aria-label="Contato">', doc, slug)
+
+    def test_trilha_semantica(self):
+        for slug in TITULOS:
+            doc = self.pagina(slug)
+            self.assertIn('<nav class="breadcrumb" aria-label="Trilha">', doc, slug)
+            self.assertNotIn('<div class="breadcrumb"', doc, slug)
+            self.assertEqual(doc.count('<span class="breadcrumb-sep" aria-hidden="true">'), 2, slug)
+            self.assertIn('<span class="breadcrumb-current" aria-current="page">', doc, slug)
+
+    def test_nenhum_svg_sem_aria_hidden_no_site(self):
+        for arq in sorted(self.saida.rglob("*.html")):
+            for m in re.finditer(r"<svg\b[^>]*>", ler(arq)):
+                self.assertIn('aria-hidden="true"', m.group(0), f"{arq}: {m.group(0)[:80]}")
+
 
 if __name__ == "__main__":
     unittest.main()

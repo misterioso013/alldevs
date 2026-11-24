@@ -1,13 +1,13 @@
 $cabecalho
 <main>
 
-<div class="breadcrumb">
+<nav class="breadcrumb" aria-label="Trilha">
   <a href="/">Home</a>
-  <span class="breadcrumb-sep">›</span>
+  <span class="breadcrumb-sep" aria-hidden="true">›</span>
   <a href="/#servicos">Serviços</a>
-  <span class="breadcrumb-sep">›</span>
-  <span class="breadcrumb-current">$nome</span>
-</div>
+  <span class="breadcrumb-sep" aria-hidden="true">›</span>
+  <span class="breadcrumb-current" aria-current="page">$nome</span>
+</nav>
 
 $conteudo
 
@@ -16,7 +16,7 @@ $conteudo
   <h2 class="titulo-revela">Projetos de $rotulo_tipo</h2>$projetos
 </section>
 
-<section class="contato" data-secao="contato">
+<section class="contato" data-secao="contato" aria-label="Contato">
   <p class="rotulo-mono">// contato</p>
 $contato
 </section>

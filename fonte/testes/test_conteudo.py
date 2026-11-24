@@ -336,7 +336,7 @@ class TestServicosSemSeloDePessoa(Base):
         """`main > .breadcrumb + section { border-top: 0 }` só vale se nada se interpuser."""
         for s in self.dados.servicos:
             txt = ler(self.saida / "servicos" / s.slug / "index.html")
-            self.assertRegex(txt, r'class="breadcrumb-current">[^<]+</span>\s*</div>\s*<section class="servico-hero">', s.slug)
+            self.assertRegex(txt, r'class="breadcrumb-current" aria-current="page">[^<]+</span>\s*</nav>\s*<section class="servico-hero">', s.slug)
         css = ler(REPO / "css" / "site.css")
         self.assertIn("main > .breadcrumb + section { border-top: 0; }", css)
 
