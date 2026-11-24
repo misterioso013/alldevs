@@ -160,5 +160,90 @@ class TestCss(unittest.TestCase):
         self.assertRegex(css, r"\.filtro-tipos\[hidden\]\s*\{[^}]*visibility: hidden")
 
 
+class TestRodada1(Base):
+    """Correções da rodada 1: imagem repetida, coluna única, lazy acima da dobra, CSS, escape."""
+
+    def case(self, slug):
+        return ler(self.saida / "projetos" / slug / "index.html")
+
+    def test_nenhum_case_repete_o_mesmo_src(self):
+        for p in self.visiveis:
+            srcs = [s for s in re.findall(r'<img [^>]*src="([^"]+)"', self.case(p.slug)) if "/js/" not in s]
+            repetidos = {s for s in srcs if srcs.count(s) > 1}
+            self.assertFalse(repetidos, f"{p.slug}: {repetidos}")
+
+    def test_case_sem_capturas_proprias_vira_coluna_unica(self):
+        txt = self.case("amott")
+        self.assertRegex(txt, r'<article class="case case-unica"')
+        self.assertNotIn('data-secao="imagens"', txt)
+        self.assertIn('data-secao="por-tras"', txt)   # o palco continua
+        com = self.case("heisuca")
+        self.assertRegex(com, r'<article class="case"')
+        self.assertNotIn("case-unica", com)
+
+    def test_css_coluna_unica_sem_grade_e_palco_largo(self):
+        from testes.test_paginas import REPO
+        css = ler(REPO / "css/site.css")
+        self.assertRegex(css, r"\.case:not\(\.case-unica\)\s*\{[^}]*display: grid")
+        self.assertRegex(css, r"\.case-unica \.case-palco\s*\{[^}]*max-width: 960px")
+        # sticky só em janela alta o bastante para a coluna de texto caber (nunca texto preso fora da janela)
+        m = re.search(r"@media \(min-width: 1024px\) and \(min-height: (\d+)px\)[^{]*\{[^@]*?position: sticky", css, re.S)
+        self.assertTrue(m)
+        self.assertGreaterEqual(int(m.group(1)), 1000)
+
+    def test_css_retratos_lado_a_lado_em_qualquer_telas(self):
+        from testes.test_paginas import REPO
+        css = ler(REPO / "css/site.css")
+        self.assertRegex(css, r"\.case-telas\s*\{[^}]*flex-wrap: wrap")
+        self.assertRegex(css, r"\.case-telas \.img-retrato\s*\{[^}]*width: calc\(50% - 8px\)")
+
+    def test_css_case_topo_sem_padding_de_cima(self):
+        from testes.test_paginas import REPO
+        css = ler(REPO / "css/site.css")
+        self.assertRegex(css, r"\.case-texto > \.case-topo\s*\{[^}]*padding-top: 0")
+
+    def test_primeira_imagem_do_case_sem_lazy(self):
+        # a imagem do topo: a 1ª captura da coluna ao lado; sem coluna, o palco. As demais seguem com lazy.
+        for p in self.visiveis:
+            txt = self.case(p.slug)
+            tags = [t for t in re.findall(r"<img [^>]+>", txt) if 'alt=""' not in t and "/assets/og" not in t]
+            if 'data-secao="imagens"' in txt:
+                topo = re.search(r'data-secao="imagens">\s*(?:<figure[^>]*>\s*)?(<img [^>]+>)', txt).group(1)
+            else:
+                topo = re.search(r'case-palco"[^>]*>(<img [^>]+>)', txt).group(1)
+            self.assertNotIn('loading="lazy"', topo, p.slug)
+            self.assertIn('fetchpriority="high"', topo, p.slug)
+            for t in tags:
+                if t != topo:
+                    self.assertIn('loading="lazy"', t, p.slug)
+                    self.assertNotIn("fetchpriority", t, p.slug)
+
+    def test_tres_primeiros_cartoes_de_projetos_sem_lazy(self):
+        txt = ler(self.saida / "projetos/index.html")
+        cartoes = re.findall(r'<article class="projeto-cartao".*?</article>', txt, re.S)
+        for i, c in enumerate(cartoes):
+            img = re.search(r'<figure class="projeto-tela"[^>]*><img [^>]+>', c).group(0)
+            if i < 3:
+                self.assertNotIn('loading="lazy"', img, i)
+            else:
+                self.assertIn('loading="lazy"', img, i)
+        self.assertEqual(txt.count('fetchpriority="high"'), 1)
+
+    def test_home_mantem_lazy_nos_cartoes(self):
+        home = ler(self.saida / "index.html")
+        for img in re.findall(r'<figure class="projeto-tela"[^>]*><img [^>]+>', home):
+            self.assertIn('loading="lazy"', img)
+
+    def test_ano_e_nivel_passam_por_escape(self):
+        from alldevs import paginas
+        from testes.test_paginas import REPO
+        p = dataclasses.replace(next(x for x in self.visiveis if x.por_tras), ano="<b>1</b>")
+        html = str(paginas._cartao_projeto(p, REPO, 2))
+        self.assertNotIn("<b>1</b>", html)
+        self.assertIn("&lt;b&gt;1&lt;/b&gt;", html)
+        with self.assertRaises(ValueError):
+            paginas._cartao_projeto(p, REPO, "2><x")
+
+
 if __name__ == "__main__":
     unittest.main()

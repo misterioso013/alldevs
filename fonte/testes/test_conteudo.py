@@ -585,7 +585,10 @@ class TestImagensDosCases(Base):
                 w, h = self.TAMANHOS[rel]
                 self.assertIn(f'src="/{rel}"', tag)
                 self.assertIn(f'width="{w}" height="{h}"', tag)
-                self.assertIn('loading="lazy"', tag)
+                if tag is tags[0]:   # a do topo: sem lazy e com prioridade (rodada 1)
+                    self.assertIn('fetchpriority="high"', tag)
+                else:
+                    self.assertIn('loading="lazy"', tag)
                 self.assertIn("decoding=\"async\"", tag)
 
     def test_retrato_e_captura_recebem_classes_diferentes(self):

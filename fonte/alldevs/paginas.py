@@ -157,18 +157,22 @@ def _camada_por_tras(proj, raiz: Path, preenche: int = CARTAO_PREENCHE, linhas_m
             f'<span class="cartao-origem">{esc(pt["origem"])}</span></div>')
 
 
-def _cartao_projeto(proj, raiz: Path, nivel: int = 3) -> Seguro:
+def _cartao_projeto(proj, raiz: Path, nivel: int = 3, acima_da_dobra: bool = False, prioridade: bool = False) -> Seguro:
     """Cartão de projeto da home e de /projetos/: a tela real, o rótulo (tipo · ano · situação), o link do case e o link para o ar.
-    Com `por_tras`, a figura leva data-revela-cartao e uma camada aria-hidden com o trecho real."""
+    Com `por_tras`, a figura leva data-revela-cartao e uma camada aria-hidden com o trecho real.
+    `acima_da_dobra`: a imagem sai sem `loading="lazy"` (o cartão já aparece na 1ª tela de /projetos/); `prioridade`: fetchpriority alto (o 1º)."""
     raiz = Path(raiz)
+    nivel = int(nivel)
+    carga = ('fetchpriority="high" ' if prioridade else "") + 'decoding="async"' if acima_da_dobra else 'loading="lazy" decoding="async"'
     img = _imagem_do_cartao(proj, raiz)
     camada = _camada_por_tras(proj, raiz) if proj.por_tras else ""
     marca = ' data-revela-cartao data-cursor="ver por trás"' if camada else ""
     figura = ""
     if img:   # a revelação mora na figura: a camada tem o tamanho dela e nunca cobre o texto nem os links
         figura = (f'\n      <figure class="projeto-tela"{marca}><img src="{esc(img[0])}" width="{img[1]}" height="{img[2]}" '
-                  f'alt="Captura de tela de {esc(proj.nome)}" loading="lazy" decoding="async">{camada}\n      </figure>')
-    rotulo = " · ".join([*_com_ano(esc(TIPO_ROTULO.get(proj.tipo, proj.tipo)), proj.ano), esc(proj.situacao)])
+                  f'alt="Captura de tela de {esc(proj.nome)}" {carga}>{camada}\n      </figure>')
+    ano = None if proj.ano is None else esc(str(proj.ano))
+    rotulo = " · ".join([*_com_ano(esc(TIPO_ROTULO.get(proj.tipo, proj.tipo)), ano), esc(proj.situacao)])
     destino = proj.link or proj.loja
     no_ar = ""
     if destino:
@@ -568,7 +572,7 @@ def _filtro_tipos(vis) -> Seguro:
 
 def _projetos(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     vis = visiveis(dados.projetos)
-    cartoes = "\n".join(str(_cartao_projeto(x, raiz, 2)) for x in vis)
+    cartoes = "\n".join(str(_cartao_projeto(x, raiz, 2, i < 3, i == 0)) for i, x in enumerate(vis))
     revelar = '\n<script src="/js/revelar.js" defer></script>' if any(x.por_tras for x in vis) else ""
     corpo = render(
         "projetos", **_cabecalho_e_rodape(dados), filtro=_filtro_tipos(vis), cartoes=Seguro(cartoes),
@@ -585,36 +589,41 @@ def _lista(itens) -> str:
     return "\n".join(f"      <li>{esc(i)}</li>" for i in itens)
 
 
-def _img_case(proj, rel: str, numero: int, raiz: Path) -> str:
+def _img_case(proj, rel: str, numero: int, raiz: Path, primeira: bool = False) -> str:
     """`<img>` de uma captura do case com width/height reais (evita salto de layout) e classe pela orientação:
     retrato (celular) fica estreito, paisagem ocupa a coluna. Sem recorte forçado: a imagem aparece inteira."""
     w, h = _tamanho_imagem(Path(raiz) / rel)
     classe = "img-retrato" if h > w else "img-captura"
     legenda = f"Captura {numero} de {proj.nome}" if len(proj.imagens) > 1 else f"Captura de {proj.nome}"
-    return (f'    <img class="{classe}" src="/{esc(rel)}" alt="{esc(legenda)}" width="{w}" height="{h}" '
-            f'loading="lazy" decoding="async">')
+    carga = 'fetchpriority="high" decoding="async"' if primeira else 'loading="lazy" decoding="async"'
+    return (f'    <img class="{classe}" src="/{esc(rel)}" alt="{esc(legenda)}" width="{w}" height="{h}" {carga}>')
 
 
 PALCO_PREENCHE = 28   # linhas da camada no palco do case (o cartão usa CARTAO_PREENCHE)
 PALCO_LINHAS = 14
 
 
-def _palco_do_case(proj, raiz: Path) -> str:
-    """Bloco "Por trás" do case: a mesma revelação do cartão (data-revela-cartao), maior. Só com `por_tras`."""
-    img = _imagem_do_cartao(proj, raiz)
+def _palco_do_case(proj, raiz: Path, imagem=None, primeira: bool = False) -> str:
+    """Bloco "Por trás" do case: a mesma revelação do cartão (data-revela-cartao), maior. Só com `por_tras`.
+    `primeira`: sem capturas na outra coluna, o palco leva a 1ª imagem do case (sem lazy, com prioridade)."""
+    img = imagem or _imagem_do_cartao(proj, raiz)
     if not proj.por_tras or not img:
         return ""
+    carga = 'fetchpriority="high" decoding="async"' if primeira else 'loading="lazy" decoding="async"'
     camada = _camada_por_tras(proj, raiz, PALCO_PREENCHE, PALCO_LINHAS)
     return (f'\n  <section data-secao="por-tras">\n    <h2>Por trás</h2>\n'
             f'    <figure class="projeto-tela case-palco" data-revela-cartao data-cursor="ver por trás">'
             f'<img src="{esc(img[0])}" width="{img[1]}" height="{img[2]}" '
-            f'alt="Captura de tela de {esc(proj.nome)}" loading="lazy" decoding="async">{camada}\n    </figure>\n  </section>\n')
+            f'alt="Captura de tela de {esc(proj.nome)}" {carga}>{camada}\n    </figure>\n  </section>\n')
 
 
 def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     raiz = Path(raiz)
     linha = " · ".join([*_com_ano(proj.tipo, proj.ano), proj.situacao])
-    palco = _palco_do_case(proj, raiz)
+    frente = _imagem_do_cartao(proj, raiz) if proj.por_tras else None
+    # o palco não repete uma imagem que a coluna de capturas já mostra: ela fica com as demais
+    capturas = [i for i in proj.imagens if not (frente and "/" + i == frente[0])]
+    palco = _palco_do_case(proj, raiz, frente, primeira=not capturas)
     resultado = ""
     if proj.resultado is not None:
         resultado = (f'\n  <section data-secao="resultado">\n    <h2>Resultado</h2>\n'
@@ -624,20 +633,22 @@ def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
         etiquetas = "".join(f'<li class="etiqueta-mono">{esc(s)}</li>' for s in proj.stack)
         stack = f'\n  <section data-secao="stack">\n    <h2>Stack</h2>\n    <ul class="etiquetas">{etiquetas}</ul>\n  </section>\n'
     imagens = ""
-    if proj.imagens:
-        figuras = "\n".join(_img_case(proj, i, n, raiz) for n, i in enumerate(proj.imagens, 1))
+    if capturas:
+        figuras = "\n".join(_img_case(proj, i, n, raiz, n == 1) for n, i in enumerate(capturas, 1))
         if proj.loja:   # capturas da loja: uma legenda só para o conjunto
             figuras = f'  <figure class="case-loja">\n{figuras}\n    <figcaption>Na Google Play</figcaption>\n  </figure>'
         imagens = f'\n<section class="case-telas" data-secao="imagens">\n{figuras}\n</section>\n'
     link = ""
-    destino = proj.loja or proj.link   # a loja vale mais; com os dois iguais (Heisuca) sai um botão só
+    # no case a loja vem primeiro (a legenda "Na Google Play" está na coluna ao lado); no cartão, o link do site vem antes.
+    # Com os dois iguais (Heisuca) sai um botão só.
+    destino = proj.loja or proj.link
     if destino:
         link = (f'\n  <p class="case-link" data-secao="link"><a href="{esc(destino)}" target="_blank" rel="noopener" '
                 f'class="btn btn-cheio">Ver {esc(proj.nome)} no ar<span class="so-leitor"> (abre em nova aba)</span></a></p>\n')
     revelar = '\n<script src="/js/revelar.js" defer></script>' if palco else ""
     corpo = render(
         "case", **_cabecalho_e_rodape(dados),
-        linha=linha, nome=proj.nome, resumo=proj.resumo, problema=proj.problema,
+        classe="case" if capturas else "case case-unica", linha=linha, nome=proj.nome, resumo=proj.resumo, problema=proj.problema,
         fizemos=Seguro(_lista(proj.fizemos)), palco=Seguro(palco), resultado=Seguro(resultado), stack=Seguro(stack),
         imagens=Seguro(imagens), link=Seguro(link), revelar=Seguro(revelar),
         contato=_bloco_contato(dados.estudio, "case", alvo=proj.nome, slug=proj.slug),
