@@ -141,20 +141,57 @@ cena('cpu4x', (det) => abre(DESK, async (p, ctx) => {
   if (!(fps >= 50)) throw new Error(`${fps.toFixed(1)} fps (esperava >= 50); resolução final ${res}`);
 }));
 
-// 360 px, sem mouse real: o cursor virtual entra sozinho; com CPU 4x a qualidade adaptativa precisa agir (nível > 0 ou cursor virtual desligado).
+// 360 px com CPU 4x: so informativo (o fps entra no relatório; a prova da qualidade adaptativa são as cenas qualidade-*).
 cena('cpu4x-360', (det) => abre({ viewport: { width: 360, height: 800 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 }, async (p, ctx) => {
   await caixa(p);
   const cdp = await ctx.newCDPSession(p);
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
-  await dorme(5000);   // o cursor virtual entra e a qualidade adaptativa assenta
+  await dorme(5000);
   const q0 = await quadros(p), t0 = Date.now();
   await dorme(3000);
   const fps = ((await quadros(p)) - q0) / ((Date.now() - t0) / 1000);
   const est = await p.evaluate(() => window.__revelarEstado());
-  const res = `${est.cols}x${est.linhas}, nível ${est.nivel}, cursor virtual ${est.auto ? 'ligado' : 'desligado'}`;
-  det(`${fps.toFixed(1)} fps com CPU 4x a 360 px; ${res}`);
-  // passa se a qualidade agiu (nível > 0 ou cursor virtual desligado) ou, se não precisou agir, se o laço ativo manteve >= 50 fps
-  if (!(est.nivel > 0 || !est.auto || fps >= 50)) throw new Error(`a qualidade adaptativa não agiu e o laço caiu: ${res}; ${fps.toFixed(1)} fps`);
+  det(`${fps.toFixed(1)} fps com CPU 4x a 360 px (informativo); ${est.cols}x${est.linhas}, nível ${est.nivel}, cursor virtual ${est.auto ? 'ligado' : 'desligado'}`);
+}));
+
+// Qualidade adaptativa com quadros sintéticos: o gancho window.__revelarRaf (só a bancada o define) troca o requestAnimationFrame
+// por uma fila; __pulsa(ivs) roda um quadro por intervalo (ms) com o relógio sintético, na mesma base do performance.now().
+const relogioFalso = async (p) => p.addInitScript(() => {
+  const fila = []; let t = null;
+  window.__revelarRaf = { r: (cb) => { fila.push(cb); return fila.length; }, c: () => { fila.length = 0; } };
+  window.__pulsa = (ivs) => {
+    if (t === null) t = performance.now() + 3000;   // depois do OCIOSO (2 s): o cursor virtual entra
+    for (const iv of ivs) { t += iv; const cb = fila.shift(); if (cb) cb(t); }
+    const cv = document.querySelector('.hero-mascara');
+    return { ...window.__revelarEstado(), fila: fila.length, w: cv.width, h: cv.height };
+  };
+});
+const comRelogio = (opts, fn) => abre(opts, async (p, ctx, e) => {
+  await p.waitForFunction(() => window.__revelarRaf && typeof window.__revelarEstado === 'function', null, { timeout: 5000 });
+  await fn(p, ctx, e);
+}, { esperaCanvas: false, antes: relogioFalso });
+const pulsa = (p, ivs) => p.evaluate((v) => window.__pulsa(v), ivs);
+
+cena('qualidade-cursor', (det) => comRelogio(MOVEL, async (p) => {
+  const base = await pulsa(p, [16, 16, 16, 16]);
+  if (!base.auto) throw new Error('o cursor virtual não entrou: ' + JSON.stringify(base));
+  const alterna = await pulsa(p, [50, 16, 50, 16, 50, 16]);   // nunca 2 seguidos: continua ligado
+  if (!alterna.auto) throw new Error('um intervalo lento isolado desligou o cursor: ' + JSON.stringify(alterna));
+  const lentos = await pulsa(p, [50, 50]);                       // 2 seguidos > 40 ms
+  if (lentos.auto) throw new Error('2 intervalos seguidos > 40 ms não desligaram o cursor virtual: ' + JSON.stringify(lentos));
+  det(`isolado (50,16,50,16) mantém auto=true; 50,50 -> auto=${lentos.auto}`);
+}));
+
+cena('qualidade-campo', (det) => comRelogio(MOVEL, async (p) => {
+  const a = await pulsa(p, [16, 16]);
+  const medio = await pulsa(p, Array(70).fill(30));              // média 30 ms (22 < m <= 40), nenhum > 40
+  if (!(medio.nivel > 0)) throw new Error('média de 30 ms não subiu o nível: ' + JSON.stringify(medio));
+  if (!medio.auto) throw new Error('média alta sem 2 lentos seguidos desligou o cursor: ' + JSON.stringify(medio));
+  if (!(medio.cols < a.cols && medio.linhas < a.linhas)) throw new Error('o campo não encolheu: ' + JSON.stringify([a, medio]));
+  if (medio.w !== a.w || medio.h !== a.h) throw new Error(`o canvas mudou de tamanho: ${a.w}x${a.h} -> ${medio.w}x${medio.h}`);
+  const rapido = await pulsa(p, Array(70).fill(16));             // média baixa: não sobe mais
+  if (rapido.nivel !== medio.nivel) throw new Error('quadros de 16 ms mudaram o nível: ' + JSON.stringify(rapido));
+  det(`média 30 ms: nível ${a.nivel} -> ${medio.nivel}, campo ${a.cols}x${a.linhas} -> ${medio.cols}x${medio.linhas}, cv ${a.w}x${a.h} igual; 16 ms não mexe`);
 }));
 
 cena('reduzido', (det) => abre({ ...DESK, reducedMotion: 'reduce' }, async (p) => {

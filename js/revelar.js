@@ -1,10 +1,10 @@
-/* Revelacao "por tras do produto" (ALL.dev v2): a frente (captura real) vira canvas 2D com um buraco que segue o ponteiro;
+/* Revelacao "por tras do produto" (ALL.dev v2): a frente vira canvas 2D com um buraco que segue o ponteiro;
    por baixo fica o trecho real. Campo de densidade em grade pequena, advectado e com decaimento. window.AllDevsRevelar. */
 (function () {
  var doc = document, estilo = getComputedStyle(doc.documentElement);
  var reduz = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
  var agoraMs = function () { return performance.now(); };
- var RAF = window.requestAnimationFrame.bind(window), CAF = window.cancelAnimationFrame.bind(window);
+ var T = window.__revelarRaf, RAF = T ? T.r : window.requestAnimationFrame.bind(window), CAF = T ? T.c : window.cancelAnimationFrame.bind(window);
  var COLS = 144, LIN = 90, MIN = 48, SUP = 2, OCIOSO = 2000, CICLO = 7000, JANELA = 30;
  var tok = function (n) { return (estilo.getPropertyValue(n) || "").trim(); };
  var cor3 = function (n) {
@@ -33,7 +33,7 @@
   var im = atras.querySelector("img") || nova("img", atras, origem);
   im.alt = ""; im.decoding = "async";
   var atual = itens[0].por_tras, W = 0, H = 0, R = { x: 0, y: 0, s: 0 };
-  // trecho ou wireframe conforme o item (o que sobra fica hidden); trecho curto se repete ate cobrir o palco
+  // trecho ou wireframe conforme o item; trecho curto se repete ate cobrir o palco
   var poe = function (p) {
    var t = txt(p.texto), n = 1;
    atual = p;
@@ -185,7 +185,7 @@
    t = d; d = d2; d2 = t; t = u; u = u2; u2 = t; t = v; v = v2; v2 = t;
    fmax = mxv; massa = m / (cols * lin);
   };
-  // por quadro: a arte sem escala + um drawImage do buraco e um do anel
+  // por quadro: arte + buraco + anel
   var desenha = function () {
    ctx.globalCompositeOperation = "copy";
    ctx.drawImage(arte, 0, 0);
