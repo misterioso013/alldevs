@@ -1,7 +1,7 @@
 /* Visual do ALL.dev v2: base de identidade (Syne, roxo e laranja do estúdio), grade de 12 colunas até 1280 px,
    calha de 16 px. Cores, tempos e fontes vêm de css/tokens.css (carregado antes); aqui só se usam as variáveis.
    Animam só transform, opacity e clip-path. Sem JS tudo fica visível; js/site.js liga a revelação.
-   A home, /projetos/, os cases e os serviços são do v2; "Páginas atuais" estiliza só o que a Task 9 ainda troca (perfis, história). */
+   Todas as páginas são do v2. */
 
 *,
 *::before,
@@ -339,7 +339,6 @@ html.pre-1a .preloader span {
 }
 @keyframes pre-sai { to { opacity: 0; } }
 
-/* ---------- Páginas atuais (transição até as Tasks 4 a 8) ---------- */
 /* ---------- Hero: o produto na frente, o código por trás (js/revelar.js) ----------
    O palco empilha três camadas: por trás (trecho real ou wireframe), a frente (captura real, um <img> para o LCP) e o
    canvas, que o JS liga. Com o canvas ligado (.vivo) a frente é redesenhada nele, com o buraco da revelação; sem JS só se vê a frente.
@@ -451,7 +450,6 @@ html.pre-1a .preloader span {
 
 /* ---------- Cartões ---------- */
 .cartao-pessoa,
-.cartao-projeto,
 .cartao-servico,
 .relacionado-card {
   position: relative;
@@ -464,11 +462,9 @@ html.pre-1a .preloader span {
   transition: border-color var(--dur-curta) var(--curva-saida);
 }
 .cartao-pessoa:hover,
-.cartao-projeto:hover,
 .cartao-servico:hover,
 .relacionado-card:hover { border-color: var(--texto-2); }
 .cartao-pessoa > :last-child,
-.cartao-projeto > :last-child,
 .cartao-servico > :last-child { margin-bottom: 0; }
 .cartao-pessoa img {
   width: 100%;
@@ -596,18 +592,12 @@ main > .faixa { padding-block: 32px; }
   border-radius: 2px;
 }
 
-.depoimentos-lista { display: grid; gap: 16px; margin-top: 32px; }
-.depoimento { margin: 0; padding: 24px; border: 1px solid var(--linha); border-radius: 4px; }
-.depoimento blockquote { margin: 0 0 16px; font-size: 1.1rem; }
-.depoimento figcaption { color: var(--texto-2); }
-
 .faq-home .faq-section { max-width: 760px; }
 @media (min-width: 640px) {
   .passos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 1024px) {
   .passos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .depoimentos-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .img-captura {
@@ -622,28 +612,54 @@ main > .faixa { padding-block: 32px; }
   border: 1px solid var(--linha);
 }
 
-/* ---------- Perfil ---------- */
-.perfil-apresentacao h1 { margin-bottom: 8px; }
-.perfil-papel { color: var(--texto-2); }
+/* ---------- Perfil (um molde para os dois sócios: nada aqui muda por pessoa) ---------- */
+.perfil-apresentacao {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  align-items: end;
+  padding-block: 48px 64px;
+}
 .perfil-foto {
-  width: min(320px, 100%);
-  height: auto;
-  aspect-ratio: 1;
+  display: block;
+  width: min(100%, 360px);
+  height: auto;   /* a proporção vem do width/height do HTML (a do arquivo) */
   object-fit: cover;
   border-radius: 4px;
   border: 1px solid var(--linha);
-  margin-block: 24px;
+  background: var(--fundo-2);
 }
+.perfil-apresentacao h1 { margin-bottom: 8px; }
+.perfil-papel { font-family: var(--fonte-mono); font-size: 0.9rem; color: var(--texto-2); }
 .perfil-frase {
   font-family: var(--fonte-titulo);
-  font-size: 1.4rem;
-  line-height: 1.35;
-  max-width: 36ch;
+  font-weight: 600;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  line-height: 1.25;
+  max-width: 32ch;
+  margin-top: 24px;
 }
-.perfil-links { list-style: none; padding: 0; }
-.perfil-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .perfil-faz ul { max-width: 60ch; }
-.vazio { color: var(--texto-2); }
+.perfil-faz li { margin-bottom: 8px; }
+.perfil-links { list-style: none; padding: 0; margin: 24px 0 0; }
+.perfil-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding-inline: 16px;
+  border: 1px solid var(--linha);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: border-color var(--dur-curta) var(--curva-saida);
+}
+.perfil-links a:hover { border-color: var(--laranja-claro); }
+.perfil-historia { display: inline-flex; align-items: center; min-height: 44px; margin-top: 16px; }
+@media (min-width: 768px) {
+  .perfil-apresentacao { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; }
+  .perfil-foto { width: 100%; }
+}
 
 /* ---------- Projetos e cases ---------- */
 /* Filtro por tipo (js/site.js tira o `hidden`): alvos de 44 px, o botão ativo em roxo. */
@@ -826,26 +842,45 @@ main > .faixa { padding-block: 32px; }
 .relacionado-nome { font-family: var(--fonte-titulo); font-weight: 600; font-size: 1.2rem; }
 .relacionado-preco { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
 
-/* ---------- História (acento laranja) ---------- */
-#hist-hero { padding-block: 96px 64px; position: relative; }
+/* ---------- História (o texto vem de fonte/conteudo/historia.html; aqui só o visual do v2) ---------- */
+#hist-hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: 96px 64px;
+  border-top: 0;
+}
 .hist-hero-bg,
-.hist-hero-lines,
-.closing-glow { display: none; }
+.hist-hero-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hist-hero-bg { background: radial-gradient(60% 80% at 100% 0%, color-mix(in srgb, var(--roxo) 22%, transparent), transparent 70%); }
+.hist-hero-lines {
+  background-image: linear-gradient(to right, var(--linha) 1px, transparent 1px);
+  background-size: 25% 100%;
+  opacity: 0.5;
+  mask-image: linear-gradient(to bottom, black, transparent);
+}
+#hist-hero > :not(.hist-hero-bg, .hist-hero-lines) { position: relative; }
 .hist-kicker,
 .horizontal-story__kicker,
 .tl-label {
   font-family: var(--fonte-mono);
   font-size: 0.8rem;
-  color: var(--texto-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--laranja-claro);
   margin-bottom: 16px;
 }
 .hist-title { max-width: 47rem; } /* rem, não ch: ch muda na troca da fonte e gera CLS */
 .hist-title em,
 .horizontal-story__text em,
-.closing-title em { font-style: normal; color: var(--laranja); }
+.closing-title em { font-style: normal; color: var(--laranja-claro); }
 .hist-sub { font-size: 1.15rem; color: var(--texto-2); max-width: 45.5rem; }
 .hist-sub strong { color: var(--texto); }
-.horizontal-story__text { max-width: 45.5rem; }
+.horizontal-story { padding-block: 64px; }
+.horizontal-story__text { font-size: clamp(1.7rem, 4vw, 2.8rem); max-width: 45.5rem; }
 #timeline {
   position: relative;
   padding-block: 32px 64px;
@@ -857,7 +892,7 @@ main > .faixa { padding-block: 32px; }
   bottom: 64px;
   left: 5px;
   width: 1px;
-  background: var(--linha);
+  background: linear-gradient(to bottom, var(--roxo), var(--linha) 40%, var(--laranja));
 }
 .tl-item {
   position: relative;
@@ -871,7 +906,7 @@ main > .faixa { padding-block: 32px; }
   grid-column: 2;
   grid-row: 1;
   font-family: var(--fonte-mono);
-  color: var(--laranja);
+  color: var(--laranja-claro);
   margin-bottom: 8px;
 }
 .tl-dot {
@@ -880,11 +915,11 @@ main > .faixa { padding-block: 32px; }
   width: 11px;
   height: 11px;
   margin-top: 6px;
-  border: 1px solid var(--laranja);
+  border: 1px solid var(--roxo-claro);
   border-radius: 50%;
   background: var(--fundo);
 }
-.tl-item.highlight .tl-dot { background: var(--laranja); }
+.tl-item.highlight .tl-dot { background: var(--laranja); border-color: var(--laranja); }
 .tl-content { grid-column: 2; grid-row: 2; max-width: 68ch; }
 .tl-heading { font-size: clamp(1.4rem, 3vw, 2rem); }
 .tl-body { color: var(--texto-2); }
@@ -892,9 +927,11 @@ main > .faixa { padding-block: 32px; }
 .tl-quote {
   margin-block: 16px;
   padding-left: 16px;
-  border-left: 1px solid var(--laranja);
+  border-left: 2px solid var(--roxo-claro);
   font-family: var(--fonte-titulo);
+  font-weight: 600;
   font-size: 1.2rem;
+  line-height: 1.35;
 }
 .tl-card {
   display: flex;
@@ -903,7 +940,9 @@ main > .faixa { padding-block: 32px; }
   margin-top: 16px;
   border: 1px solid var(--linha);
   border-radius: 4px;
+  background: var(--fundo-2);
 }
+.tl-card-icon { font-size: 1.4rem; line-height: 1.2; }
 @media (min-width: 768px) {
   .tl-line { left: 135px; }
   .tl-item { grid-template-columns: 112px 12px minmax(0, 1fr); }
@@ -911,12 +950,20 @@ main > .faixa { padding-block: 32px; }
   .tl-dot { grid-column: 2; }
   .tl-content { grid-column: 3; grid-row: 1; }
 }
-#hist-closing { padding-block: 96px; }
+#hist-closing { position: relative; overflow: hidden; padding-block: 96px; }
+.closing-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(50% 70% at 0% 100%, color-mix(in srgb, var(--laranja) 14%, transparent), transparent 70%);
+}
+.closing-inner { position: relative; }
 .closing-title {
   font-family: var(--fonte-titulo);
-  font-weight: 600;
+  font-weight: 800;
   font-size: clamp(1.7rem, 4vw, 2.6rem);
   line-height: 1.1;
+  letter-spacing: -0.02em;
   max-width: 18ch;
   margin-bottom: 16px;
 }

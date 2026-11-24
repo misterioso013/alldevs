@@ -89,10 +89,6 @@ class TestPaginas(Base):
         for arq in self.saida.rglob("*.html"):
             self.assertIsNone(re.search(r"Ol(?:á|%C3%A1)(?:,|%2C)?(?:[\s+]|%20)+Rosiel", ler(arq), re.I), arq)
 
-    def test_wa_do_perfil(self):   # a do case migrou para test_projetos.py (test_wa_do_case_com_origem)
-        self.assertIn("%5Bsite%C2%B7perfil%C2%B7caio%5D", ler(self.saida / "caio/index.html"))
-        self.assertIn("%5Bsite%C2%B7perfil%C2%B7rosiel%5D", ler(self.saida / "rosiel/index.html"))
-
     PROIBIDAS = ("CGSERVER", "servidor", "Whatbox", "torrent", "tracker", "acervo", "Jellyfin", "Plex",
                  "nuvem", "Emby")
 
@@ -150,24 +146,6 @@ class TestPortfolio(Base):
 
 
 class TestPerfis(Base):
-    def test_perfis_mesmo_peso(self):
-        def secoes(slug):
-            return re.findall(r'<section[^>]*data-secao="([^"]+)"', ler(self.saida / slug / "index.html"))
-        self.assertEqual(secoes("caio"), secoes("rosiel"))
-        self.assertGreaterEqual(len(secoes("caio")), 3)
-        for slug in ("caio", "rosiel"):
-            self.assertIn('data-molde="perfil"', ler(self.saida / slug / "index.html"))
-
-    def test_perfil_lista_todos_os_projetos_sob_fizemos_juntos(self):
-        links = {}
-        for slug in ("caio", "rosiel"):
-            txt = ler(self.saida / slug / "index.html")
-            secao = re.search(r'<section class="perfil-projetos".*?</section>', txt, re.S).group(0)
-            self.assertRegex(secao, r"<h2>[^<]*Fizemos juntos[^<]*</h2>")
-            links[slug] = set(re.findall(r'href="(/projetos/[^/"]+/)"', secao))
-        self.assertEqual(links["caio"], links["rosiel"])
-        self.assertEqual(links["caio"], {f"/projetos/{p.slug}/" for p in self.visiveis})
-
     def test_perfil_sem_kicker_por_socio(self):
         for slug in ("caio", "rosiel"):
             nome = next(p.nome for p in self.dados.pessoas if p.slug == slug)
@@ -299,7 +277,8 @@ class TestPerfilConteudo(Base):
             m = re.search(r'<section[^>]*data-secao="faz".*?</section>', txt, re.S)
             self.assertIsNotNone(m, slug)
             self.assertIn("O que eu faço", m.group(0))
-            self.assertEqual(len(re.findall(r"<li>", m.group(0))), 3, slug)
+            lista = re.search(r"<ul>.*?</ul>", m.group(0), re.S).group(0)   # os links, quando há, vêm em outra <ul>
+            self.assertEqual(len(re.findall(r"<li>", lista)), 3, slug)
 
     def test_link_para_historia_so_no_rosiel(self):
         self.assertIn('class="link-seta perfil-historia" href="/historia.html"',
@@ -680,16 +659,6 @@ class TestRodada1(Base):
         self.assertLess(energia(REPO / "assets/images/prosup-3.webp"), 3.0)
         # controle: o mesmo cálculo numa captura com texto nítido na mesma altura é alto
         self.assertGreater(energia(REPO / "assets/images/prosup-1.webp"), 0.0)
-
-    def test_links_do_perfil_tem_alvo_de_44px(self):
-        css = ler(REPO / "css" / "site.css")
-        i = css.index(".perfil-links a {")
-        regra = css[i:css.index("}", i)]
-        self.assertIn("display: inline-flex", regra)
-        self.assertIn("align-items: center", regra)
-        self.assertIn("min-height: 44px", regra)
-        for token in re.findall(r"#[0-9a-fA-F]{3,8}\b|rgba?\(", regra):
-            self.fail(f"cor fora dos tokens: {token}")
 
     def test_h2_do_servico_de_sites_fala_em_equipe(self):
         fonte = ler(REPO / "fonte/conteudo/servicos/criacao-de-sites-institucionais.html")

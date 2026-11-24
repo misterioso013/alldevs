@@ -112,17 +112,6 @@ def _cartao_pessoa(p) -> str:
     )
 
 
-def _cartao_lista(proj, classe: str, nivel: int = 3) -> str:
-    """Cartão de texto do v1, ainda usado nos perfis (a Task 8 troca por _cartao_projeto)."""
-    return (
-        f'    <article class="{classe}" data-slug="{esc(proj.slug)}">\n'
-        f'      <p class="rotulo-mono">{esc(" · ".join(_com_ano(proj.tipo, proj.ano)))}</p>\n'
-        f'      <h{nivel}><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h{nivel}>\n'
-        f'      <p>{esc(proj.resumo)}</p>\n'
-        f'    </article>'
-    )
-
-
 CARTAO_PREENCHE = 18   # linhas na camada: o trecho se repete até aqui, para um círculo em qualquer ponto cruzar texto
 CARTAO_LINHAS = 9   # linhas do trecho de código na camada "por trás" do cartão
 
@@ -530,24 +519,29 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ld)
 
 
-def _perfil(p, dados: Dados, previa: bool) -> Pagina:
-    meus = visiveis(dados.projetos)
-    projetos = "\n".join(_cartao_lista(x, "cartao-projeto") for x in meus)
+def _perfil(p, dados: Dados, raiz: Path, previa: bool) -> Pagina:
+    """Um molde para os dois sócios: as mesmas seções, as mesmas classes, a mesma foto e os mesmos projetos
+    (todos os visíveis, na ordem de /projetos/). Só o conteúdo de `pessoas.json` muda."""
+    vis = visiveis(dados.projetos)
+    projetos = "\n".join(str(_cartao_projeto(x, raiz, 3)) for x in vis)
     if not projetos:
-        projetos = '    <p class="vazio">Em breve.</p>'
+        projetos = '    <p class="secao-intro">Em breve.</p>'
     links = ""
     if p.links:
         itens = "\n".join(
             f'    <li><a href="{esc(l["url"])}" rel="noopener">{esc(l.get("rotulo", l["url"]))}</a></li>' for l in p.links)
-        links = f'  <ul class="perfil-links">\n{itens}\n  </ul>'
+        links = f'\n  <ul class="perfil-links">\n{itens}\n  </ul>'
     faz = "\n".join(f"    <li>{esc(x)}</li>" for x in p.faz)
     historia = ""
     if p.link_historia:
         historia = '\n  <p><a class="link-seta perfil-historia" href="/historia.html">Leia a história</a></p>'
+    foto_w, foto_h = _tamanho_webp(Path(raiz) / p.foto)
     corpo = render(
         "perfil", **_cabecalho_e_rodape(dados), faz=Seguro(faz), historia=Seguro(historia),
         nome=p.nome, papel=p.papel, papel_mono=p.papel_mono, frase=p.frase, foto=p.foto,
+        foto_w=str(foto_w), foto_h=str(foto_h),
         links=Seguro(links), projetos=Seguro(projetos),
+        revelar=Seguro('\n<script src="/js/revelar.js" defer></script>' if any(x.por_tras for x in vis) else ""),
         contato=_bloco_contato(dados.estudio, "perfil", alvo=p.nome, slug=p.slug),
     )
     caminho = f"{p.slug}/index.html"
@@ -739,7 +733,7 @@ def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
 def montar_todas(dados: Dados, raiz: Path, previa: bool) -> list:
     """Todas as páginas, ordenadas por caminho. Na `previa` cada uma leva a meta noindex."""
     paginas = [_home(dados, raiz, previa), _historia(dados, raiz, previa), _projetos(dados, raiz, previa)]
-    paginas += [_perfil(p, dados, previa) for p in dados.pessoas]
+    paginas += [_perfil(p, dados, raiz, previa) for p in dados.pessoas]
     paginas += [_case(x, dados, raiz, previa) for x in visiveis(dados.projetos)]
     paginas += [_servico(s, dados, raiz, previa) for s in dados.servicos]
     return sorted(paginas, key=lambda p: p.caminho)
