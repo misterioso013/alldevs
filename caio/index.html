@@ -79,20 +79,19 @@
   --noir:&#35;0e0c0a; --noir-2:&#35;17140f; --noir-3:&#35;211c16;
   --ivory:&#35;f3ebdf; --paper:&#35;fbf8f2; --ink:&#35;1f1912;
   --gold:&#35;c9a45c; --gold-deep:&#35;8b682c; --smoke:&#35;a3957f;
+}
+
 :root{
   --noir:&#35;0e0c0a; --noir-2:&#35;17140f; --noir-3:&#35;211c16;
   --ivory:&#35;f3ebdf; --paper:&#35;fbf8f2; --ink:&#35;1f1912;
   --gold:&#35;c9a45c; --gold-deep:&#35;8b682c; --smoke:&#35;a3957f;
+}
+
 :root{
   --noir:&#35;0e0c0a; --noir-2:&#35;17140f; --noir-3:&#35;211c16;
   --ivory:&#35;f3ebdf; --paper:&#35;fbf8f2; --ink:&#35;1f1912;
   --gold:&#35;c9a45c; --gold-deep:&#35;8b682c; --smoke:&#35;a3957f;
-:root{
-  --noir:&#35;0e0c0a; --noir-2:&#35;17140f; --noir-3:&#35;211c16;
-  --ivory:&#35;f3ebdf; --paper:&#35;fbf8f2; --ink:&#35;1f1912;
-  --gold:&#35;c9a45c; --gold-deep:&#35;8b682c; --smoke:&#35;a3957f;
-:root{
-  --noir:&#35;0e0c0a; --noir-2:&#35;17140f; --noir-3:&#35;211c16;</code></pre><span class="cartao-origem">amott-perfumes · index.html@00aa67a</span></div>
+}</code></pre><span class="cartao-origem">amott-perfumes · index.html@00aa67a</span></div>
       </figure>
       <p class="rotulo-mono">Site · 2026 · no ar</p>
       <h3><a href="/projetos/amott/">amott</a></h3>
@@ -110,15 +109,9 @@
     val lilac: Color,
     /** Texto sobre o roxo. */
     val onAccent: Color,
-    val accent: Color,
-    /** Roxo forte (&#35;9333ea): início do gradiente do botão principal. */
-    val accentStrong: Color,
-    /** Roxo escuro: contêineres. */
-    val accentDeep: Color,
-    /** Lilás (&#35;c084fc): slogan, foco, textos de destaque. */
-    val lilac: Color,
-    /** Texto sobre o roxo. */
-    val onAccent: Color,</code></pre><span class="cartao-origem">cgflix-lite · CgflixPalette.kt@8aa925d</span></div>
+    val text: Color,
+    val textMuted: Color,
+    val outline: Color,</code></pre><span class="cartao-origem">cgflix-lite · CgflixPalette.kt@8aa925d</span></div>
       </figure>
       <p class="rotulo-mono">App · 2026 · no ar</p>
       <h3><a href="/projetos/cgflix-lite/">CGFLIX Lite</a></h3>
@@ -136,15 +129,16 @@
       acceptedAnswer: {
         &quot;@type&quot;: &quot;Answer&quot;,
         text: item.answer,
-  const schemaJson = {
-    &quot;@context&quot;: &quot;https://schema.org&quot;,
-    &quot;@type&quot;: &quot;FAQPage&quot;,
-    mainEntity: data.map((item) =&gt; ({
-      &quot;@type&quot;: &quot;Question&quot;,
-      name: item.question,
-      acceptedAnswer: {
-        &quot;@type&quot;: &quot;Answer&quot;,
-        text: item.answer,</code></pre><span class="cartao-origem">fakly · main.js@4c3ea1a</span></div>
+      },
+    })),
+  };
+
+  const escapedTitle = title.replace(/&quot;/g, &quot;&amp;quot;&quot;);
+  const escapedData = JSON.stringify(data).replace(/&#x27;/g, &quot;\\&#x27;&quot;);
+  const schemaScript =
+    &#x27;&lt;script type=&quot;application/ld+json&quot;&gt;&#x27; +
+    JSON.stringify(schemaJson) +
+    &quot;&lt;\\/script&gt;&quot;;</code></pre><span class="cartao-origem">fakly · main.js@4c3ea1a</span></div>
       </figure>
       <p class="rotulo-mono">Produto · 2025 · no ar</p>
       <h3><a href="/projetos/fakly/">Fakly</a></h3>
@@ -162,15 +156,7 @@ class TemaHisui {
     static const temaCorAcentoSuave = Color(0xFFD3EEDF);
     static const temaCorAviso = Color(0xFF9A600B);
     static const temaCorBorda = Color(0xFFD1CDC5);
-import &#x27;package:flutter/widgets.dart&#x27;;
-
-class TemaHisui {
-    TemaHisui._();
-
-    static const temaCorAcento = Color(0xFF276C4F);
-    static const temaCorAcentoSuave = Color(0xFFD3EEDF);
-    static const temaCorAviso = Color(0xFF9A600B);
-    static const temaCorBorda = Color(0xFFD1CDC5);</code></pre><span class="cartao-origem">heisuca · tema_hisui.dart@9755d4a</span></div>
+}</code></pre><span class="cartao-origem">heisuca · tema_hisui.dart@9755d4a</span></div>
       </figure>
       <p class="rotulo-mono">App · 2026 · no ar</p>
       <h3><a href="/projetos/heisuca/">Heisuca</a></h3>
@@ -196,15 +182,12 @@ class TemaHisui {
   language?: string;
   file_size?: number;
   file_url?: string;
-export interface WorkspaceFile {
-  id: string;
-  workspace_id: string;
-  filename: string;
-  content?: string;
-  file_type: &quot;text&quot; | &quot;code&quot; | &quot;markdown&quot; | &quot;file&quot;;
-  language?: string;
-  file_size?: number;
-  file_url?: string;</code></pre><span class="cartao-origem">sendany · src/lib/database.ts@1117310</span></div>
+  mime_type?: string;
+  drive_file_id?: string;
+  order_index: number;
+  created_at: Date;
+  updated_at: Date;
+}</code></pre><span class="cartao-origem">sendany · src/lib/database.ts@1117310</span></div>
       </figure>
       <p class="rotulo-mono">Produto · 2025 · no ar</p>
       <h3><a href="/projetos/sendany/">SendAny</a></h3>

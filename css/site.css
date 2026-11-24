@@ -53,7 +53,7 @@ h1, h2, h3 {
   overflow-wrap: break-word;
 }
 h1 { font-size: clamp(2.4rem, 7vw, 5rem); }
-h2 { font-size: clamp(1.7rem, 4vw, 2.8rem); }
+h2 { font-size: clamp(1.6rem, 4vw, 3.6rem); }
 h3 { font-size: 1.3rem; font-weight: 700; line-height: 1.15; }
 h3 a { text-decoration: none; }
 p { margin: 0 0 16px; }
@@ -104,6 +104,11 @@ main > section,
 main > article { padding-block: 64px; border-top: 1px solid var(--linha); }
 main > section:first-child,
 main > .breadcrumb + section { border-top: 0; }
+/* Desktop: o respiro varia com o papel da seção (destaques com mais ar, as densas com menos). */
+@media (min-width: 1024px) {
+  main > #projetos, main > #quem-somos, main > #contato { padding-block: 128px; }
+  main > #como-trabalhamos, main > #tecnologias, main > #faq { padding-block: 80px; }
+}
 
 .grade-projetos,
 .grade-servicos,
@@ -239,6 +244,9 @@ main > .breadcrumb + section { border-top: 0; }
 .btn-linha:focus-visible { border-color: var(--laranja-claro); color: var(--laranja-claro); }
 
 .link-seta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;   /* alvo de toque */
   font-weight: 500;
   text-decoration: none;
   border-bottom: 1px solid var(--linha);
@@ -391,15 +399,23 @@ html.pre-1a .preloader span {
   overflow: hidden;
   display: grid;
   align-content: center;
-  justify-content: center;
+  justify-content: start;   /* nenhuma linha começa cortada: o código alinha à esquerda e o fim da linha esmaece */
   font-family: var(--fonte-mono);
   font-size: 0.72rem;
   line-height: 1.5;
   color: var(--texto);
   white-space: pre;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
 }
 /* Texto de fundo menor que a img da frente: o LCP fica com a img, não com o código que o JS revela. */
-.hero-por-tras code { display: block; max-height: 7.5em; overflow: hidden; }
+.hero-por-tras code {
+  display: block;
+  max-height: 9em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 2.2em), transparent);
+  mask-image: linear-gradient(to bottom, black calc(100% - 2.2em), transparent);
+}
 .hero-por-tras img { width: 100%; height: 100%; object-fit: cover; }
 .hero-origem {
   position: absolute;
@@ -466,6 +482,10 @@ html.pre-1a .preloader span {
 .relacionado-card:hover { border-color: var(--texto-2); }
 .cartao-pessoa > :last-child,
 .cartao-servico > :last-child { margin-bottom: 0; }
+/* O cartão de serviço inteiro é o alvo do link do título; o foco aparece no cartão. */
+.cartao-servico h3 a::after { content: ""; position: absolute; inset: 0; }
+.cartao-servico h3 a:focus-visible { outline: none; }
+.cartao-servico:has(h3 a:focus-visible) { outline: 2px solid var(--laranja-claro); outline-offset: 3px; }
 .cartao-pessoa img {
   width: 100%;
   height: auto;
@@ -494,7 +514,8 @@ main > .faixa { padding-block: 32px; }
   font-size: clamp(1.8rem, 5vw, 3.2rem);
   line-height: 1.1;
 }
-.faixa-rotulo { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
+.faixa-rotulo { display: block; font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); text-wrap: balance; }   /* sem palavra órfã a 360 e 430 */
+.faixa-lista { gap: 16px 8px; }
 .secao-intro { color: var(--texto-2); max-width: 52ch; }
 
 /* Cartão de projeto: a captura na frente; por trás, o trecho real que a máscara revela sob o ponteiro (js/revelar.js liga --mx, --my, --r). */
@@ -522,7 +543,8 @@ main > .faixa { padding-block: 32px; }
 .projeto-cartao h3,
 .projeto-cartao h2 { margin-bottom: 8px; font-family: var(--fonte-titulo); }
 .projeto-cartao h3 a,
-.projeto-cartao h2 a { text-decoration: none; }
+.projeto-cartao h2 { font-size: 1.5rem; }
+.projeto-cartao h2 a { text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
 .projeto-cartao h3 a,
 .projeto-cartao .link-seta { display: inline-flex; align-items: center; min-height: 44px; }
 .projeto-cartao p { color: var(--texto-2); }
@@ -536,8 +558,10 @@ main > .faixa { padding-block: 32px; }
   border: 1px solid var(--linha);
   border-radius: 2px;
   background: var(--fundo-2);
+  padding: 12px;   /* a mesma margem interna para toda capa: paisagem, retrato, claro, escuro e ícone */
+  box-sizing: border-box;
 }
-.projeto-tela img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.projeto-tela img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 2px; }
 /* A camada tem o tamanho da figura: o texto e os links do cartão ficam sempre visíveis. Só o JS a abre (--r), com opacity. */
 .cartao-por-tras {
   position: absolute;
@@ -565,6 +589,10 @@ main > .faixa { padding-block: 32px; }
   line-height: 1.4;
   color: var(--texto-2);
   white-space: pre;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent), linear-gradient(to bottom, black calc(100% - 2em), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 32px), transparent), linear-gradient(to bottom, black calc(100% - 2em), transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 .cartao-por-tras img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
 .cartao-origem { font-family: var(--fonte-mono); font-size: 0.7rem; color: var(--laranja-claro); }
@@ -693,6 +721,8 @@ main > .faixa { padding-block: 32px; }
    coluna só e o palco "Por trás" alarga. A coluna de texto (1200 a 1800 px) nunca cabe na janela: o sticky vai na coluna de capturas (abaixo). */
 .case-texto > section { padding-block: 24px; }
 .case-texto > .case-topo { padding-top: 0; }
+.case-topo h1 { font-size: clamp(2.2rem, 4vw, 3.6rem); }   /* a coluna do case tem ~510 px a 1440: "Heisuca" não quebra no meio */
+.case h2 { font-size: clamp(1.7rem, 2.6vw, 2.4rem); }
 .case p,
 .case li { max-width: 68ch; }
 .etiquetas { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; }
@@ -722,6 +752,7 @@ main > .faixa { padding-block: 32px; }
 }
 
 /* ---------- Contato ---------- */
+.cta-buttons#contato { scroll-margin-top: 11rem; }   /* nas páginas que não são a home o id está nos botões: o título acima continua à vista */
 .contato h2 { max-width: 20ch; }
 .cta-buttons { margin-top: 24px; }
 
@@ -750,7 +781,7 @@ main > .faixa { padding-block: 32px; }
   color: var(--laranja-claro);
   margin-bottom: 16px;
 }
-.servico-h1 { font-size: clamp(1.7rem, 5.5vw, 3.6rem); max-width: 22ch; } /* Syne é larga: "Desenvolvimento" cabe em 430 px */
+.servico-h1 { font-size: clamp(1.45rem, 5.5vw, 3.6rem); max-width: 22ch; } /* Syne é larga: "Desenvolvimento" cabe em 430 px */
 .servico-lead { font-size: 1.15rem; color: var(--texto-2); max-width: 60ch; }
 .servico-preco-badge {
   display: inline-block;
@@ -986,8 +1017,8 @@ main > .faixa { padding-block: 32px; }
   margin-bottom: 16px;
 }
 .footer-col ul { list-style: none; padding: 0; margin: 0; }
-.footer-col li { margin-bottom: 8px; }
-.footer-col a { text-decoration: none; font-size: 0.95rem; }
+.footer-col li { margin-bottom: 0; }
+.footer-col a { text-decoration: none; font-size: 0.95rem; display: inline-flex; align-items: center; min-height: 44px; }
 .footer-col a:hover { color: var(--texto); text-decoration: underline; }
 .footer-bottom {
   display: flex;
@@ -1193,13 +1224,13 @@ html.lenis body { height: auto; }
 }
 
 /* Desktop com movimento: a seção presa (pin do ScrollTrigger). */
-.ideia-pin { min-height: 100vh; display: flex; flex-direction: column; padding-block: 32px 24px; border-top: 0; }
+.ideia-pin { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-block: 32px 24px; border-top: 0; }
 .ideia-pin .ideia-cab { margin-bottom: 8px; }
 .ideia-pin .ideia-trilho { display: block; height: 2px; margin-top: 16px; background: var(--linha); }
 .ideia-pin .ideia-trilho-barra { display: block; height: 100%; background: var(--laranja-claro); transform: scaleX(0); transform-origin: 0 50%; }
-.ideia-pin .ideia-estagios { flex: 1; gap: 0; }
+.ideia-pin .ideia-estagios { flex: none; gap: 0; margin-top: 16px; }
 .ideia-pin .ideia-estagio { grid-area: 1 / 1; opacity: 0; }
-.ideia-pin .ideia-estagio:not(.ativo) { pointer-events: none; }
+.ideia-pin .ideia-estagio:not(.ativo) { pointer-events: none; visibility: hidden; }
 /* Cabe em 1280×600: a figura (captura da loja) é limitada pela altura da janela; width/height do <img> seguram o CLS. */
 .ideia-pin .ideia-frente { width: fit-content; max-width: 100%; }
 .ideia-pin .ideia-frente img { width: auto; max-width: 100%; max-height: min(52vh, 440px); }

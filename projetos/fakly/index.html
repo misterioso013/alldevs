@@ -89,20 +89,11 @@
   };
 
   const escapedTitle = title.replace(/&quot;/g, &quot;&amp;quot;&quot;);
-  const schemaJson = {
-    &quot;@context&quot;: &quot;https://schema.org&quot;,
-    &quot;@type&quot;: &quot;FAQPage&quot;,
-    mainEntity: data.map((item) =&gt; ({
-      &quot;@type&quot;: &quot;Question&quot;,
-      name: item.question,
-      acceptedAnswer: {
-        &quot;@type&quot;: &quot;Answer&quot;,
-        text: item.answer,
-      },
-    })),
-  };
-
-  const escapedTitle = title.replace(/&quot;/g, &quot;&amp;quot;&quot;);</code></pre><span class="cartao-origem">fakly · main.js@4c3ea1a</span></div>
+  const escapedData = JSON.stringify(data).replace(/&#x27;/g, &quot;\\&#x27;&quot;);
+  const schemaScript =
+    &#x27;&lt;script type=&quot;application/ld+json&quot;&gt;&#x27; +
+    JSON.stringify(schemaJson) +
+    &quot;&lt;\\/script&gt;&quot;;</code></pre><span class="cartao-origem">fakly · main.js@4c3ea1a</span></div>
     </figure>
   </section>
 

@@ -220,15 +220,16 @@
       acceptedAnswer: {
         &quot;@type&quot;: &quot;Answer&quot;,
         text: item.answer,
-  const schemaJson = {
-    &quot;@context&quot;: &quot;https://schema.org&quot;,
-    &quot;@type&quot;: &quot;FAQPage&quot;,
-    mainEntity: data.map((item) =&gt; ({
-      &quot;@type&quot;: &quot;Question&quot;,
-      name: item.question,
-      acceptedAnswer: {
-        &quot;@type&quot;: &quot;Answer&quot;,
-        text: item.answer,</code></pre><span class="cartao-origem">fakly · main.js@4c3ea1a</span></div>
+      },
+    })),
+  };
+
+  const escapedTitle = title.replace(/&quot;/g, &quot;&amp;quot;&quot;);
+  const escapedData = JSON.stringify(data).replace(/&#x27;/g, &quot;\\&#x27;&quot;);
+  const schemaScript =
+    &#x27;&lt;script type=&quot;application/ld+json&quot;&gt;&#x27; +
+    JSON.stringify(schemaJson) +
+    &quot;&lt;\\/script&gt;&quot;;</code></pre><span class="cartao-origem">fakly · main.js@4c3ea1a</span></div>
       </figure>
       <p class="rotulo-mono">Produto · 2025 · no ar</p>
       <h3><a href="/projetos/fakly/">Fakly</a></h3>
@@ -246,15 +247,12 @@
   language?: string;
   file_size?: number;
   file_url?: string;
-export interface WorkspaceFile {
-  id: string;
-  workspace_id: string;
-  filename: string;
-  content?: string;
-  file_type: &quot;text&quot; | &quot;code&quot; | &quot;markdown&quot; | &quot;file&quot;;
-  language?: string;
-  file_size?: number;
-  file_url?: string;</code></pre><span class="cartao-origem">sendany · src/lib/database.ts@1117310</span></div>
+  mime_type?: string;
+  drive_file_id?: string;
+  order_index: number;
+  created_at: Date;
+  updated_at: Date;
+}</code></pre><span class="cartao-origem">sendany · src/lib/database.ts@1117310</span></div>
       </figure>
       <p class="rotulo-mono">Produto · 2025 · no ar</p>
       <h3><a href="/projetos/sendany/">SendAny</a></h3>

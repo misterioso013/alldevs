@@ -129,15 +129,28 @@ def _imagem_do_cartao(proj, raiz: Path):
     return "/" + rel, w, h
 
 
+def _fechado(texto: str) -> str:
+    """O trecho real, com os fechamentos que faltam no fim (chaves, colchetes, parênteses): cada cópia repetida fica completa."""
+    pares, pilha = {"{": "}", "[": "]", "(": ")"}, []
+    for c in texto:
+        if c in pares:
+            pilha.append(pares[c])
+        elif c in pares.values() and pilha and pilha[-1] == c:
+            pilha.pop()
+    return texto.rstrip() + ("\n" + "".join(reversed(pilha)) if pilha else "")
+
+
 def _camada_por_tras(proj, raiz: Path, preenche: int = CARTAO_PREENCHE, linhas_max: int = CARTAO_LINHAS) -> str:
     """A camada que a máscara do ponteiro revela no cartão e no palco do case (js/revelar.js monta; css/site.css desenha a máscara).
     O palco do case é maior: mostra mais linhas do mesmo trecho."""
     pt = proj.por_tras
     texto = ler_por_tras(raiz, proj)
     if texto is not None:
-        linhas = texto.splitlines()[:linhas_max] or [""]
-        # o trecho se repete até preencher a figura inteira (o código nunca é editado; a camada é aria-hidden)
-        trecho = "\n".join((linhas * -(-preenche // len(linhas)))[:preenche])
+        linhas = _fechado(texto).splitlines() or [""]
+        # o trecho inteiro e fechado se repete (cópias completas, separadas por linha em branco) até quase preencher a figura;
+        # o CSS esmaece o corte vertical (o código nunca é editado; a camada é aria-hidden)
+        copias = max(1, preenche // (len(linhas) + 1))
+        trecho = "\n\n".join(["\n".join(linhas)] * copias)
         miolo = f'<pre><code>{re.sub(r"(?<!&)#", "&#35;", esc(trecho))}</code></pre>'
     else:
         w, h = _tamanho_webp(Path(raiz) / pt["arquivo"])
@@ -224,7 +237,7 @@ def _item_ciclo(proj, raiz: Path) -> dict:
     atras = {"tipo": pt["tipo"], "origem": pt["origem"]}
     texto = ler_por_tras(raiz, proj)
     if texto is not None:
-        atras["texto"] = texto
+        atras["texto"] = _fechado(texto)
     else:
         atras["src"] = "/" + pt["arquivo"]
     return {"slug": proj.slug, "nome": proj.nome, "frase": pt["frase"], "cor": pt["cor"],
