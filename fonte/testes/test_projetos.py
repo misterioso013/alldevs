@@ -161,6 +161,15 @@ class TestCss(unittest.TestCase):
         # oculto, o filtro guarda o lugar (sem salto de layout quando o JS o abre) e some da leitura
         self.assertRegex(css, r"\.filtro-tipos\[hidden\]\s*\{[^}]*visibility: hidden")
 
+    def test_reserva_do_filtro_vence_hidden_global(self):
+        # [hidden] global é `display: none !important`; sem `!important` a reserva do filtro perde e a grade salta 84 px (CLS)
+        from testes.test_paginas import REPO
+        css = ler(REPO / "css/site.css")
+        self.assertRegex(css, r"(?m)^\[hidden\]\s*\{\s*display: none !important;\s*\}", "a regra global de [hidden] fica como está")
+        self.assertRegex(css, r"\.filtro-tipos\[hidden\]\s*\{[^}]*display: flex !important")
+        self.assertRegex(css, r"\.projeto-cartao\[hidden\]\s*\{\s*display: none;")
+        self.assertNotRegex(css, r"\.projeto-cartao\[hidden\]\s*\{[^}]*display: (?!none)", "cartão filtrado continua sumindo")
+
 
 class TestRodada2(Base):
     def case(self, slug):

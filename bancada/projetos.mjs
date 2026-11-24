@@ -63,6 +63,18 @@ for (const w of [1440, 430]) {
 await abre('/projetos/', { viewport: { width: 1440, height: 900 } }, async (p) => {
   rel('sem-js-filtro-oculto', !(await p.locator('.filtro-tipos').isVisible()) && (await vis(p)).length >= 6);
 }, false);
+// reserva do filtro (CLS): sem JS a caixa oculta guarda >= 44 px, invisível; com JS a grade fica no mesmo lugar (+-1 px)
+for (const w of [1440, 390]) {
+  let semJs = null;
+  await abre('/projetos/', { viewport: { width: w, height: 900 } }, async (p) => {
+    semJs = await p.evaluate(() => { const f = document.querySelector('.filtro-tipos'); const s = getComputedStyle(f); return { h: f.getBoundingClientRect().height, display: s.display, vis: s.visibility, grade: document.querySelector('.grade-projetos').getBoundingClientRect().top }; });
+    rel(`sem-js-filtro-reserva-${w}`, semJs.h >= 44 && semJs.vis === 'hidden', JSON.stringify(semJs));
+  }, false);
+  await abre('/projetos/', { viewport: { width: w, height: 900 } }, async (p) => {
+    const g = await p.evaluate(() => document.querySelector('.grade-projetos').getBoundingClientRect().top);
+    rel(`grade-mesmo-topo-com-e-sem-js-${w}`, Math.abs(g - semJs.grade) <= 1, `com JS ${g}, sem JS ${semJs.grade}`);
+  });
+}
 await abre('/projetos/', { viewport: { width: 360, height: 800 } }, async (p) => {
   rel('sem-rolagem-h-360-lista', (await p.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 0);
 });

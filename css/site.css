@@ -650,8 +650,9 @@ main > .faixa { padding-block: 32px; }
 /* Filtro por tipo (js/site.js tira o `hidden`): alvos de 44 px, o botão ativo em roxo. */
 .filtro-tipos { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 32px; }
 .projeto-cartao[hidden] { display: none; }
-/* Sem o `hidden` o filtro apareceria depois do JS e empurraria a grade (CLS): oculto, ele guarda o lugar, invisível e fora da leitura. */
-.filtro-tipos[hidden] { display: flex; visibility: hidden; }
+/* Sem o `hidden` o filtro apareceria depois do JS e empurraria a grade (CLS): oculto, ele guarda o lugar, invisível e fora da leitura.
+   O `!important` é preciso: a regra global `[hidden] { display: none !important }` venceria e tiraria a caixa do layout. */
+.filtro-tipos[hidden] { display: flex !important; visibility: hidden; }
 .filtro-tipos button {
   min-height: 44px;
   min-width: 44px;
