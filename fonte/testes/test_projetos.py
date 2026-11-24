@@ -156,6 +156,8 @@ class TestCss(unittest.TestCase):
         self.assertTrue(m, "sticky do .case-texto só a partir de 1024 px")
         self.assertRegex(css, r"\.projeto-cartao\[hidden\]\s*\{\s*display: none")
         self.assertRegex(css, r"\.filtro-tipos button\s*\{[^}]*min-height: 44px")
+        # oculto, o filtro guarda o lugar (sem salto de layout quando o JS o abre) e some da leitura
+        self.assertRegex(css, r"\.filtro-tipos\[hidden\]\s*\{[^}]*visibility: hidden")
 
 
 if __name__ == "__main__":
