@@ -93,7 +93,6 @@ main > section,
 main > article,
 main > .breadcrumb,
 main > .servico-body,
-main > #timeline,
 .footer-inner,
 .footer-bottom {
   width: min(100% - 32px, 1280px);
@@ -174,9 +173,10 @@ main > .breadcrumb + section { border-top: 0; }
     border-top: 0;
   }
   main > .contato > .rotulo-mono, main > .contato > h2 { grid-column: 1; }
+  /* Serviço: o bloco só tem o rótulo e os botões (sem h2): uma coluna, nada de coluna esquerda vazia */
+  main > .contato:not(:has(> h2)) { grid-template-columns: minmax(0, 1fr); }
+  main > .contato:not(:has(> h2)) > .cta-buttons { grid-column: 1; grid-row: auto; margin-top: 16px; }
   main > .contato > .cta-buttons { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; justify-content: flex-start; flex-wrap: nowrap; }   /* os 3 botões na mesma linha */
-  /* História: o manifesto usa a largura da página */
-  .horizontal-story__text { max-width: 72rem; }
   .footer-brand { grid-column: span 6; }
   .footer-col { grid-column: span 3; }
 }
@@ -192,6 +192,9 @@ main > .breadcrumb + section { border-top: 0; }
 }
 .nav-logo,
 .footer-logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;   /* alvo de toque */
   font-family: var(--fonte-titulo);
   font-weight: 800;
   font-size: 1.25rem;
@@ -216,7 +219,6 @@ main > .breadcrumb + section { border-top: 0; }
   text-decoration: none;
   color: var(--texto-2);
   font-size: 0.95rem;
-  transition: color var(--dur-curta) var(--curva-saida);
 }
 .nav-links a:hover { color: var(--texto); }
 .paleta-gatilho {
@@ -226,7 +228,7 @@ main > .breadcrumb + section { border-top: 0; }
   text-decoration: none;
   color: var(--texto-2);
   border: 1px solid var(--linha);
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   padding: 6px 14px;
   display: inline-flex;
   align-items: center;
@@ -241,8 +243,7 @@ main > .breadcrumb + section { border-top: 0; }
   text-decoration: none;
   padding: 6px 16px;
   border: 1px solid var(--roxo-claro);
-  border-radius: 999px;
-  transition: background-color var(--dur-curta) var(--curva-saida);
+  border-radius: var(--raio-pilula);
 }
 .nav-cta:hover { background: var(--roxo); color: var(--texto); }
 @media (max-width: 479px) {
@@ -262,15 +263,14 @@ main > .breadcrumb + section { border-top: 0; }
   min-height: 44px;
   padding: 10px 22px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   font-family: var(--fonte-texto);
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.2;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color var(--dur-curta) var(--curva-saida), border-color var(--dur-curta) var(--curva-saida),
-    transform var(--dur-curta) var(--curva-saida);
+  transition: transform var(--dur-curta) var(--curva-saida);
 }
 .btn svg { flex: none; width: 16px; height: 16px; }
 @media (prefers-reduced-motion: no-preference) {
@@ -290,7 +290,6 @@ main > .breadcrumb + section { border-top: 0; }
   font-weight: 500;
   text-decoration: none;
   border-bottom: 1px solid var(--linha);
-  transition: border-color var(--dur-curta) var(--curva-saida);
 }
 .link-seta::after { content: " →"; }
 .link-seta:hover { border-color: var(--laranja-claro); color: var(--laranja-claro); }
@@ -348,7 +347,7 @@ main > .breadcrumb + section { border-top: 0; }
     height: 14px;
     border: 1px solid var(--laranja-claro);
     border-radius: 50%;
-    transition: transform var(--dur-media) var(--curva-saida), background-color var(--dur-curta) var(--curva-saida);
+    transition: transform var(--dur-media) var(--curva-saida);
   }
   .cursor.cursor-com-texto .cursor-anel { transform: scale(5.14); background: var(--laranja-claro); }
   .cursor-texto {
@@ -486,7 +485,7 @@ html.pre-1a .preloader span {
   color: var(--texto);
   background: var(--fundo-2);
   border: 1px solid var(--cor-item);
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   cursor: pointer;
 }
 .hero-ver-por-tras[aria-pressed="true"] { background: var(--cor-item); color: var(--fundo); }
@@ -503,21 +502,28 @@ html.pre-1a .preloader span {
 /* Mobile (r3): o botão sai de cima do código do palco e a frase tem lugar reservado no fluxo (nada pendurado sobre o respiro do hero). */
 @media (max-width: 959px) {
   .hero { padding-bottom: 40px; }
-  .hero-palco { margin-bottom: 136px; }
+  .hero-palco { margin-bottom: 80px; }   /* sem JS não há botão: só o lugar da frase (até 2 linhas) */
+  html.js .hero-palco { margin-bottom: 136px; }   /* com JS: o botão (44 px) e a frase abaixo dele */
   .hero-ver-por-tras { bottom: -52px; right: auto; left: 0; }
-  .hero-frase { top: calc(100% + 60px); margin-top: 0; }
+  html.js .hero-frase { top: calc(100% + 60px); margin-top: 0; }
 }
-/* Toque (sem ponteiro fino): a dica "ver por trás" (o mesmo texto do data-cursor) fica visível no cartão. */
+/* Toque (sem ponteiro fino): a dica "ver por trás" (o mesmo rótulo do data-cursor) fica visível FORA da miniatura, só quando a revelação
+   existe (js/revelar.js põe .revela-armado na figura; sem JS e com movimento reduzido ela não aparece). No cartão, na linha do
+   rótulo, à direita; no case, na linha do título "Por trás". */
 @media (hover: none), (pointer: coarse) {
-  [data-cursor="ver por trás"]::after {
-    content: attr(data-cursor);
-    position: absolute; left: 8px; bottom: 8px; z-index: 5;
+  .projeto-cartao:has(> .revela-armado) .rotulo-mono { position: relative; padding-right: 7.5rem; }
+  [data-secao="por-tras"]:has(> .revela-armado) > h2::after,
+  .projeto-cartao:has(> .revela-armado) .rotulo-mono::after {
+    content: "ver por trás";
     padding: 4px 10px;
-    font-family: var(--fonte-mono); font-size: 0.75rem;
+    font-family: var(--fonte-mono); font-size: 0.75rem; font-weight: 400; letter-spacing: 0; line-height: 1.4;
+    text-transform: none;
     color: var(--texto); background: var(--fundo-2);
-    border: 1px solid var(--roxo-claro); border-radius: 999px;
+    border: 1px solid var(--roxo-claro); border-radius: var(--raio-pilula);
     pointer-events: none;
   }
+  .projeto-cartao:has(> .revela-armado) .rotulo-mono::after { position: absolute; right: 0; top: -4px; }
+  [data-secao="por-tras"]:has(> .revela-armado) > h2 { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 }
 .hero-frase-nome { font-family: var(--fonte-mono); color: var(--cor-item); margin-right: 8px; }
 @media (min-width: 960px) {
@@ -535,13 +541,15 @@ html.pre-1a .preloader span {
   flex-direction: column;
   padding: 24px;
   border: 1px solid var(--linha);
-  border-radius: 4px;
+  border-radius: var(--raio-2);
   background: var(--fundo);
-  transition: border-color var(--dur-curta) var(--curva-saida);
 }
 .cartao-pessoa:hover,
 .cartao-servico:hover,
 .relacionado-card:hover { border-color: var(--texto-2); }
+/* Sinal de link: a mesma seta do .link-seta, no fim do cartão inteiro clicável */
+.cartao-servico::after,
+.relacionado-card::after { content: "→"; margin-top: 8px; font-weight: 500; }
 .cartao-pessoa > :last-child,
 .cartao-servico > :last-child { margin-bottom: 0; }
 /* O cartão de serviço inteiro é o alvo do link do título; o foco aparece no cartão. */
@@ -553,7 +561,7 @@ html.pre-1a .preloader span {
   height: auto;
   aspect-ratio: 4 / 5; /* retrato inteiro: em 16:10 a foto quadrada perdia testa ou queixo */
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: var(--raio-1);
   margin-bottom: 16px;
 }
 
@@ -577,7 +585,7 @@ main > .faixa { padding-block: 32px; }
 }
 .faixa-rotulo { display: block; font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); text-wrap: balance; }   /* sem palavra órfã a 360 e 430 */
 .faixa-lista { gap: 16px 8px; }
-.secao-intro { color: var(--texto-2); max-width: 52ch; }
+.secao-intro { color: var(--texto-2); max-width: 52ch; text-wrap: pretty; }   /* sem palavra órfã no fim ("ar." a 360) */
 
 /* Cartão de projeto: a captura na frente; por trás, o trecho real que a máscara revela sob o ponteiro (js/revelar.js liga --mx, --my, --r). */
 .projeto-cartao {
@@ -587,7 +595,7 @@ main > .faixa { padding-block: 32px; }
   overflow: hidden;
   padding: 16px;
   border: 1px solid var(--linha);
-  border-radius: 4px;
+  border-radius: var(--raio-2);
   background: var(--fundo);
 }
 /* contorno do hover num pseudo-elemento: só a opacity muda */
@@ -596,7 +604,7 @@ main > .faixa { padding-block: 32px; }
   position: absolute;
   inset: 0;
   border: 1px solid var(--texto-2);
-  border-radius: 4px;
+  border-radius: var(--raio-2);
   opacity: 0;
   pointer-events: none;
 }
@@ -614,7 +622,7 @@ main > .faixa { padding-block: 32px; }
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border: 1px solid var(--linha);
-  border-radius: 2px;
+  border-radius: var(--raio-1);
   background: var(--fundo-2);
   box-sizing: border-box;
 }
@@ -664,7 +672,7 @@ main > .faixa { padding-block: 32px; }
   display: grid;
   gap: 16px;
 }
-.passo { padding: 24px; border: 1px solid var(--linha); border-radius: 4px; }
+.passo { padding: 24px; border: 1px solid var(--linha); border-radius: var(--raio-2); }
 .passo h3 { margin: 8px 0; font-family: var(--fonte-titulo); }
 .passo p { margin: 0; color: var(--texto-2); }
 .passo-num { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--laranja-claro); }
@@ -672,17 +680,19 @@ main > .faixa { padding-block: 32px; }
 .tec-grupos { margin-top: 32px; }   /* uma regra só: bloco; no desktop (media) vira 3 colunas de fluxo */
 .tec-grupo { margin-bottom: 24px; }
 .tec-grupo .rotulo-mono { margin-bottom: 8px; }
-.tec-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.tecnologia {
+.tecnologia,
+.etiqueta-mono {   /* a mesma etiqueta mono nas tecnologias da home e na stack do case */
   font-family: var(--fonte-mono);
-  font-size: 0.85rem;
-  padding: 6px 12px;
+  font-size: 0.8rem;
+  padding: 4px 10px;
   border: 1px solid var(--linha);
-  border-radius: 2px;
+  border-radius: var(--raio-1);
 }
+.tec-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+
 
 .depoimentos-lista { display: grid; gap: 16px; margin-top: 32px; }
-.depoimento { margin: 0; padding: 24px; border: 1px solid var(--linha); border-radius: 4px; }
+.depoimento { margin: 0; padding: 24px; border: 1px solid var(--linha); border-radius: var(--raio-2); }
 .depoimento blockquote { margin: 0 0 16px; font-size: 1.1rem; }
 .depoimento figcaption { color: var(--texto-2); }
 
@@ -712,8 +722,9 @@ main > .faixa { padding-block: 32px; }
 .filtro-tipos { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 32px; }
 .projeto-cartao[hidden] { display: none; }
 /* Sem o `hidden` o filtro apareceria depois do JS e empurraria a grade (CLS): oculto, ele guarda o lugar, invisível e fora da leitura.
-   O `!important` é preciso: a regra global `[hidden] { display: none !important }` venceria e tiraria a caixa do layout. */
-.filtro-tipos[hidden] { display: flex !important; visibility: hidden; }
+   (A classe js vem do script inline do <head>, antes da 1ª pintura; sem JS o filtro nem ocupa lugar.) O `!important` é preciso: a regra global `[hidden] { display: none !important }` venceria e tiraria a caixa do layout. */
+.filtro-tipos[hidden] { display: none; }   /* sem JS: nada de vão */
+html.js .filtro-tipos[hidden] { display: flex !important; visibility: hidden; }
 .filtro-tipos button {
   min-height: 44px;
   min-width: 44px;
@@ -723,7 +734,7 @@ main > .faixa { padding-block: 32px; }
   color: var(--texto);
   background: transparent;
   border: 1px solid var(--linha);
-  border-radius: 999px;   /* o mesmo raio das pílulas */
+  border-radius: var(--raio-pilula);   /* o mesmo raio das pílulas */
   cursor: pointer;
 }
 .filtro-tipos button:hover { border-color: var(--laranja-claro); color: var(--laranja-claro); }
@@ -738,12 +749,7 @@ main > .faixa { padding-block: 32px; }
 .case p,
 .case li { max-width: 68ch; }
 .etiquetas { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; }
-.etiqueta-mono {
-  font-size: 0.8rem;
-  padding: 4px 10px;
-  border: 1px solid var(--linha);
-  border-radius: 2px;
-}
+
 .case-palco { margin-bottom: 0; }
 .case-palco--retrato { aspect-ratio: 4 / 3; }   /* a largura da coluna; um print em retrato mostra o topo */
 .case-palco .cartao-por-tras pre { font-size: 0.8rem; }
@@ -753,7 +759,8 @@ main > .faixa { padding-block: 32px; }
 .case-telas .img-captura { flex-basis: 100%; }
 .case-telas .img-retrato { width: calc(50% - 8px); max-width: 240px; }
 .case-loja { margin: 0; flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
-.case-loja img { width: 100%; max-width: 100%; height: auto; }   /* imagens da coluna direita: a largura da coluna */
+.case-loja img { width: auto; max-width: 100%; height: auto; }   /* o tamanho natural (540 px) ou a largura da coluna, o que for menor: nunca ampliada */
+.case-loja img.img-captura { flex-basis: auto; }   /* vence o `.case-telas .img-captura` (100%): sem isso a imagem de 540 px esticava até a coluna */
 .case-loja img.img-icone { width: 120px; }   /* o ícone quadrado é ícone, não print */
 .case-loja figcaption { flex-basis: 100%; font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
 @media (min-width: 1024px) {
@@ -804,7 +811,7 @@ main > .faixa { padding-block: 32px; }
   margin-top: 8px;
   padding: 6px 14px;
   border: 1px solid var(--roxo);
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   font-family: var(--fonte-mono);
   font-size: 0.85rem;
 }
@@ -813,7 +820,7 @@ main > .faixa { padding-block: 32px; }
   margin-top: 64px;
   padding-top: 32px;
   border-top: 1px solid var(--linha);
-  font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+  font-size: clamp(1.25rem, 3.4vw, 2.2rem);   /* nunca maior que o H1 do serviço (23 px a 360) */
   max-width: 28ch;
 }
 .servico-body > p { max-width: 68ch; }
@@ -830,7 +837,7 @@ main > .faixa { padding-block: 32px; }
   gap: 16px;
   padding: 24px;
   border: 1px solid var(--linha);
-  border-radius: 4px;
+  border-radius: var(--raio-2);
 }
 .step-num { font-family: var(--fonte-mono); color: var(--laranja-claro); }
 .step-content h3 { font-size: 1.15rem; }
@@ -842,7 +849,7 @@ main > .faixa { padding-block: 32px; }
   gap: 8px;
   padding: 6px 12px;
   border: 1px solid var(--linha);
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   font-size: 0.9rem;
 }
 .tech-pill img { width: 18px; height: 18px; }
@@ -888,11 +895,27 @@ main > .faixa { padding-block: 32px; }
   margin-top: 64px;
   padding: 32px;
   border: 1px solid var(--linha);
-  border-radius: 4px;
+  border-radius: var(--raio-2);
   background: var(--fundo-2);
 }
+.projetos-do-tipo h2 { font-size: clamp(1.25rem, 3.4vw, 2.2rem); }
 .servico-cta h2 { font-size: clamp(1.4rem, 3vw, 2rem); max-width: 28ch; }
 .servicos-relacionados h2 { font-size: clamp(1.4rem, 3vw, 2rem); }
+.projetos-do-tipo .grade-projetos > .projeto-cartao:only-child { grid-column: 1 / -1; }   /* um cartão só: a fileira inteira, sem meia linha vazia */
+@media (min-width: 1024px) {
+  .projetos-do-tipo .grade-projetos > .projeto-cartao:only-child:has(> .projeto-tela) {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-rows: 1fr auto auto auto auto 1fr;
+    column-gap: 32px;
+  }
+  .projetos-do-tipo .grade-projetos > .projeto-cartao:only-child > .projeto-tela { grid-column: 1; grid-row: 1 / -1; margin: 0; }
+  .projetos-do-tipo .grade-projetos > .projeto-cartao:only-child > :nth-child(n+2) { grid-column: 2; }
+  .projetos-do-tipo .grade-projetos > .projeto-cartao:only-child > :nth-child(2) { grid-row: 2; }
+  .projetos-do-tipo .grade-projetos > .projeto-cartao:only-child > :nth-child(3) { grid-row: 3; }
+  .projetos-do-tipo .grade-projetos > .projeto-cartao:only-child > :nth-child(4) { grid-row: 4; }
+  .projetos-do-tipo .grade-projetos > .projeto-cartao:only-child > :nth-child(5) { grid-row: 5; }
+}
 .projetos-do-tipo .link-seta { display: inline-flex; align-items: center; min-height: 44px; }
 .relacionado-card { text-decoration: none; gap: 8px; min-height: 44px; }
 .relacionado-nome { font-family: var(--fonte-titulo); font-weight: 600; font-size: 1.2rem; }
@@ -923,7 +946,7 @@ main > .faixa { padding-block: 32px; }
   font-size: 0.85rem;
   color: var(--texto-2);
 }
-.footer-dominio { font-family: var(--fonte-mono); color: var(--texto-2); }
+.footer-dominio { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--fonte-mono); color: var(--texto-2); }
 
 /* ---------- Paleta de comandos (js/paleta.js): <dialog> nativo, só opacidade ---------- */
 dialog.paleta {
@@ -1036,7 +1059,7 @@ html.lenis body { height: auto; }
   background: var(--fundo-2);
 }
 .ideia-wire span { display: block; }
-.wire-barra { width: 40%; height: 8px; border-radius: 4px; background: var(--linha); }
+.wire-barra { width: 40%; height: 8px; border-radius: var(--raio-2); background: var(--linha); }
 .wire-tela { display: grid !important; place-items: center; border: 1px solid var(--linha); border-radius: 8px; background: var(--fundo); }
 .wire-play { width: 36px; height: 36px; background: var(--roxo-claro); clip-path: polygon(25% 15%, 25% 85%, 90% 50%); }
 .wire-prog { height: 6px; border-radius: 3px; background: var(--linha); }
@@ -1069,12 +1092,14 @@ html.lenis body { height: auto; }
   background-repeat: no-repeat;
   background-attachment: local, local, scroll, scroll;
 }
-.ideia-estagio:focus-visible { outline: 2px solid var(--roxo-claro); outline-offset: 6px; border-radius: 4px; }
-.ideia-codigo:focus-visible { outline: 2px solid var(--roxo-claro); outline-offset: 2px; }
+.ideia-estagio:focus-visible { outline: 2px solid var(--laranja-claro); outline-offset: 6px; border-radius: var(--raio-2); }
+.ideia-codigo:focus-visible { outline: 2px solid var(--laranja-claro); outline-offset: 2px; }
 @media (max-width: 539px) { .ideia-codigo { padding: 16px; font-size: 0.72rem; } }
 /* Celular: a linha quebra (nenhuma passa da borda nem é cortada); sem rolagem horizontal interna. */
 @media (max-width: 767px) {
   .ideia-codigo { overflow-x: visible; background-image: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+  /* Recuo pendente: a continuação da linha quebrada entra 2 caracteres (cada linha do código é um <span class="ln">). */
+  .ideia-codigo .ln { display: block; padding-left: 2ch; text-indent: -2ch; }
   pre.ideia-codigo code { width: auto; min-width: 0; white-space: pre-wrap; }
   .ideia-visual:has(.ideia-frente) .ideia-frente { width: 100%; }
   .ideia-visual:has(.ideia-frente) .ideia-frente img { width: 100%; }

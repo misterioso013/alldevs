@@ -126,6 +126,11 @@
   --texto-2: #a6a6bb;
   --linha: #26263a;
 
+  /* Raios: 2 px (etiquetas), 4 px (cartões), pílula (botões, filtros, selos) */
+  --raio-1: 2px;
+  --raio-2: 4px;
+  --raio-pilula: 999px;
+
   --dur-curta: 200ms;
   --dur-media: 400ms;
   --dur-longa: 800ms;

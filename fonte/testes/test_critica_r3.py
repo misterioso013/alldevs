@@ -101,7 +101,7 @@ class Codigo(unittest.TestCase):
     def test_trecho_da_ideia_fecha_a_classe(self):
         html = (REPO / "index.html").read_text(encoding="utf-8")
         m = re.search(r'<pre class="ideia-codigo".*?<code>(.*?)</code>', html, re.S)
-        self.assertTrue(m.group(1).rstrip().endswith("}"))
+        self.assertTrue(re.sub(r"</?span[^>]*>", "", m.group(1)).rstrip().endswith("}"))
 
     def test_celular_quebra_a_linha_do_codigo(self):
         css = re.sub(r"/\*.*?\*/", "", CSS, flags=re.S)
@@ -129,8 +129,8 @@ class Sistema(unittest.TestCase):
             self.assertNotIn("relacionado-icon", f.read_text(encoding="utf-8"))
 
     def test_filtro_com_o_raio_das_pilulas(self):
-        self.assertIn("border-radius: 999px", corpo(".filtro-tipos button"))
-        self.assertIn("border-radius: 999px", corpo(".btn"))
+        self.assertIn("border-radius: var(--raio-pilula)", corpo(".filtro-tipos button"))
+        self.assertIn("border-radius: var(--raio-pilula)", corpo(".btn"))
 
     def test_seta_do_faq_com_20px_de_desenho(self):
         r = corpo(".faq-chevron")
@@ -195,9 +195,12 @@ class VaziosDesktop(unittest.TestCase):
         self.assertIn("bottom: -52px", m.group(1))
 
     def test_dica_ver_por_tras_no_toque(self):
-        m = re.search(r"@media \(hover: none\), \(pointer: coarse\) \{\s*\[data-cursor=\"ver por trás\"\]::after \{([^}]*)\}", CSS)
+        """A dica só aparece com a revelação armada (JS, sem movimento reduzido) e fora da miniatura (rótulo do cartão e título do case)."""
+        m = re.search(r"@media \(hover: none\), \(pointer: coarse\) \{(.*?)\n\}", CSS, re.S)
         self.assertTrue(m)
-        self.assertIn("content: attr(data-cursor)", m.group(1))
+        self.assertEqual(CSS.count('content: "ver por trás"'), 1)   # o mesmo rótulo do data-cursor, escrito uma vez
+        self.assertIn(".revela-armado", m.group(1))
+        self.assertNotRegex(CSS, r'\[data-cursor="ver por trás"\]::after')   # nada sobre a figura
 
 
 class ComputadoNoNavegador(unittest.TestCase):
@@ -230,6 +233,8 @@ await nav.close(); srv.close(); console.log(JSON.stringify(out));
         try:
             r = subprocess.run(["node", str(script), str(REPO)], cwd=REPO / "bancada", env=env, capture_output=True, text=True, timeout=120)
             cls.d = json.loads(r.stdout.strip().splitlines()[-1])
+        except Exception:   # node ou Chromium indisponível: pular, não dar ERROR
+            cls.ok = False
         finally:
             script.unlink(missing_ok=True)
 

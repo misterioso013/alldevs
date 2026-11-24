@@ -54,12 +54,6 @@ class SecoesDensas(unittest.TestCase):
         self.assertIn("100vmax", corpo)
         self.assertIn("var(--fundo-2)", corpo)
 
-    def test_manifesto_nao_fica_na_metade_esquerda(self):
-        corpo = " ".join(regras(r"[^{}]*\.horizontal-story__text[^{}]*", desktop()))
-        m = re.search(r"max-width:\s*(\d+(?:\.\d+)?)rem", corpo)
-        self.assertIsNotNone(m)
-        self.assertGreaterEqual(float(m.group(1)), 64)
-
 
 class Heisuca(unittest.TestCase):
     def test_print_do_app_uma_vez_so(self):
@@ -177,6 +171,6 @@ class SemHistoriaNemDivisao(unittest.TestCase):
 
     def test_dados_sem_papel_nem_links_nem_perfil(self):
         for p in json.loads((REPO / "fonte/dados/pessoas.json").read_text(encoding="utf-8")):
-            self.assertEqual(set(p), {"slug", "nome", "foto", "cor", "atualizado"})
+            self.assertEqual(set(p), {"slug", "nome", "foto", "atualizado"})
         est = json.loads((REPO / "fonte/dados/estudio.json").read_text(encoding="utf-8"))
         self.assertNotIn("perfil", est["mensagens"])

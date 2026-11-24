@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>(function(){try{if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||window.sessionStorage.getItem("alldev-visto"))return;document.documentElement.classList.add("pre-1a")}catch(e){}})()</script>
+<script>(function(){try{document.documentElement.classList.add("js");if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||window.sessionStorage.getItem("alldev-visto"))return;document.documentElement.classList.add("pre-1a")}catch(e){}})()</script>
 <title>AllDevs — Estúdio de software: sites, apps e automações</title>
 <meta name="description" content="Estúdio de software com dois sócios. Sites, apps, bots e produtos próprios no ar.">
 <link rel="canonical" href="https://all.dev.br/">
@@ -30,7 +30,7 @@
 <script src="/js/site.js" defer></script>
 <script src="/js/paleta.js" defer></script>
 <link rel="preload" as="image" href="/assets/frente/amott.webp" type="image/webp" fetchpriority="high">
-<script type="application/ld+json">[{"@context": "https://schema.org", "@id": "https://all.dev.br/#organizacao", "@type": "Organization", "member": [{"@id": "https://all.dev.br/#caio-guerras"}, {"@id": "https://all.dev.br/#rosiel-victor"}], "name": "AllDevs", "url": "https://all.dev.br/"}, {"@context": "https://schema.org", "@id": "https://all.dev.br/#caio-guerras", "@type": "Person", "name": "Caio Guerras", "worksFor": {"@id": "https://all.dev.br/#organizacao"}}, {"@context": "https://schema.org", "@id": "https://all.dev.br/#rosiel-victor", "@type": "Person", "name": "Rosiel Victor", "worksFor": {"@id": "https://all.dev.br/#organizacao"}}]</script>
+<script type="application/ld+json">[{"@context": "https://schema.org", "@id": "https://all.dev.br/#organizacao", "@type": "Organization", "member": [{"@id": "https://all.dev.br/#quem-somos-caio"}, {"@id": "https://all.dev.br/#quem-somos-rosiel"}], "name": "AllDevs", "url": "https://all.dev.br/"}, {"@context": "https://schema.org", "@id": "https://all.dev.br/#quem-somos-caio", "@type": "Person", "name": "Caio Guerras", "worksFor": {"@id": "https://all.dev.br/#organizacao"}}, {"@context": "https://schema.org", "@id": "https://all.dev.br/#quem-somos-rosiel", "@type": "Person", "name": "Rosiel Victor", "worksFor": {"@id": "https://all.dev.br/#organizacao"}}]</script>
 </head>
 <body>
 <div class="preloader" aria-hidden="true"><span>all.dev</span></div>
@@ -103,17 +103,17 @@
     <p>Um trecho do tema: cada cor do app tem um nome e vem de um único lugar.</p>
    </div>
    <div class="ideia-visual">
-   <pre class="ideia-codigo" role="region" aria-label="Trecho do código" tabindex="0"><code>import &#x27;package:flutter/widgets.dart&#x27;;
-
-class TemaHisui {
-    TemaHisui._();
-
-    static const temaCorAcento = Color(0xFF276C4F);
-    static const temaCorAcentoSuave = Color(0xFFD3EEDF);
-    static const temaCorAviso = Color(0xFF9A600B);
-    static const temaCorBorda = Color(0xFFD1CDC5);
-}
-</code></pre>
+   <pre class="ideia-codigo" role="region" aria-label="Trecho do código" tabindex="0"><code><span class="ln">import &#x27;package:flutter/widgets.dart&#x27;;
+</span><span class="ln">
+</span><span class="ln">class TemaHisui {
+</span><span class="ln">    TemaHisui._();
+</span><span class="ln">
+</span><span class="ln">    static const temaCorAcento = Color(0xFF276C4F);
+</span><span class="ln">    static const temaCorAcentoSuave = Color(0xFFD3EEDF);
+</span><span class="ln">    static const temaCorAviso = Color(0xFF9A600B);
+</span><span class="ln">    static const temaCorBorda = Color(0xFFD1CDC5);
+</span><span class="ln">}
+</span></code></pre>
    </div>
   </li>
   <li class="ideia-estagio" data-chave="no-ar">
@@ -367,12 +367,12 @@ class TemaHisui {
   <p class="rotulo-mono">// quem somos</p>
   <h2 class="titulo-revela">Os dois sócios</h2>
   <div class="cartoes-pessoas">
-    <article class="cartao-pessoa" data-slug="caio">
+    <article class="cartao-pessoa" id="quem-somos-caio" data-slug="caio">
       <img src="/assets/images/caio-640.webp" alt="Foto de Caio Guerras" width="512" height="640" loading="lazy" decoding="async">
       <h3>Caio Guerras</h3>
       <p>Sócio do estúdio.</p>
     </article>
-    <article class="cartao-pessoa" data-slug="rosiel">
+    <article class="cartao-pessoa" id="quem-somos-rosiel" data-slug="rosiel">
       <img src="/assets/images/rosiel-640.webp" alt="Foto de Rosiel Victor" width="512" height="640" loading="lazy" decoding="async">
       <h3>Rosiel Victor</h3>
       <p>Sócio do estúdio.</p>

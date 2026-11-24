@@ -1,14 +1,13 @@
 # AllDevs
 
-Site autoral da AllDevs, criado para contar a historia de como começamos e vender freelas de desenvolvimento com uma experiencia visual forte, direta e artesanal.
+Site autoral da AllDevs, criado para vender freelas de desenvolvimento com uma experiencia visual forte, direta e artesanal.
 
 A proposta desta versao e voltar ao essencial: HTML e CSS gerados por um script Python simples, com JavaScript so como melhoria. Nada de framework por obrigação. A pagina precisa carregar rapido, comunicar valor em poucos segundos e ainda ter personalidade.
 
 ## Objetivo
 
-Transformar a AllDevs em uma vitrine comercial e narrativa para:
+Transformar a AllDevs em uma vitrine comercial para:
 
-- apresentar a historia do AllDevs de forma memoravel;
 - vender servicos de sites, landing pages, apps, bots, MVPs e automacoes;
 - mostrar dominio tecnico sem parecer um curriculo;
 - reforcar a identidade de construtor rapido, pratico e orientado a produto;
@@ -25,8 +24,7 @@ Transformar a AllDevs em uma vitrine comercial e narrativa para:
 
 ```text
 .
-├── index.html, historia.html     # saída do gerador
-├── caio/, rosiel/, projetos/, servicos/   # saída do gerador
+├── index.html, projetos/, servicos/   # saída do gerador
 ├── css/        # tokens.css e site.css (escritos à mão)
 ├── js/         # scripts da página e js/vendor/
 ├── assets/     # imagens, fontes e paleta.json
@@ -60,12 +58,6 @@ Mede a prévia local: capturas em 360, 430 e 1440 px, axe, funcionamento sem JS,
 
 `index.html`  
 Home comercial com serviços, projetos e contato.
-
-`historia.html`  
-Página narrativa do estúdio.
-
-`caio/`, `rosiel/`  
-Perfil de cada sócio.
 
 `projetos/`  
 Cases, um por pasta.

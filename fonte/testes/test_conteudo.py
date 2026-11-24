@@ -9,6 +9,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from alldevs.dados import TIPO_ROTULO
+
 from alldevs import dados as D
 from testes.test_paginas import REPO, rodar, titulo
 
@@ -44,7 +46,7 @@ class TestPaginas(Base):
     def test_titulo_do_case(self):
         for p in self.visiveis:
             self.assertEqual(titulo(self.saida / "projetos" / p.slug / "index.html"),
-                             f"{p.nome}: {p.tipo} — AllDevs")
+                             f"{p.nome}: {TIPO_ROTULO[p.tipo]} — AllDevs")
 
     def test_hero_literal_e_botoes(self):
         txt = ler(self.saida / "index.html")
@@ -116,8 +118,8 @@ class TestPaginas(Base):
             m = re.search(r'<script type="application/ld\+json">(.*?)</script>', ler(self.saida / arq), re.S)
             return json.loads(m.group(1))
         home = ld("index.html")
-        self.assertEqual(home[1]["@id"], "https://all.dev.br/#caio-guerras")
-        self.assertEqual(home[2]["@id"], "https://all.dev.br/#rosiel-victor")
+        self.assertEqual(home[1]["@id"], "https://all.dev.br/#quem-somos-caio")
+        self.assertEqual(home[2]["@id"], "https://all.dev.br/#quem-somos-rosiel")
         case = ld("projetos/heisuca/index.html")[0]
         self.assertEqual(case["@type"], "SoftwareApplication")
         self.assertEqual(case["creator"], {"@id": "https://all.dev.br/#organizacao"})
@@ -141,7 +143,7 @@ class TestHome(Base):
 class TestPortfolio(Base):
     def test_linha_mono_do_case(self):
         txt = ler(self.saida / "projetos/heisuca/index.html")
-        self.assertIn("app · 2026 · no ar", txt)
+        self.assertIn("App · 2026 · no ar", txt)
 
 
     def test_nenhuma_pagina_tem_selo_de_autor(self):
@@ -222,11 +224,11 @@ class TestAno(unittest.TestCase):
             modelo(ps, slug="sem-ano", nome="Sem Ano", ano=None, rascunho=False),
             modelo(ps, slug="com-ano", nome="Com Ano", ano=2031, rascunho=False)])
         txt = ler(raiz / "projetos/sem-ano/index.html")
-        self.assertIn("app · no ar", txt)
+        self.assertIn("App · no ar", txt)
         self.assertNotIn("None", txt)
         self.assertNotIn("· 2026", txt)
         com = ler(raiz / "projetos/com-ano/index.html")
-        self.assertIn("app · 2031 · no ar", com)
+        self.assertIn("App · 2031 · no ar", com)
         ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', txt, re.S).group(1)
         self.assertNotRegex(ld, r"\b(19|20)\d\d\b")
         self.assertNotIn("None", ler(raiz / "projetos/index.html"))
@@ -408,10 +410,10 @@ class TestCasesReais(Base):
         self.assertEqual(p.imagens, ("assets/images/sendany.webp",))
 
     def test_linha_mono_e_botao_de_cada_case(self):
-        esperado = {"prosup": ("app · 2026 · no ar", "Ver ProsUp no ar", "https://prosup.app"),
-                    "fakly": ("produto · 2025 · no ar", "Ver Fakly no ar",
+        esperado = {"prosup": ("App · 2026 · no ar", "Ver ProsUp no ar", "https://prosup.app"),
+                    "fakly": ("Produto · 2025 · no ar", "Ver Fakly no ar",
                               "https://misterioso013.github.io/fakly/"),
-                    "sendany": ("produto · 2025 · no ar", "Ver SendAny no ar",
+                    "sendany": ("Produto · 2025 · no ar", "Ver SendAny no ar",
                                 "https://sendany.all.dev.br")}
         for slug, (linha, botao, url) in esperado.items():
             txt = ler(self.saida / "projetos" / slug / "index.html")

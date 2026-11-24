@@ -3,14 +3,12 @@
     "slug": "caio",
     "nome": "Caio Guerras",
     "foto": "assets/images/caio-640.webp",
-    "cor": "roxo",
     "atualizado": "2026-11-22"
   },
   {
     "slug": "rosiel",
     "nome": "Rosiel Victor",
     "foto": "assets/images/rosiel-640.webp",
-    "cor": "laranja",
     "atualizado": "2026-11-23"
   }
 ]

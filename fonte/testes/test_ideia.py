@@ -19,6 +19,11 @@ CHAVES = ["prototipo", "codigo", "no-ar"]
 PROIBIDAS = ("CGSERVER", "servidor", "Whatbox", "torrent", "tracker", "acervo", "Jellyfin", "Plex", "nuvem", "Emby")
 
 
+def _sem_spans(codigo: str) -> str:
+    """O conteúdo de <code> sem as tags <span class="ln"> de cada linha."""
+    return re.sub(r'</?span[^>]*>', "", codigo)
+
+
 def _secao() -> str:
     return str(paginas._ideia(dados_mod.carregar(REPO), REPO))
 
@@ -190,7 +195,7 @@ class TestIdeiaHtml(unittest.TestCase):
         self.assertIsNotNone(m)
         texto = (REPO / self.est["codigo"]["arquivo"]).read_text(encoding="utf-8")
         self.assertNotRegex(m.group(1), r"#(?!x?\d+;)")   # "#" solto vira entidade (checar.py reprova cor hex)
-        self.assertEqual(html_lib.unescape(m.group(1)), texto)
+        self.assertEqual(html_lib.unescape(_sem_spans(m.group(1))), texto)   # cada linha vai num <span class="ln">; o texto não muda
         self.assertNotIn("hidden", cod)  # o texto inteiro está no DOM e visível sem JS
 
     def test_codigo_escapa_marcacao_do_arquivo(self):
@@ -351,7 +356,7 @@ class TestCodigoEscape(unittest.TestCase):
             (Path(t) / "fonte/conteudo/por-tras/c.txt").write_text(texto, encoding="utf-8")
             out = paginas._est_codigo(Path(t), {"arquivo": "fonte/conteudo/por-tras/c.txt"})
         m = re.search(r"<code>(.*?)</code>", out, re.S)
-        bruto = m.group(1)
+        bruto = _sem_spans(m.group(1))
         self.assertEqual(html_lib.unescape(bruto), texto)
         self.assertIn("\ue000", bruto)                   # o caractere do uso privado não vira "#"
         self.assertEqual(bruto.count("&#35;"), 1)          # só o "#" do texto

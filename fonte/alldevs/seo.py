@@ -1,6 +1,5 @@
 """SEO: JSON-LD, sitemap e modo prévia (noindex)."""
 import json
-import unicodedata
 from xml.sax.saxutils import escape
 
 SITE = "https://all.dev.br"
@@ -18,13 +17,8 @@ def url_publica(caminho: str) -> str:
     return f"{SITE}/{caminho}"
 
 
-def _fragmento(nome: str) -> str:
-    sem_acento = unicodedata.normalize("NFKD", nome).encode("ascii", "ignore").decode()
-    return "-".join(sem_acento.lower().split())
-
-
 def _id_pessoa(p) -> str:
-    return f"{SITE}/#{_fragmento(p.nome)}"
+    return f"{SITE}/#quem-somos-{p.slug}"   # o id do cartão na home (paginas._cartao_pessoa)
 
 
 def json_ld_pessoa(p) -> dict:

@@ -275,6 +275,7 @@
 
  function montarCartao(el) {
   if (reduz) return;   // sem movimento o "por trás" nunca aparece (o CSS o esconde)
+  el.classList.add("revela-armado");   // só agora a dica "ver por trás" pode aparecer (css/site.css): com JS e com movimento
   var on = el.addEventListener.bind(el), s = el.style.setProperty.bind(el.style), b = null, tm = 0, x0 = 0, y0 = 0, aberto = false;
   function vai(x, y) {
    if (!b) { var r = el.getBoundingClientRect(); b = { l: r.left, t: r.top + window.scrollY, w: r.width, h: r.height }; }   // rect em cache; o scroll entra por scrollY

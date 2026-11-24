@@ -26,13 +26,13 @@ class TestJsonLd(unittest.TestCase):
         self.assertEqual(org["@id"], "https://all.dev.br/#organizacao")
         self.assertEqual(
             sorted(m["@id"] for m in org["member"]),
-            ["https://all.dev.br/#caio-guerras", "https://all.dev.br/#rosiel-victor"],
+            ["https://all.dev.br/#quem-somos-caio", "https://all.dev.br/#quem-somos-rosiel"],
         )
 
     def test_ids_das_pessoas(self):
         ids = {p.slug: seo.json_ld_pessoa(p)["@id"] for p in self.dados.pessoas}
-        self.assertEqual(ids["rosiel"], "https://all.dev.br/#rosiel-victor")
-        self.assertEqual(ids["caio"], "https://all.dev.br/#caio-guerras")
+        self.assertEqual(ids["rosiel"], "https://all.dev.br/#quem-somos-rosiel")
+        self.assertEqual(ids["caio"], "https://all.dev.br/#quem-somos-caio")
         self.assertEqual(seo.json_ld_pessoa(self.dados.pessoas[0])["@type"], "Person")
 
     def test_servico_provider(self):

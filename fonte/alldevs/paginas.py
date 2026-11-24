@@ -102,16 +102,13 @@ def _cartao_pessoa(p) -> str:
     # Foto em 4/5 (retrato inteiro), abaixo do hero: lazy, para não disputar banda com a frente (LCP). A única prioridade alta da home é a da frente do hero.
     # Só foto, nome e o mesmo texto nos dois (decisão do Caio, 24/11): nada que separe um sócio do outro.
     return (
-        f'    <article class="cartao-pessoa" data-slug="{esc(p.slug)}">\n'
+        f'    <article class="cartao-pessoa" id="quem-somos-{esc(p.slug)}" data-slug="{esc(p.slug)}">\n'
         f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="512" height="640" loading="lazy" decoding="async">\n'
         f'      <h3>{esc(p.nome)}</h3>\n'
         f'      <p>Sócio do estúdio.</p>\n'
         f'    </article>'
     )
 
-
-CARTAO_PREENCHE = 18   # (sem uso desde a r3: o trecho não se repete mais; mantido só pela assinatura)
-CARTAO_LINHAS = 9   # linhas do trecho de código na camada "por trás" do cartão
 
 
 def _imagem_do_cartao(proj, raiz: Path):
@@ -138,9 +135,9 @@ def _fechado(texto: str) -> str:
     return texto.rstrip() + ("\n" + "".join(reversed(pilha)) if pilha else "")
 
 
-def _camada_por_tras(proj, raiz: Path, preenche: int = CARTAO_PREENCHE, linhas_max: int = CARTAO_LINHAS) -> str:
+def _camada_por_tras(proj, raiz: Path) -> str:
     """A camada que a máscara do ponteiro revela no cartão e no palco do case (js/revelar.js monta; css/site.css desenha a máscara).
-    O palco do case é maior: mostra mais linhas do mesmo trecho."""
+    O trecho é o mesmo nos dois; o palco do case só é maior (o CSS corta o que não cabe)."""
     pt = proj.por_tras
     texto = ler_por_tras(raiz, proj)
     if texto is not None:
@@ -161,7 +158,7 @@ def _cartao_projeto(proj, raiz: Path, nivel: int = 3, acima_da_dobra: bool = Fal
     `acima_da_dobra`: a imagem sai sem `loading="lazy"` (o cartão já aparece na 1ª tela de /projetos/); `prioridade`: fetchpriority alto (o 1º)."""
     raiz = Path(raiz)
     nivel = int(nivel)
-    carga = ('fetchpriority="high" ' if prioridade else "") + 'decoding="async"' if acima_da_dobra else 'loading="lazy" decoding="async"'
+    carga = (('fetchpriority="high" ' if prioridade else "") + 'decoding="async"') if acima_da_dobra else 'loading="lazy" decoding="async"'
     img = _imagem_do_cartao(proj, raiz)
     camada = _camada_por_tras(proj, raiz) if proj.por_tras else ""
     marca = ' data-revela-cartao data-cursor="ver por trás"' if camada else ""
@@ -306,8 +303,12 @@ WIREFRAME = (
 def _est_codigo(raiz: Path, e: dict) -> str:
     texto = (Path(raiz) / e["arquivo"]).read_text(encoding="utf-8")
     # "#" vira entidade: o checar.py varre o HTML atrás de cor solta (#fff) e um comentário de código não é cor.
+    # Cada linha vai num <span class="ln"> (com o "\n" dentro): no celular a linha quebra com recuo pendente (css/site.css) e o textContent não muda.
+    partes = texto.split("\n")
+    linhas = [p + "\n" for p in partes[:-1]] + ([partes[-1]] if partes[-1] else [])
+    miolo = "".join(f'<span class="ln">{re.sub(r"(?<!&)#", "&#35;", esc(x))}</span>' for x in linhas)
     return (f'<pre class="ideia-codigo" role="region" aria-label="Trecho do código" tabindex="0">'
-            f'<code>{re.sub(r"(?<!&)#", "&#35;", esc(texto))}</code></pre>')
+            f'<code>{miolo}</code></pre>')
 
 
 def _est_no_ar(proj, e: dict, raiz: Path) -> str:
@@ -564,9 +565,6 @@ def _altura_telas(tamanhos, loja: bool = False, largura: int = CASE_COLUNA_CAPTU
     return round(sum(linhas) + gap * max(len(linhas) - 1, 0) + 48 + (24 + gap if loja else 0))
 
 
-PALCO_PREENCHE = 28   # linhas da camada no palco do case (o cartão usa CARTAO_PREENCHE)
-PALCO_LINHAS = 14
-
 
 def _palco_do_case(proj, raiz: Path, imagem=None, primeira: bool = False) -> str:
     """Bloco "Por trás" do case: a mesma revelação do cartão (data-revela-cartao), maior. Só com `por_tras`.
@@ -575,7 +573,7 @@ def _palco_do_case(proj, raiz: Path, imagem=None, primeira: bool = False) -> str
     if not proj.por_tras or not img:
         return ""
     carga = 'fetchpriority="high" decoding="async"' if primeira else 'loading="lazy" decoding="async"'
-    camada = _camada_por_tras(proj, raiz, PALCO_PREENCHE, PALCO_LINHAS)
+    camada = _camada_por_tras(proj, raiz)
     retrato = " case-palco--retrato" if img[2] > img[1] else ""
     return (f'\n  <section data-secao="por-tras">\n    <h2>Por trás</h2>\n'
             f'    <figure class="projeto-tela case-palco{retrato}" data-revela-cartao data-cursor="ver por trás">'
@@ -585,7 +583,7 @@ def _palco_do_case(proj, raiz: Path, imagem=None, primeira: bool = False) -> str
 
 def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     raiz = Path(raiz)
-    linha = " · ".join([*_com_ano(proj.tipo, proj.ano), proj.situacao])
+    linha = " · ".join([*_com_ano(TIPO_ROTULO.get(proj.tipo, proj.tipo), proj.ano), proj.situacao])
     frente = _imagem_do_cartao(proj, raiz) if proj.por_tras else None
     # o palco não repete uma imagem que a coluna de capturas já mostra: ela fica com as demais
     capturas = [i for i in proj.imagens if not (frente and "/" + i == frente[0])]
@@ -624,7 +622,7 @@ def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
         contato=_bloco_contato(dados.estudio, "case", alvo=proj.nome, slug=proj.slug),
     )
     caminho = f"projetos/{proj.slug}/index.html"
-    titulo = f"{proj.nome}: {proj.tipo} — AllDevs"
+    titulo = f"{proj.nome}: {TIPO_ROTULO.get(proj.tipo, proj.tipo)} — AllDevs"
     ld = (seo.json_ld_case(proj, dados),)
     doc = _documento(caminho, titulo, proj.resumo, corpo, json_ld=ld, previa=previa or proj.rascunho,
                      barra=_barra_wa(dados.estudio, "case", alvo=proj.nome, slug=proj.slug))

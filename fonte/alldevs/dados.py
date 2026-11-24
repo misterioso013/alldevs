@@ -50,7 +50,6 @@ class Pessoa:
     slug: str
     nome: str
     foto: str
-    cor: str
     atualizado: str
 
 
@@ -354,8 +353,6 @@ def validar(dados: Dados, raiz: Path):
 
     for p in dados.pessoas:
         rot = f"pessoa {p.slug}"
-        if p.cor not in CORES:
-            e(f"{rot}: cor inválida: {p.cor!r}")
         data(rot, p.atualizado)
         if not (raiz / p.foto).is_file():
             e(f"{rot}: foto inexistente: {p.foto}")
