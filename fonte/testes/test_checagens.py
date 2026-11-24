@@ -20,6 +20,8 @@ class Base(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         self.raiz = Path(tmp.name)
         shutil.copytree(REPO / "fonte" / "dados", self.raiz / "fonte" / "dados")
+        (self.raiz / "fonte" / "conteudo").mkdir(parents=True, exist_ok=True)
+        shutil.copy(REPO / "fonte" / "conteudo" / "como-trabalhamos.json", self.raiz / "fonte" / "conteudo" / "como-trabalhamos.json")
 
     def escrever(self, rel, texto):
         p = self.raiz / rel

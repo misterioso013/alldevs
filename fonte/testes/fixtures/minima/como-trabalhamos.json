@@ -1,0 +1,24 @@
+{
+  "passos": [
+    {
+      "titulo": "Passo 1",
+      "texto": "Texto do passo.",
+      "fonte": "fixture"
+    },
+    {
+      "titulo": "Passo 2",
+      "texto": "Texto do passo.",
+      "fonte": "fixture"
+    },
+    {
+      "titulo": "Passo 3",
+      "texto": "Texto do passo.",
+      "fonte": "fixture"
+    },
+    {
+      "titulo": "Passo 4",
+      "texto": "Texto do passo.",
+      "fonte": "fixture"
+    }
+  ]
+}

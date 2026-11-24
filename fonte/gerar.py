@@ -39,7 +39,11 @@ def main(argv=None) -> int:
             print(f"erro: {e}", file=sys.stderr)
         return 1
 
-    lista = paginas.montar_todas(dados, raiz, args.previa)
+    try:
+        lista = paginas.montar_todas(dados, raiz, args.previa)
+    except mod_dados.ErroDeDados as e:
+        print(f"erro: {e}", file=sys.stderr)
+        return 1
     paginas.escrever(lista, saida, args.previa, raiz, {"assets/paleta.json": paginas.paleta_json(dados)})
     print(f"{len(lista)} páginas em {saida}")
     return 0

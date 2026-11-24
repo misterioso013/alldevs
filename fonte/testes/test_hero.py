@@ -157,7 +157,7 @@ class TestRevelarJs(unittest.TestCase):
         self.js = REVELAR.read_text(encoding="utf-8")
 
     def test_revelar_js_ate_14kb_e_sem_dependencia(self):
-        self.assertLessEqual(REVELAR.stat().st_size, 14 * 1024)  # rodada 1: +2 KB pelos itens 6, 7, 9, 10 e 11
+        self.assertLessEqual(REVELAR.stat().st_size, 15 * 1024)  # T6 r1: +~0,9 KB no montarCartao (timer do toque, rect em cache, retorno cedo no reduzido)
         self.assertNotRegex(self.js, r"^\s*import\s", )
         self.assertNotIn("gsap", self.js.lower())
         self.assertNotRegex(self.js, r"\bimport\s*\(")

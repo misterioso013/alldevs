@@ -18,6 +18,8 @@ class Base(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         self.raiz = Path(tmp.name)
         shutil.copytree(FIXTURE / "dados", self.raiz / "fonte" / "dados")
+        (self.raiz / "fonte" / "conteudo").mkdir(parents=True, exist_ok=True)
+        shutil.copy(FIXTURE / "como-trabalhamos.json", self.raiz / "fonte" / "conteudo" / "como-trabalhamos.json")
         for rel in ("assets/pessoas/ana.webp", "assets/pessoas/bia.webp", "assets/projetos/alfa/1.png",
                     "assets/projetos/beta/1.png", "assets/og/ana.png", "assets/og/bia.png",
                     "assets/og/alfa.png", "assets/og/site.png"):

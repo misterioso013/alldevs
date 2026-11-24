@@ -61,7 +61,8 @@ def _documento(caminho, titulo, descricao, corpo, json_ld=(), previa=False, barr
                   head_extra=Seguro(head_extra))
 
 
-def _bloco_contato(estudio, tipo, alvo=None, slug=None) -> Seguro:
+def _bloco_contato(estudio, tipo, alvo=None, slug=None, com_id=True) -> Seguro:
+    """com_id=False na home: o id "contato" é da seção, não do bloco."""
     codigo = contato.codigo_origem(tipo, slug)
     msg = contato.mensagem(estudio, tipo, alvo, slug)
     return render(
@@ -69,6 +70,7 @@ def _bloco_contato(estudio, tipo, alvo=None, slug=None) -> Seguro:
         whatsapp=contato.link_whatsapp(estudio.whatsapp, msg),
         email=contato.link_email(estudio.email, codigo),
         telegram=estudio.telegram,
+        id_attr=Seguro(' id="contato"' if com_id else ""),
     )
 
 
@@ -121,13 +123,17 @@ def _cartao_lista(proj, classe: str, nivel: int = 3) -> str:
     )
 
 
+CARTAO_PREENCHE = 18   # linhas na camada: o trecho se repete até aqui, para um círculo em qualquer ponto cruzar texto
 CARTAO_LINHAS = 9   # linhas do trecho de código na camada "por trás" do cartão
 
 
 def _imagem_do_cartao(proj, raiz: Path):
     """(src, largura, altura) da imagem do cartão: a frente do "por trás"; sem ela, a 1ª imagem do projeto se for WebP."""
     pt = proj.por_tras
-    rel = pt["frente"] if pt else next((i for i in proj.imagens if i.endswith(".webp")), None)
+    rel = pt["frente"] if pt else None
+    if not rel:   # sem "por trás": o derivado do cartão (assets/frente/<slug>.webp, ≤ 540 px em retrato), senão a 1ª imagem
+        der = f"assets/frente/{proj.slug}.webp"
+        rel = der if (Path(raiz) / der).is_file() else next((i for i in proj.imagens if i.endswith(".webp")), None)
     if not rel:
         return None
     w, h = _tamanho_webp(Path(raiz) / rel)
@@ -139,39 +145,39 @@ def _camada_por_tras(proj, raiz: Path) -> str:
     pt = proj.por_tras
     texto = ler_por_tras(raiz, proj)
     if texto is not None:
-        trecho = "\n".join(texto.splitlines()[:CARTAO_LINHAS])
-        # sem aspas no escape (texto de elemento não precisa) para o "#" virar entidade sem quebrar &#x27;; o checar reprova hex solto
-        miolo = f'<pre><code>{html.escape(trecho, quote=False).replace("#", "&#35;")}</code></pre>'
+        linhas = texto.splitlines()[:CARTAO_LINHAS] or [""]
+        # o trecho se repete até preencher a figura inteira (o código nunca é editado; a camada é aria-hidden)
+        trecho = "\n".join((linhas * -(-CARTAO_PREENCHE // len(linhas)))[:CARTAO_PREENCHE])
+        miolo = f'<pre><code>{re.sub(r"(?<!&)#", "&#35;", esc(trecho))}</code></pre>'
     else:
-        miolo = f'<img src="/{esc(pt["arquivo"])}" alt="" loading="lazy" decoding="async">'
+        w, h = _tamanho_webp(Path(raiz) / pt["arquivo"])
+        miolo = f'<img src="/{esc(pt["arquivo"])}" width="{w}" height="{h}" alt="" loading="lazy" decoding="async">'
     return (f'\n      <div class="cartao-por-tras" aria-hidden="true">{miolo}'
             f'<span class="cartao-origem">{esc(pt["origem"])}</span></div>')
 
 
 def _cartao_projeto(proj, raiz: Path, nivel: int = 3) -> Seguro:
     """Cartão de projeto da home: a tela real, o rótulo (tipo · ano · situação), o link do case e o link para o ar.
-    Com `por_tras`, o cartão inteiro leva data-revela-cartao e uma camada aria-hidden com o trecho real."""
+    Com `por_tras`, a figura leva data-revela-cartao e uma camada aria-hidden com o trecho real."""
     raiz = Path(raiz)
     img = _imagem_do_cartao(proj, raiz)
+    camada = _camada_por_tras(proj, raiz) if proj.por_tras else ""
+    marca = ' data-revela-cartao data-cursor="ver por trás"' if camada else ""
     figura = ""
-    if img:
-        figura = (f'\n      <figure class="projeto-tela"><img src="{esc(img[0])}" width="{img[1]}" height="{img[2]}" '
-                  f'alt="Captura de tela de {esc(proj.nome)}" loading="lazy" decoding="async"></figure>')
+    if img:   # a revelação mora na figura: a camada tem o tamanho dela e nunca cobre o texto nem os links
+        figura = (f'\n      <figure class="projeto-tela"{marca}><img src="{esc(img[0])}" width="{img[1]}" height="{img[2]}" '
+                  f'alt="Captura de tela de {esc(proj.nome)}" loading="lazy" decoding="async">{camada}\n      </figure>')
     rotulo = " · ".join([*_com_ano(esc(TIPO_ROTULO.get(proj.tipo, proj.tipo)), proj.ano), esc(proj.situacao)])
     destino = proj.link or proj.loja
     no_ar = ""
     if destino:
         no_ar = (f'\n      <a class="link-seta" href="{esc(destino)}" target="_blank" rel="noopener">'
                  f'Ver {esc(proj.nome)} no ar<span class="so-leitor"> (abre em nova aba)</span></a>')
-    camada, marca = "", ""
-    if proj.por_tras:
-        camada = _camada_por_tras(proj, raiz)
-        marca = ' data-revela-cartao data-cursor="ver por trás"'
     return Seguro(
-        f'    <article class="projeto-cartao" data-slug="{esc(proj.slug)}"{marca} data-revela>{figura}\n'
+        f'    <article class="projeto-cartao" data-slug="{esc(proj.slug)}" data-revela>{figura}\n'
         f'      <p class="rotulo-mono">{rotulo}</p>\n'
         f'      <h{nivel}><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h{nivel}>\n'
-        f'      <p>{esc(proj.resumo)}</p>{no_ar}{camada}\n'
+        f'      <p>{esc(proj.resumo)}</p>{no_ar}\n'
         f'    </article>')
 
 
@@ -255,7 +261,7 @@ def _hero(dados: Dados, raiz: Path) -> Seguro:
         pri = itens[0]
         atras = pri["por_tras"]
         if "texto" in atras:
-            camada = f"<pre hidden><code>{esc(atras['texto']).replace('#', '&#35;')}</code></pre>"
+            camada = f"<pre hidden><code>{re.sub(r"(?<!&)#", "&#35;", esc(atras['texto']))}</code></pre>"
         else:
             camada = f'<img src="{esc(atras["src"])}" alt="" decoding="async" hidden>'
         frente = pri["frente"]
@@ -412,7 +418,7 @@ def _tecnologias(dados: Dados) -> Seguro:
     for chave, rotulo in GRUPOS_ROTULO:
         lis = "\n".join(f'    <li class="tecnologia">{esc(x.nome)}</li>' for x in dados.tecnologias if x.grupo == chave)
         if lis:
-            grupos.append(f'  <div class="tec-grupo" data-grupo="{chave}" data-revela>\n'
+            grupos.append(f'  <div class="tec-grupo" data-grupo="{esc(chave)}" data-revela>\n'
                           f'   <h3 class="rotulo-mono">{esc(rotulo)}</h3>\n   <ul class="tec-lista">\n{lis}\n   </ul>\n  </div>')
     return Seguro(
         '<section id="tecnologias" class="tecnologias" data-secao="tecnologias">\n'
@@ -424,8 +430,6 @@ def _tecnologias(dados: Dados) -> Seguro:
 
 def _como_trabalhamos(dados: Dados) -> Seguro:
     """#como-trabalhamos: os 4 passos de fonte/conteudo/como-trabalhamos.json, em lista ordenada."""
-    if not dados.passos:
-        return Seguro("")
     lis = "\n".join(
         f'  <li class="passo" data-revela>\n   <span class="passo-num">{n:02d}</span>\n'
         f'   <h3>{esc(x["titulo"])}</h3>\n   <p>{esc(x["texto"])}</p>\n  </li>'
@@ -453,23 +457,37 @@ def _depoimentos(dados: Dados) -> Seguro:
         f' <div class="depoimentos-lista">\n{itens}\n </div>\n</section>')
 
 
-# As 4 perguntas mais gerais das páginas de serviço (serviço, pergunta); a resposta é lida do HTML do serviço, palavra por palavra.
-FAQ_HOME = (("criacao-de-sites-institucionais", "Em quanto tempo meu site institucional fica pronto?"),
-            ("landing-page-conversao", "Quantas revisões estão incluídas?"),
-            ("criacao-de-sites-institucionais", "Preciso comprar o domínio separado?"),
-            ("bots-whatsapp-automacao", "Quem faz a manutenção após a entrega?"))
-FAQ_SETA = '<svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>'
+# 4 perguntas das páginas de serviço, no máximo uma por serviço e nenhuma de um só entregável (serviço, pergunta); a resposta é lida do HTML do serviço, palavra por palavra.
+FAQ_HOME = (("landing-page-conversao", "Quantas revisões estão incluídas?"),
+            ("desenvolvimento-mvp-startups", "Vocês dão suporte após o lançamento?"),
+            ("automacoes-integracoes-api", "Quais sistemas vocês conseguem integrar?"),
+            ("aplicativo-mobile-react-native", "Vocês publicam o app na App Store e Google Play?"))
+FAQ_SETA = '<svg class="faq-chevron" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>'
+
+
+FAQ_TAGS = ("strong", "em", "a", "code")   # marcação aceita na resposta copiada (HTML do próprio repo, sem escape)
+
+
+def _ler_texto(arq: Path, quem: str) -> str:
+    try:
+        return Path(arq).read_text(encoding="utf-8")
+    except OSError as e:
+        raise ErroDeDados(f"{quem}: não consegui ler {arq}: {e.strerror or e}") from e
 
 
 def _faq_home(raiz: Path) -> Seguro:
     """#faq: as respostas saem dos HTML dos serviços (fonte única). Botão desativado e aberto sem JS; o site.js vira sanfona."""
     itens = []
     for slug, pergunta in FAQ_HOME:
-        texto = (Path(raiz) / "fonte" / "conteudo" / "servicos" / f"{slug}.html").read_text(encoding="utf-8")
-        m = re.search(r'faq-question[^>]*>\s*' + re.escape(pergunta) + r'\s*<svg.*?<div class="faq-answer"><p>([^<]*)</p></div>',
+        arq = Path(raiz) / "fonte" / "conteudo" / "servicos" / f"{slug}.html"
+        texto = _ler_texto(arq, "FAQ da home")
+        m = re.search(r'faq-question[^>]*>\s*' + re.escape(pergunta) + r'\s*<svg.*?<div class="faq-answer"><p>(.*?)</p></div>',
                       texto, re.S)
         if not m:
             raise ErroDeDados(f"FAQ da home: a pergunta {pergunta!r} sumiu de servicos/{slug}.html")
+        fora = sorted({t for t in re.findall(r"</?\s*([A-Za-z][\w-]*)", m.group(1)) if t.lower() not in FAQ_TAGS})
+        if fora:
+            raise ErroDeDados(f"FAQ da home: a resposta de {pergunta!r} tem tag fora de {', '.join(FAQ_TAGS)}: {', '.join(fora)}")
         itens.append(
             '   <div class="faq-item">\n'
             f'    <button type="button" class="faq-question" aria-expanded="true" disabled>\n     {esc(pergunta)}\n     {FAQ_SETA}\n    </button>\n'
@@ -493,13 +511,12 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
         f'      <p>{esc(s.resumo)}</p>\n'
         '    </article>'
         for s in dados.servicos)
-    # O molde de contato traz o id "contato" (as outras páginas ancoram nele); na home o id é da seção.
-    bloco = str(_bloco_contato(est, "home")).replace('<div id="contato" class="cta-buttons">', '<div class="cta-buttons">', 1)
+    bloco = _bloco_contato(est, "home", com_id=False)   # na home o id "contato" é da seção
     corpo = render(
         "home", **_cabecalho_e_rodape(dados), hero=_hero(dados, raiz), faixa=_faixa_prova(dados, raiz),
         ideia=_ideia(dados, raiz), projetos=Seguro(projetos), servicos=Seguro(servicos),
         como=_como_trabalhamos(dados), tecnologias=_tecnologias(dados), cartoes=Seguro(cartoes),
-        depoimentos=_depoimentos(dados), faq=_faq_home(raiz), contato=Seguro(bloco),
+        depoimentos=_depoimentos(dados), faq=_faq_home(raiz), contato=bloco,
     )
     caminho = "index.html"
     ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in sorted(dados.pessoas, key=lambda p: p.slug)))

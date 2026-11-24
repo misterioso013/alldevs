@@ -175,7 +175,7 @@ SERVICO_ANOS = "fonte/conteudo/servicos/criacao-de-sites-institucionais.html"
 def _passos(raiz: Path) -> tuple:
     arq = raiz / "fonte" / "conteudo" / "como-trabalhamos.json"
     if not arq.is_file():
-        return ()
+        raise ErroDeDados(f"como-trabalhamos.json ausente: {arq} (a seção #como-trabalhamos é fixa)")
     obj = _ler(arq)
     lista = obj.get("passos") if isinstance(obj, dict) else None
     if not isinstance(lista, list) or len(lista) != PASSOS_TOTAL:
@@ -189,7 +189,11 @@ def _passos(raiz: Path) -> tuple:
 
 def anos_de_estrada(raiz: Path) -> int:
     """O "8" da faixa de prova: lido do texto "mais de N anos" do serviço de site institucional. Falha alto se sumir."""
-    txt = (Path(raiz) / SERVICO_ANOS).read_text(encoding="utf-8")
+    arq = Path(raiz) / SERVICO_ANOS
+    try:
+        txt = arq.read_text(encoding="utf-8")
+    except OSError as e:
+        raise ErroDeDados(f"faixa de prova: não consegui ler {arq}: {e.strerror or e}") from e
     m = re.search(r"mais de (\d+) anos", txt)
     if not m:
         raise ErroDeDados(f"faixa de prova: o texto 'mais de N anos' sumiu de {SERVICO_ANOS}")

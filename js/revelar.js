@@ -274,17 +274,29 @@
  }
 
  function montarCartao(el) {
-  var on = el.addEventListener.bind(el), s = el.style.setProperty.bind(el.style);
-  function vai(e, f) {
-   var b = el.getBoundingClientRect();
-   s("--mx", e.clientX - b.left + "px"); s("--my", e.clientY - b.top + "px");
-   s("--r", f * Math.max(b.width, b.height) * 0.28 + "px");
+  if (reduz) return;   // sem movimento o "por trás" nunca aparece (o CSS o esconde)
+  var on = el.addEventListener.bind(el), s = el.style.setProperty.bind(el.style), b = null, tm = 0, x0 = 0, y0 = 0, aberto = false;
+  function vai(x, y) {
+   if (!b) { var r = el.getBoundingClientRect(); b = { l: r.left, t: r.top + window.scrollY, w: r.width, h: r.height }; }   // rect em cache; o scroll entra por scrollY
+   s("--mx", x - b.l + "px"); s("--my", y - (b.t - window.scrollY) + "px"); s("--r", Math.max(b.w, b.h) * 0.28 + "px");
+   aberto = true; el.classList.add("cartao-ativo");
   }
-  on("pointermove", function (e) { if (e.pointerType !== "touch" || e.buttons) vai(e, 1); });
-  on("pointerdown", function (e) { vai(e, 1.3); });
-  ["pointerup", "pointercancel", "pointerleave"].forEach(function (t) {
-   on(t, function (e) { vai(e, t === "pointerup" && e.pointerType !== "touch" ? 1 : 0); });
+  function fecha() {
+   clearTimeout(tm); tm = 0;
+   if (aberto) { aberto = false; el.classList.remove("cartao-ativo"); s("--r", "0px"); }
+  }
+  on("pointerenter", function (e) { if (e.pointerType === "mouse") { b = null; vai(e.clientX, e.clientY); } });
+  on("pointermove", function (e) {
+   if (e.pointerType === "mouse" || aberto) vai(e.clientX, e.clientY);
+   else if (tm && Math.hypot(e.clientX - x0, e.clientY - y0) > 8) { clearTimeout(tm); tm = 0; }   // o dedo andou: é rolagem
   });
+  on("pointerdown", function (e) {
+   if (e.pointerType !== "touch") return;
+   b = null; x0 = e.clientX; y0 = e.clientY;
+   tm = setTimeout(function () { tm = 0; vai(x0, y0); }, 150);   // só abre com o dedo parado
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(function (t) { on(t, fecha); });
+  window.addEventListener("resize", function () { b = null; });
  }
 
  window.AllDevsRevelar = { montarHero: montarHero, montarCartao: montarCartao };

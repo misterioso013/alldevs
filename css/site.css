@@ -512,17 +512,29 @@ main > .faixa { padding-block: 32px; }
   border: 1px solid var(--linha);
   border-radius: 4px;
   background: var(--fundo);
-  transition: border-color var(--dur-curta) var(--curva-saida);
 }
-.projeto-cartao:hover { border-color: var(--texto-2); }
+/* contorno do hover num pseudo-elemento: só a opacity muda */
+.projeto-cartao::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--texto-2);
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+}
+.projeto-cartao:hover::after { opacity: 1; }
 .projeto-cartao h3,
 .projeto-cartao h2 { margin-bottom: 8px; font-family: var(--fonte-titulo); }
 .projeto-cartao h3 a,
 .projeto-cartao h2 a { text-decoration: none; }
+.projeto-cartao h3 a,
+.projeto-cartao .link-seta { display: inline-flex; align-items: center; min-height: 44px; }
 .projeto-cartao p { color: var(--texto-2); }
 .projeto-cartao .rotulo-mono { margin-bottom: 8px; }
 .projeto-cartao .link-seta { margin-top: auto; align-self: flex-start; }
 .projeto-tela {
+  position: relative;
   margin: 0 0 16px;
   aspect-ratio: 16 / 10;
   overflow: hidden;
@@ -531,6 +543,7 @@ main > .faixa { padding-block: 32px; }
   background: var(--fundo-2);
 }
 .projeto-tela img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+/* A camada tem o tamanho da figura: o texto e os links do cartão ficam sempre visíveis. Só o JS a abre (--r), com opacity. */
 .cartao-por-tras {
   position: absolute;
   inset: 0;
@@ -538,22 +551,27 @@ main > .faixa { padding-block: 32px; }
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 16px;
+  gap: 4px;
+  padding: 8px 12px;
   background: var(--fundo-2);
   pointer-events: none;
+  opacity: 0;
   -webkit-mask-image: radial-gradient(circle var(--r, 0px) at var(--mx, 50%) var(--my, 50%), black 70%, transparent 100%);
   mask-image: radial-gradient(circle var(--r, 0px) at var(--mx, 50%) var(--my, 50%), black 70%, transparent 100%);
 }
+.cartao-ativo .cartao-por-tras { opacity: 1; }
 .cartao-por-tras pre {
+  flex: 1;
+  min-height: 0;
   margin: 0;
   overflow: hidden;
   font-family: var(--fonte-mono);
-  font-size: 0.72rem;
-  line-height: 1.5;
+  font-size: 0.7rem;
+  line-height: 1.4;
   color: var(--texto-2);
   white-space: pre;
 }
-.cartao-por-tras img { display: block; width: 100%; height: auto; }
+.cartao-por-tras img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
 .cartao-origem { font-family: var(--fonte-mono); font-size: 0.7rem; color: var(--laranja-claro); }
 
 .passos {
@@ -751,7 +769,7 @@ main > .faixa { padding-block: 32px; }
 .relacionado-nome { font-family: var(--fonte-titulo); font-weight: 600; font-size: 1.2rem; }
 .relacionado-preco { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
 
-/* ---------- História (de Rosiel: acento laranja) ---------- */
+/* ---------- História (acento laranja) ---------- */
 #hist-hero { padding-block: 96px 64px; position: relative; }
 .hist-hero-bg,
 .hist-hero-lines,
@@ -1060,6 +1078,8 @@ html.lenis body { height: auto; }
     transition: opacity var(--dur-longa) var(--curva-saida), transform var(--dur-longa) var(--curva-saida);
   }
   .ideia-estagio.ideia-oculto.ideia-visto { opacity: 1; transform: none; }
+  .projeto-cartao::after { transition: opacity var(--dur-curta) var(--curva-saida); }
+  .cartao-por-tras { transition: opacity var(--dur-curta) var(--curva-saida); }
 }
 
 /* Desktop com movimento: a seção presa (pin do ScrollTrigger). */
