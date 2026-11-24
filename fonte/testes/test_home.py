@@ -263,7 +263,7 @@ class TestHome(Base):
     def test_quem_somos_sem_projeto_por_pessoa(self):
         sec = secao(self.home, "quem-somos")
         self.assertEqual(len(re.findall(r'<article class="cartao-pessoa"', sec)), 2)
-        self.assertIn("data-sortear", sec)
+        self.assertNotIn("data-sortear", sec)   # ordem fixa (crítica r2)
         for p in self.dados.projetos:
             self.assertNotIn(p.nome, sec)
             self.assertNotIn(f"/projetos/{p.slug}/", sec)

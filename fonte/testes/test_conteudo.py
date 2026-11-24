@@ -128,7 +128,7 @@ class TestPaginas(Base):
 class TestHome(Base):
     def test_cartoes_ordem_alfabetica(self):
         txt = ler(self.saida / "index.html")
-        self.assertIn("data-sortear", txt)
+        self.assertNotIn("data-sortear", txt)   # ordem fixa (crítica r2)
         i = [m.group(1) for m in re.finditer(r'class="cartao-pessoa"[^>]*data-slug="([^"]+)"', txt)]
         self.assertEqual(i, sorted(i))
         self.assertEqual(i, ["caio", "rosiel"])

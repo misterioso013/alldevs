@@ -1,0 +1,27 @@
+17 páginas
+> /
+> /caio/
+> /historia.html
+> /projetos/
+> /projetos/amott/
+> /projetos/cgflix-lite/
+> /projetos/fakly/
+> /projetos/heisuca/
+> /projetos/prosup/
+> /projetos/sendany/
+> /rosiel/
+> /servicos/aplicativo-mobile-react-native/
+> /servicos/automacoes-integracoes-api/
+> /servicos/bots-whatsapp-automacao/
+> /servicos/criacao-de-sites-institucionais/
+> /servicos/desenvolvimento-mvp-startups/
+> /servicos/landing-page-conversao/
+| Capturas em 430 e 1440 px | PASSA | 0/17 páginas |
+| axe: zero problemas serious/critical | PASSA | 0/17 páginas |
+| Sem JS: título, contato e (em /projetos/) todos os cards | PASSA | 0/17 páginas |
+| Sem rolagem horizontal em 430 px | PASSA | 0/17 páginas |
+| Links internos respondem 200, sem redirecionamento | PASSA | 0/17 páginas |
+| reducedMotion: nenhum transform após 1 s | PASSA | 0/17 páginas |
+| Paleta: Ctrl K, seta, Enter navega e Esc devolve o foco (1440 px); toque na pílula (412 px); axe aberta; reduced-motion; sem rede | PASSA | 0/17 páginas |
+| Lighthouse móvel: LCP < 2500 ms e CLS < 0,05 | PASSA | 0/17 páginas | 
+rc 0

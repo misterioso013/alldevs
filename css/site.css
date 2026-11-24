@@ -137,6 +137,56 @@ main > .breadcrumb + section { border-top: 0; }
   .grade-projetos > *,
   .grade-servicos > *,
   .relacionados-grid > * { grid-column: span 4; }
+  /* Projetos: hierarquia assimétrica. De seis em seis cartões: 7+5, 5+7, 6+6 (cada fileira fecha 12 colunas, sem buraco).
+     O 1º de cada bloco é o destaque: título maior. A figura cresce para o cartão estreito igualar a altura do largo. */
+  .grade-projetos > .projeto-cartao:nth-child(6n + 1) { grid-column: span 7; }
+  .grade-projetos > .projeto-cartao:nth-child(6n + 2) { grid-column: span 5; }
+  .grade-projetos > .projeto-cartao:nth-child(6n + 3) { grid-column: span 5; }
+  .grade-projetos > .projeto-cartao:nth-child(6n + 4) { grid-column: span 7; }
+  .grade-projetos > .projeto-cartao:nth-child(6n + 5),
+  .grade-projetos > .projeto-cartao:nth-child(6n + 6) { grid-column: span 6; }
+  .grade-projetos > .projeto-cartao:nth-child(6n + 1) h2,
+  .grade-projetos > .projeto-cartao:nth-child(6n + 1) h3 a,
+  .grade-projetos > .projeto-cartao:nth-child(6n + 1) h2 a { font-size: 2rem; }
+  .grade-projetos > .projeto-cartao .projeto-tela { flex: 1 0 auto; }
+  /* filtro de /projetos/: com cartões ocultos, os seguintes sobem e fecham a fileira */
+  .grade-projetos[data-lista-projetos] { grid-auto-flow: dense; }
+  /* Quem somos: o retrato de 340 px com o texto ao lado, um sócio por fileira */
+  .cartoes-pessoas > * { grid-column: span 12; }
+  .cartoes-pessoas > .cartao-pessoa {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto auto auto 1fr;
+    column-gap: 48px;
+    padding: 32px;
+  }
+  .cartoes-pessoas > .cartao-pessoa > img { grid-column: 1; grid-row: 1 / -1; margin: 0; }
+  .cartoes-pessoas > .cartao-pessoa > :nth-child(2) { grid-column: 2; grid-row: 2; }
+  .cartoes-pessoas > .cartao-pessoa > :nth-child(3) { grid-column: 2; grid-row: 3; }
+  .cartoes-pessoas > .cartao-pessoa > :nth-child(4) { grid-column: 2; grid-row: 4; max-width: 52ch; }
+  .cartoes-pessoas > .cartao-pessoa > :nth-child(5) { grid-column: 2; grid-row: 5; margin-top: 16px; justify-self: start; }
+  /* Tecnologias: os cinco grupos em colunas */
+  .tec-grupos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 40px; }
+  /* FAQ: o título à esquerda, as perguntas à direita */
+  .faq-home { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); column-gap: 56px; align-items: start; }
+  .faq-home > .rotulo-mono, .faq-home > h2 { grid-column: 1; }
+  .faq-home > h2 { overflow-wrap: normal; font-size: clamp(2rem, 3.4vw, 3rem); }
+  .faq-home > .faq-section { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; max-width: none; }
+  /* Contato: faixa de largura total, o título à esquerda e os botões à direita */
+  main > #contato {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: 56px;
+    align-items: center;
+    background: var(--fundo-2);
+    box-shadow: 0 0 0 100vmax var(--fundo-2);
+    clip-path: inset(0 -100vmax);
+    border-top: 0;
+  }
+  main > #contato > .rotulo-mono, main > #contato > h2 { grid-column: 1; }
+  main > #contato > .cta-buttons { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; justify-content: flex-start; }
+  /* História: o manifesto usa a largura da página */
+  .horizontal-story__text { max-width: 72rem; }
   .footer-brand { grid-column: span 6; }
   .footer-col { grid-column: span 3; }
 }
@@ -656,7 +706,7 @@ main > .faixa { padding-block: 32px; }
 }
 .perfil-foto {
   display: block;
-  width: min(100%, 360px);
+  width: 100%;   /* a foto ocupa a largura da coluna em qualquer largura de tela */
   height: auto;   /* a proporção vem do width/height do HTML (a do arquivo) */
   object-fit: cover;
   border-radius: 4px;
@@ -740,7 +790,7 @@ main > .faixa { padding-block: 32px; }
 .case-telas .img-captura { flex-basis: 100%; }
 .case-telas .img-retrato { width: calc(50% - 8px); max-width: 240px; }
 .case-loja { margin: 0; flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
-.case-loja img { max-width: min(100%, 540px); height: auto; }
+.case-loja img { width: min(100%, 540px); max-width: 100%; height: auto; }   /* imagens da coluna direita: todas da mesma largura */
 .case-loja figcaption { flex-basis: 100%; font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
 @media (min-width: 1024px) {
   .case:not(.case-unica) { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; }
@@ -892,7 +942,7 @@ main > .faixa { padding-block: 32px; }
   inset: 0;
   pointer-events: none;
 }
-.hist-hero-bg { background: radial-gradient(ellipse closest-side at 72% 45%, color-mix(in srgb, var(--roxo) 22%, transparent), transparent 60%); }
+.hist-hero-bg { background: radial-gradient(ellipse closest-side at 60% 40%, color-mix(in srgb, var(--roxo) 16%, transparent), transparent 60%); }   /* mancha larga atrás do texto e do vazio: não é mais uma bolinha solta à direita */
 .hist-hero-lines {
   background-image: linear-gradient(to right, var(--linha) 1px, transparent 1px);
   background-size: 25% 100%;
@@ -917,7 +967,7 @@ main > .faixa { padding-block: 32px; }
 .hist-sub { font-size: 1.15rem; color: var(--texto-2); max-width: 45.5rem; }
 .hist-sub strong { color: var(--texto); }
 .horizontal-story { padding-block: 64px; }
-.horizontal-story__text { font-size: clamp(1.7rem, 4vw, 2.8rem); max-width: 45.5rem; }
+.horizontal-story__text { font-size: clamp(1.7rem, 4vw, 2.8rem); max-width: 45.5rem; }   /* a 1024+ o bloco de desktop alarga */
 #timeline {
   position: relative;
   padding-block: 32px 64px;
