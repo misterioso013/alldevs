@@ -1,7 +1,8 @@
 /* Visual do ALL.dev v2: base de identidade (Syne, roxo e laranja do estúdio), grade de 12 colunas até 1280 px,
    calha de 16 px. Cores, tempos e fontes vêm de css/tokens.css (carregado antes); aqui só se usam as variáveis.
    Animam só transform, opacity e clip-path. Sem JS tudo fica visível; js/site.js liga a revelação.
-   A seção "Páginas atuais" estiliza o marcado de hoje até as Tasks 4 a 8 trocarem as páginas. */
+   A home (hero, faixa, ideia, projetos, serviços, passos, tecnologias, FAQ, contato) é do v2; "Páginas atuais" estiliza só o
+   marcado que as Tasks 7 e 8 ainda vão trocar (serviço, projetos, perfis, história). */
 
 *,
 *::before,
@@ -452,7 +453,6 @@ html.pre-1a .preloader span {
 /* ---------- Cartões ---------- */
 .cartao-pessoa,
 .cartao-projeto,
-.cartao-destaque,
 .cartao-servico,
 .relacionado-card {
   position: relative;
@@ -466,12 +466,10 @@ html.pre-1a .preloader span {
 }
 .cartao-pessoa:hover,
 .cartao-projeto:hover,
-.cartao-destaque:hover,
 .cartao-servico:hover,
 .relacionado-card:hover { border-color: var(--texto-2); }
 .cartao-pessoa > :last-child,
 .cartao-projeto > :last-child,
-.cartao-destaque > :last-child,
 .cartao-servico > :last-child { margin-bottom: 0; }
 .cartao-pessoa img {
   width: 100%;
@@ -482,6 +480,118 @@ html.pre-1a .preloader span {
   margin-bottom: 16px;
 }
 .cartao-pessoa .link-seta { margin-top: auto; align-self: flex-start; }
+
+/* ---------- Home completa (Task 6) ---------- */
+.faixa-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  text-align: center;
+}
+main > .faixa { padding-block: 32px; }
+.faixa-num {
+  display: block;
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  line-height: 1.1;
+}
+.faixa-rotulo { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
+.secao-intro { color: var(--texto-2); max-width: 52ch; }
+
+/* Cartão de projeto: a captura na frente; por trás, o trecho real que a máscara revela sob o ponteiro (js/revelar.js liga --mx, --my, --r). */
+.projeto-cartao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid var(--linha);
+  border-radius: 4px;
+  background: var(--fundo);
+  transition: border-color var(--dur-curta) var(--curva-saida);
+}
+.projeto-cartao:hover { border-color: var(--texto-2); }
+.projeto-cartao h3,
+.projeto-cartao h2 { margin-bottom: 8px; font-family: var(--fonte-titulo); }
+.projeto-cartao h3 a,
+.projeto-cartao h2 a { text-decoration: none; }
+.projeto-cartao p { color: var(--texto-2); }
+.projeto-cartao .rotulo-mono { margin-bottom: 8px; }
+.projeto-cartao .link-seta { margin-top: auto; align-self: flex-start; }
+.projeto-tela {
+  margin: 0 0 16px;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--linha);
+  border-radius: 2px;
+  background: var(--fundo-2);
+}
+.projeto-tela img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.cartao-por-tras {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--fundo-2);
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle var(--r, 0px) at var(--mx, 50%) var(--my, 50%), black 70%, transparent 100%);
+  mask-image: radial-gradient(circle var(--r, 0px) at var(--mx, 50%) var(--my, 50%), black 70%, transparent 100%);
+}
+.cartao-por-tras pre {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--texto-2);
+  white-space: pre;
+}
+.cartao-por-tras img { display: block; width: 100%; height: auto; }
+.cartao-origem { font-family: var(--fonte-mono); font-size: 0.7rem; color: var(--laranja-claro); }
+
+.passos {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+.passo { padding: 24px; border: 1px solid var(--linha); border-radius: 4px; }
+.passo h3 { margin: 8px 0; font-family: var(--fonte-titulo); }
+.passo p { margin: 0; color: var(--texto-2); }
+.passo-num { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--laranja-claro); }
+
+.tec-grupos { display: grid; gap: 24px; margin-top: 32px; }
+.tec-grupo .rotulo-mono { margin-bottom: 8px; }
+.tec-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.tecnologia {
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border: 1px solid var(--linha);
+  border-radius: 2px;
+}
+
+.depoimentos-lista { display: grid; gap: 16px; margin-top: 32px; }
+.depoimento { margin: 0; padding: 24px; border: 1px solid var(--linha); border-radius: 4px; }
+.depoimento blockquote { margin: 0 0 16px; font-size: 1.1rem; }
+.depoimento figcaption { color: var(--texto-2); }
+
+.faq-home .faq-section { max-width: 760px; }
+@media (min-width: 640px) {
+  .passos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .passos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .depoimentos-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
 .img-captura {
   width: 100%;
@@ -835,6 +945,7 @@ html.lenis body { height: auto; }
 @media (prefers-reduced-motion: reduce) {
   /* a regra global zera as transições; o esmaecido da revelação por botão fica em 200 ms (tokens) */
   .hero-palco .hero-frente { transition-duration: var(--dur-curta) !important; }
+  .cartao-por-tras { display: none; }   /* com movimento reduzido o "por trás" nunca aparece */
 }
 
 /* ---------- Da ideia ao ar (#ideia, js/ideia.js) ----------

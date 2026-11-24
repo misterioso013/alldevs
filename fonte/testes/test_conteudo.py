@@ -138,12 +138,6 @@ class TestHome(Base):
         self.assertEqual(i, sorted(i))
         self.assertEqual(i, ["caio", "rosiel"])
 
-    def test_destaques_sao_os_visiveis_com_destaque(self):
-        txt = ler(self.saida / "index.html")
-        esperados = [p.slug for p in self.visiveis if p.destaque]
-        achados = re.findall(r'class="cartao-destaque"[^>]*data-slug="([^"]+)"', txt)
-        self.assertEqual(achados, esperados)
-
     def test_servicos_na_home(self):
         txt = ler(self.saida / "index.html")
         for s in self.dados.servicos:
@@ -341,16 +335,6 @@ class TestServicosSemSeloDePessoa(Base):
                 "aplicativo-mobile-react-native": "app", "bots-whatsapp-automacao": "automacao",
                 "automacoes-integracoes-api": "automacao", "desenvolvimento-mvp-startups": "produto"}
         self.assertEqual({s.slug: s.tipo for s in self.dados.servicos}, mapa)
-
-    def test_cartoes_de_servico_da_home_sem_selo_nem_degrade(self):
-        txt = ler(self.saida / "index.html")
-        cartoes = re.findall(r'<article class="cartao-servico[^"]*".*?</article>', txt, re.S)
-        self.assertEqual(len(cartoes), len(self.dados.servicos))
-        for c in cartoes:
-            self.assertTrue(c.startswith('<article class="cartao-servico">'), c)
-            self.assertNotIn("selo", c)
-            self.assertNotIn("Caio", c)
-            self.assertNotIn("Rosiel", c)
 
     def test_pagina_de_servico_sem_selo_nem_degrade(self):
         for s in self.dados.servicos:

@@ -116,6 +116,7 @@ class Dados:
     tecnologias: tuple
     depoimentos: tuple
     ideia: dict = field(default_factory=dict)  # fonte/conteudo/ideia.json (Task 5); vazio se o arquivo não existe
+    passos: tuple = ()  # fonte/conteudo/como-trabalhamos.json (Task 6): os 4 passos da home; vazio se o arquivo não existe
 
 
 def _ler(caminho: Path):
@@ -167,6 +168,34 @@ def _ideia(raiz: Path) -> dict:
     return obj
 
 
+PASSOS_TOTAL = 4
+SERVICO_ANOS = "fonte/conteudo/servicos/criacao-de-sites-institucionais.html"
+
+
+def _passos(raiz: Path) -> tuple:
+    arq = raiz / "fonte" / "conteudo" / "como-trabalhamos.json"
+    if not arq.is_file():
+        return ()
+    obj = _ler(arq)
+    lista = obj.get("passos") if isinstance(obj, dict) else None
+    if not isinstance(lista, list) or len(lista) != PASSOS_TOTAL:
+        raise ErroDeDados(f"como-trabalhamos.json: esperado um objeto com {PASSOS_TOTAL} passos")
+    for n, x in enumerate(lista, 1):
+        for k in ("titulo", "texto", "fonte"):
+            if not (isinstance(x, dict) and isinstance(x.get(k), str) and x[k].strip()):
+                raise ErroDeDados(f"como-trabalhamos.json: passo {n}: campo {k} ausente ou vazio")
+    return tuple(lista)
+
+
+def anos_de_estrada(raiz: Path) -> int:
+    """O "8" da faixa de prova: lido do texto "mais de N anos" do serviço de site institucional. Falha alto se sumir."""
+    txt = (Path(raiz) / SERVICO_ANOS).read_text(encoding="utf-8")
+    m = re.search(r"mais de (\d+) anos", txt)
+    if not m:
+        raise ErroDeDados(f"faixa de prova: o texto 'mais de N anos' sumiu de {SERVICO_ANOS}")
+    return int(m.group(1))
+
+
 def carregar(raiz: Path) -> Dados:
     d = Path(raiz) / "fonte" / "dados"
     estudio = _montar(Estudio, _ler(d / "estudio.json"), "estudio.json")
@@ -178,6 +207,7 @@ def carregar(raiz: Path) -> Dados:
         tecnologias=_simples(Tecnologia, d, "tecnologias.json"),
         depoimentos=_simples(Depoimento, d, "depoimentos.json"),
         ideia=_ideia(Path(raiz)),
+        passos=_passos(Path(raiz)),
     )
 
 
@@ -401,4 +431,9 @@ def validar(dados: Dados, raiz: Path):
     if not (raiz / "assets" / "og" / "site.png").is_file():
         a("falta assets/og/site.png")
     erros += validar_ideia(dados, raiz)
+    if (Path(raiz) / SERVICO_ANOS).is_file():  # sem o arquivo (fixtures mínimas) não há faixa a conferir; no site real ele existe
+        try:
+            anos_de_estrada(raiz)
+        except ErroDeDados as x:
+            erros.append(str(x))
     return erros, avisos

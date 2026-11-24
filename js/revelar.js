@@ -274,19 +274,21 @@
  }
 
  function montarCartao(el) {
-  var vai = function (e, f) {
-   var b = el.getBoundingClientRect(), st = el.style;
-   st.setProperty("--mx", e.clientX - b.left + "px"); st.setProperty("--my", e.clientY - b.top + "px");
-   st.setProperty("--r", f * Math.max(b.width, b.height) * 0.28 + "px");
-  };
-  el.addEventListener("pointermove", function (e) { if (e.pointerType !== "touch" || e.buttons) vai(e, 1); });
-  el.addEventListener("pointerdown", function (e) { vai(e, 1.3); });
+  var on = el.addEventListener.bind(el), s = el.style.setProperty.bind(el.style);
+  function vai(e, f) {
+   var b = el.getBoundingClientRect();
+   s("--mx", e.clientX - b.left + "px"); s("--my", e.clientY - b.top + "px");
+   s("--r", f * Math.max(b.width, b.height) * 0.28 + "px");
+  }
+  on("pointermove", function (e) { if (e.pointerType !== "touch" || e.buttons) vai(e, 1); });
+  on("pointerdown", function (e) { vai(e, 1.3); });
   ["pointerup", "pointercancel", "pointerleave"].forEach(function (t) {
-   el.addEventListener(t, function (e) { vai(e, t === "pointerup" && e.pointerType !== "touch" ? 1 : 0); });
+   on(t, function (e) { vai(e, t === "pointerup" && e.pointerType !== "touch" ? 1 : 0); });
   });
  }
 
  window.AllDevsRevelar = { montarHero: montarHero, montarCartao: montarCartao };
  var palco = doc.querySelector(".hero-palco[data-ciclo]");
  if (palco) montarHero(palco);
+ doc.querySelectorAll("[data-revela-cartao]").forEach(montarCartao);
 })();

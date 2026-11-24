@@ -1,0 +1,24 @@
+{
+  "passos": [
+    {
+      "titulo": "Briefing",
+      "texto": "Conversamos sobre a empresa, o público e as referências visuais. Em até 24h úteis você recebe a proposta.",
+      "fonte": "servicos/criacao-de-sites-institucionais.html, passo 1 (briefing e levantamento); servicos/landing-page-conversao.html, chamada final (proposta em até 24h úteis)"
+    },
+    {
+      "titulo": "Design e aprovação",
+      "texto": "Você vê o layout das páginas principais antes de qualquer código. Até 2 rodadas de ajustes incluídas.",
+      "fonte": "servicos/criacao-de-sites-institucionais.html, passo 2 (design e aprovação)"
+    },
+    {
+      "titulo": "Desenvolvimento",
+      "texto": "Codificamos com HTML semântico, CSS responsivo e JavaScript moderno, com SEO técnico configurado e performance conferida no Google PageSpeed.",
+      "fonte": "servicos/criacao-de-sites-institucionais.html, passo 3 (desenvolvimento e SEO)"
+    },
+    {
+      "titulo": "Publicação e entrega",
+      "texto": "Publicamos no seu domínio, com certificado SSL, e entregamos o código e todos os acessos. Landing page em 3 dias; site institucional em 7 dias úteis.",
+      "fonte": "servicos/landing-page-conversao.html, passo 4 (entrega em 3 dias, todos os acessos); servicos/criacao-de-sites-institucionais.html, passo 4 e FAQ de prazo (7 dias úteis), texto 'código de sua propriedade'"
+    }
+  ]
+}
