@@ -2,7 +2,7 @@
 
 Ramo `claude/v2`. O site segue estático e gerado por `fonte/gerar.py`. **Push e PR só com o OK do Caio e do Rosiel.** O `main` não muda até lá.
 
-<!-- controlador: link da prévia -->
+**Prévia:** https://alldevs.docaio.com.br (publicada por `bin/publicar-previa`; para desfazer, rodar o script a partir de um commit anterior).
 
 ## O que mudou
 
@@ -42,7 +42,18 @@ Em `bancada/relatorios/2026-11-24-final/` (fora do git, só os PNG; o `RELATORIO
 
 LCP mais alto, em 3 rodadas (LCP ms / CLS): `/caio/` 2481, 2482, 2480; `/projetos/` 2461, 2424, 2423; `/rosiel/` 2410, 2414, 2409; `/` 2111, 1423, 1430. A margem de `/caio/` é de 19 ms: qualquer foto maior estoura a meta.
 
-<!-- controlador: nota da crítica externa -->
+## Crítica externa
+
+Três rodadas de correção (meta: nota ≥ 8). O Codex ficou sem cota até 25/11 06:05 e não entrou.
+
+| Crítica | r1 | r2 | r3 |
+|---|---|---|---|
+| Visual (capturas) | 5/10 | 5/10 | 6/10 |
+| Gemini (código) | 6/10 | 6/10 | 7,5/10 |
+
+A meta não foi atingida no teto de rodadas. O que sobra e é objetivo (sem texto nem imagem nova) entrou na revisão final
+do ramo (`.superpowers/sdd/2026-11-23-alldevs-v2/critica-r3-para-revisao-final.md`). O resto depende de texto, foto ou
+decisão de desenho e está na lista abaixo.
 
 ## Para o Caio e o Rosiel conferirem
 
