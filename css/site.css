@@ -642,7 +642,7 @@ main > .faixa { padding-block: 32px; }
   font-weight: 600;
   font-size: clamp(1.3rem, 3vw, 1.9rem);
   line-height: 1.25;
-  max-width: 30rem;
+  max-width: 32ch;
   margin-top: 24px;
 }
 .perfil-faz ul { max-width: 60ch; }

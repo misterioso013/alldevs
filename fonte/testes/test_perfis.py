@@ -86,9 +86,9 @@ class TestPerfis(Base):
             self.assertNotIn("decoding", img)
             self.assertIn('fetchpriority="high"', img)
 
-    def test_titulos_com_webfont_sem_ch(self):
+    def test_titulo_do_fecho_sem_ch(self):
         css = ler(REPO / "css" / "site.css")
-        for sel in (".perfil-frase {", ".closing-title {"):
+        for sel in (".closing-title {",):  # .perfil-frase fica em ch: em rem o LCP do /caio/ sobe 2482 -> 2555 ms (ver relatório)
             i = css.index(sel)
             self.assertNotRegex(css[i:css.index("}", i)], r"max-width:\s*[\d.]+ch", sel)
 
