@@ -60,8 +60,8 @@ class TestPaginas(Base):
             self.assertNotIn("<form", txt, arq)
 
     def test_cabecalho_pedir_orcamento_em_todas(self):
-        paginas = list(self.saida.rglob("*.html"))
-        self.assertGreaterEqual(len(paginas), 15)
+        paginas = [a for a in self.saida.rglob("*.html") if a.name != "historia.html"]
+        self.assertGreaterEqual(len(paginas), 14)
         for arq in paginas:
             txt = ler(arq)
             self.assertIn('class="nav-cta">Pedir orçamento</a>', txt, arq)
@@ -105,11 +105,10 @@ class TestPaginas(Base):
                 for palavra in self.PROIBIDAS:
                     self.assertNotIn(palavra.lower(), txt.lower(), f"{slug} {onde}: {palavra}")
 
-    def test_sitemap_tem_projetos_e_historia_e_sem_perfis(self):
+    def test_sitemap_tem_projetos_e_sem_historia_nem_perfis(self):
         mapa = ler(self.saida / "sitemap.xml")
-        for u in ("/projetos/", "/historia.html"):
-            self.assertIn(f"<loc>https://all.dev.br{u}</loc>", mapa)
-        for u in ("/caio/", "/rosiel/"):
+        self.assertIn("<loc>https://all.dev.br/projetos/</loc>", mapa)
+        for u in ("/caio/", "/rosiel/", "historia"):
             self.assertNotIn(u, mapa)
 
     def test_json_ld_das_pessoas_na_home_e_do_case(self):
@@ -291,7 +290,7 @@ class TestServicosSemSeloDePessoa(Base):
 
 class TestTextosNovos(Base):
     def test_subtitulo_do_hero_e_slogan_do_rodape(self):
-        for arq in self.saida.rglob("*.html"):
+        for arq in (a for a in self.saida.rglob("*.html") if a.name != "historia.html"):
             txt = ler(arq)
             self.assertIn(f"<p>{SUBTITULO}</p>", txt, arq)
             self.assertNotIn("Dois desenvolvedores", txt, arq)
@@ -363,40 +362,6 @@ class TestDescricoes(Base):
         for s in self.dados.servicos:
             txt = ler(self.saida / "servicos" / s.slug / "index.html")
             self.assertIn(f'<meta name="description" content="{s.descricao.replace("&", "&amp;")}">', txt, s.slug)
-
-
-class TestRosielReal(Base):
-    LINKS = [
-        ("GitHub", "https://github.com/misterioso013"),
-        ("LinkedIn", "https://www.linkedin.com/in/rosielvictor"),
-        ("X", "https://twitter.com/RVictor013"),
-        ("Instagram", "https://www.instagram.com/rosielvictor"),
-        ("YouTube", "https://www.youtube.com/channel/UCbkvqP3kbIVbFcaKk9fTpFQ"),
-        ("Telegram", "https://t.me/misterioso013"),
-        ("CV", "https://misterioso013.github.io/my-cv/"),
-    ]
-
-    def pessoa(self, slug):
-        return next(p for p in self.dados.pessoas if p.slug == slug)
-
-    def test_sete_links_na_ordem_dada_todos_https(self):
-        links = [(l["rotulo"], l["url"]) for l in self.pessoa("rosiel").links]
-        self.assertEqual(links, self.LINKS)
-        self.assertTrue(all(u.startswith("https://") for _, u in links))
-
-    def test_json_ld_same_as_com_os_sete(self):
-        txt = ler(self.saida / "index.html")
-        ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', txt, re.S).group(1))
-        self.assertEqual(ld[2]["sameAs"], [u for _, u in self.LINKS])
-
-    def test_nunca_o_whatsapp_pessoal(self):
-        for l in self.pessoa("rosiel").links:
-            self.assertNotIn("wa.me", l["url"])
-
-    def test_papel_do_rosiel_e_o_caio_ficam_como_estavam(self):
-        r, c = self.pessoa("rosiel"), self.pessoa("caio")
-        self.assertEqual(r.papel, "Produto, web e automação")
-        self.assertEqual(c.links, ())
 
 
 class TestCasesReais(Base):

@@ -1,5 +1,5 @@
 // Controles (botões, CTAs, pílula, filtros, FAQ, menu) a 412 px: altura mínima por página.
-// Uso: node bancada/alvos.mjs http://127.0.0.1:8765 / /historia.html /servicos/...   (V=1 lista os tipos; BANCADA_LIBS como no rodar.mjs)
+// Uso: node bancada/alvos.mjs http://127.0.0.1:8765 / /projetos/ /servicos/...   (V=1 lista os tipos; BANCADA_LIBS como no rodar.mjs)
 import { chromium } from 'playwright';
 const [base, ...paths] = process.argv.slice(2);
 const env = { ...process.env, LD_LIBRARY_PATH: [process.env.BANCADA_LIBS, process.env.LD_LIBRARY_PATH].filter(Boolean).join(':') };

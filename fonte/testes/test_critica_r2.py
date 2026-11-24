@@ -74,11 +74,6 @@ class SecoesDensas(unittest.TestCase):
         self.assertIsNotNone(m)
         self.assertGreaterEqual(float(m.group(1)), 64)
 
-    def test_brilho_roxo_nao_flutua(self):
-        corpo = " ".join(regras(r"\.hist-hero-bg"))
-        self.assertNotIn("72% 45%", corpo)   # a bolinha solta à direita
-        self.assertIn("60% 40%", corpo)
-
 
 class Heisuca(unittest.TestCase):
     def test_print_do_app_uma_vez_so(self):
@@ -106,7 +101,7 @@ class MenuESocios(unittest.TestCase):
 
 class SemPerfisDosSocios(unittest.TestCase):
     """Decisão do Caio (24/11): nada que nos divida. /caio/ e /rosiel/ saíram; os cartões só levam foto, nome e 'Sócio do estúdio.'"""
-    PAGINAS = ["index.html", "historia.html", *(f"{d}/{n}/index.html" for d, ns in (
+    PAGINAS = ["index.html", *(f"{d}/{n}/index.html" for d, ns in (
         ("projetos", ("", "amott", "cgflix-lite", "fakly", "heisuca", "prosup", "sendany")),
         ("servicos", ("aplicativo-mobile-react-native", "automacoes-integracoes-api", "bots-whatsapp-automacao",
                       "criacao-de-sites-institucionais", "desenvolvimento-mvp-startups", "landing-page-conversao"))) for n in ns)]
@@ -145,3 +140,57 @@ class SemPerfisDosSocios(unittest.TestCase):
     def test_rodape_e_cabecalho_com_socios(self):
         for rel, txt in self.textos():
             self.assertEqual(txt.count('<a href="/#quem-somos">Sócios</a>'), 2, rel)   # cabeçalho e rodapé
+
+
+class SemHistoriaNemDivisao(unittest.TestCase):
+    """Decisão do Caio (24/11): a História saiu; historia.html é só o redirecionamento para /#quem-somos;
+    nada de cargo, rede social nem nome de sócio fora de 'Quem somos'."""
+    SEM_REDIRECT = SemPerfisDosSocios.PAGINAS
+
+    def test_menu_e_rodape_sem_historia(self):
+        for rel in self.SEM_REDIRECT:
+            txt = (REPO / rel).read_text(encoding="utf-8")
+            self.assertNotIn("historia.html", txt, rel)
+            self.assertNotIn(">História<", txt, rel)
+        for molde in ("cabecalho", "rodape"):
+            self.assertNotIn("historia", (REPO / f"fonte/modelos/{molde}.html").read_text(encoding="utf-8"))
+
+    def test_historia_so_redireciona(self):
+        txt = (REPO / "historia.html").read_text(encoding="utf-8")
+        self.assertIn('<meta http-equiv="refresh" content="0; url=/#quem-somos">', txt)
+        self.assertIn('<link rel="canonical" href="https://all.dev.br/#quem-somos">', txt)
+        self.assertIn('<meta name="robots" content="noindex">', txt)
+        self.assertEqual(re.findall(r"<a [^>]*>(.*?)</a>", txt), ["Quem somos"])
+        self.assertIn('<a href="/#quem-somos">', txt)
+        self.assertNotIn("<script", txt)
+        self.assertNotIn("historia", (REPO / "sitemap.xml").read_text(encoding="utf-8"))
+        for rel in ("fonte/conteudo/historia.html", "fonte/modelos/historia.html", "assets/og/historia.png"):
+            self.assertFalse((REPO / rel).exists(), rel)
+
+    def test_sem_cargo_nem_same_as_nem_papel(self):
+        home = (REPO / "index.html").read_text(encoding="utf-8")
+        blocos = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', home, re.S).group(1))
+        pessoas = [b for b in blocos if b.get("@type") == "Person"]
+        self.assertEqual([p["name"] for p in pessoas], ["Caio Guerras", "Rosiel Victor"])
+        for p in pessoas:
+            self.assertEqual(set(p), {"@context", "@type", "@id", "name", "worksFor"}, p)
+        for rel in self.SEM_REDIRECT:
+            txt = (REPO / rel).read_text(encoding="utf-8")
+            self.assertNotIn("jobTitle", txt, rel)
+            self.assertNotIn("sameAs", txt, rel)
+
+    def test_nome_de_socio_so_em_quem_somos(self):
+        for rel in self.SEM_REDIRECT:
+            txt = (REPO / rel).read_text(encoding="utf-8")
+            txt = re.sub(r'<script type="application/ld\+json">.*?</script>', "", txt, flags=re.S)   # JSON-LD só com `name`
+            txt = re.sub(r'<section[^>]*id="quem-somos".*?</section>', "", txt, flags=re.S)
+            txt = txt.replace("rosielvictor.dev@gmail.com", "")   # o ENDEREÇO do e-mail fica (decisão do Caio, 24/11)
+            for nome in ("Caio", "Rosiel"):
+                self.assertNotIn(nome, txt, f"{rel}: {nome}")
+                self.assertNotIn(nome.lower() + "-", txt.lower().replace("/assets/images/", ""), rel)
+
+    def test_dados_sem_papel_nem_links_nem_perfil(self):
+        for p in json.loads((REPO / "fonte/dados/pessoas.json").read_text(encoding="utf-8")):
+            self.assertEqual(set(p), {"slug", "nome", "foto", "cor", "atualizado"})
+        est = json.loads((REPO / "fonte/dados/estudio.json").read_text(encoding="utf-8"))
+        self.assertNotIn("perfil", est["mensagens"])

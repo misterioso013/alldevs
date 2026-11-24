@@ -1,29 +1,28 @@
 # Relatório da bancada
 
-Base: http://127.0.0.1:8765 — 15 páginas — gerado em 2026-11-24T10:38:05.034Z
+Base: http://127.0.0.1:8765 — 14 páginas — gerado em 2026-11-24T11:22:21.292Z
 
 ## Resumo
 
 | Meta | Resultado | Falhas |
 |---|---|---|
-| Capturas em 360, 430 e 1440 px | PASSA | 0/15 páginas |
-| axe: zero problemas serious/critical (360, 430 e 1440 px) | PASSA | 0/15 páginas |
-| Sem JS: título, contato e (em /projetos/) todos os cards | PASSA | 0/15 páginas |
-| Sem rolagem horizontal em 360 e 430 px | PASSA | 0/15 páginas |
-| Links internos respondem 200, sem redirecionamento | PASSA | 0/15 páginas |
-| reducedMotion: nenhum transform após 1 s | PASSA | 0/15 páginas |
-| Paleta: Ctrl K, seta, Enter navega e Esc devolve o foco (1440 px); toque na pílula (412 px); axe aberta; reduced-motion; sem rede | PASSA | 0/15 páginas |
+| Capturas em 360, 430 e 1440 px | PASSA | 0/14 páginas |
+| axe: zero problemas serious/critical (360, 430 e 1440 px) | PASSA | 0/14 páginas |
+| Sem JS: título, contato e (em /projetos/) todos os cards | PASSA | 0/14 páginas |
+| Sem rolagem horizontal em 360 e 430 px | PASSA | 0/14 páginas |
+| Links internos respondem 200, sem redirecionamento | PASSA | 0/14 páginas |
+| reducedMotion: nenhum transform após 1 s | PASSA | 0/14 páginas |
+| Paleta: Ctrl K, seta, Enter navega e Esc devolve o foco (1440 px); toque na pílula (412 px); axe aberta; reduced-motion; sem rede | FALHA | 1/14 páginas |
 | FPS ≥ 50 com CPU 4× mais lenta (só na /; 1440 px) | PASSA | 0/1 páginas |
-| Lighthouse móvel: LCP < 2500 ms e CLS < 0,05 | PASSA | 0/15 páginas |
+| Lighthouse móvel: LCP < 2500 ms e CLS < 0,05 | PASSA | 0/14 páginas |
 
-Código de saída: **0**
+Código de saída: **1**
 
 ## Capturas em 360, 430 e 1440 px
 
 | Página | Resultado | Detalhe |
 |---|---|---|
 | / | passa | home-360.png, home-430.png, home-1440.png |
-| /historia.html | passa | historia.html-360.png, historia.html-430.png, historia.html-1440.png |
 | /projetos/ | passa | projetos-360.png, projetos-430.png, projetos-1440.png |
 | /projetos/amott/ | passa | projetos_amott-360.png, projetos_amott-430.png, projetos_amott-1440.png |
 | /projetos/cgflix-lite/ | passa | projetos_cgflix-lite-360.png, projetos_cgflix-lite-430.png, projetos_cgflix-lite-1440.png |
@@ -43,7 +42,6 @@ Código de saída: **0**
 | Página | Resultado | Detalhe |
 |---|---|---|
 | / | passa | 0 graves em 360, 430 e 1440 px (1/1/0 leves) |
-| /historia.html | passa | 0 graves em 360, 430 e 1440 px (1/1/0 leves) |
 | /projetos/ | passa | 0 graves em 360, 430 e 1440 px (1/1/0 leves) |
 | /projetos/amott/ | passa | 0 graves em 360, 430 e 1440 px (1/1/0 leves) |
 | /projetos/cgflix-lite/ | passa | 0 graves em 360, 430 e 1440 px (1/1/0 leves) |
@@ -63,7 +61,6 @@ Código de saída: **0**
 | Página | Resultado | Detalhe |
 |---|---|---|
 | / | passa | h1 "Fazemos software que vive.", contatos visíveis 3/4 |
-| /historia.html | passa | h1 "Uma históriafora do roteiro", contatos visíveis 3/4 |
 | /projetos/ | passa | h1 "Projetos", contatos visíveis 3/4, cards visíveis 6/6 |
 | /projetos/amott/ | passa | h1 "amott", contatos visíveis 3/4 |
 | /projetos/cgflix-lite/ | passa | h1 "CGFLIX Lite", contatos visíveis 3/4 |
@@ -83,7 +80,6 @@ Código de saída: **0**
 | Página | Resultado | Detalhe |
 |---|---|---|
 | / | passa | 360 px: scrollWidth 360 / clientWidth 360; 430 px: scrollWidth 430 / clientWidth 430 |
-| /historia.html | passa | 360 px: scrollWidth 360 / clientWidth 360; 430 px: scrollWidth 430 / clientWidth 430 |
 | /projetos/ | passa | 360 px: scrollWidth 360 / clientWidth 360; 430 px: scrollWidth 430 / clientWidth 430 |
 | /projetos/amott/ | passa | 360 px: scrollWidth 360 / clientWidth 360; 430 px: scrollWidth 430 / clientWidth 430 |
 | /projetos/cgflix-lite/ | passa | 360 px: scrollWidth 360 / clientWidth 360; 430 px: scrollWidth 430 / clientWidth 430 |
@@ -102,28 +98,26 @@ Código de saída: **0**
 
 | Página | Resultado | Detalhe |
 |---|---|---|
-| / | passa | 35 ok |
-| /historia.html | passa | 19 ok |
-| /projetos/ | passa | 32 ok |
-| /projetos/amott/ | passa | 22 ok |
-| /projetos/cgflix-lite/ | passa | 25 ok |
-| /projetos/fakly/ | passa | 23 ok |
-| /projetos/heisuca/ | passa | 24 ok |
-| /projetos/prosup/ | passa | 24 ok |
-| /projetos/sendany/ | passa | 23 ok |
-| /servicos/aplicativo-mobile-react-native/ | passa | 31 ok |
-| /servicos/automacoes-integracoes-api/ | passa | 23 ok |
-| /servicos/bots-whatsapp-automacao/ | passa | 22 ok |
-| /servicos/criacao-de-sites-institucionais/ | passa | 26 ok |
-| /servicos/desenvolvimento-mvp-startups/ | passa | 29 ok |
-| /servicos/landing-page-conversao/ | passa | 25 ok |
+| / | passa | 34 ok |
+| /projetos/ | passa | 31 ok |
+| /projetos/amott/ | passa | 21 ok |
+| /projetos/cgflix-lite/ | passa | 24 ok |
+| /projetos/fakly/ | passa | 22 ok |
+| /projetos/heisuca/ | passa | 23 ok |
+| /projetos/prosup/ | passa | 23 ok |
+| /projetos/sendany/ | passa | 22 ok |
+| /servicos/aplicativo-mobile-react-native/ | passa | 30 ok |
+| /servicos/automacoes-integracoes-api/ | passa | 22 ok |
+| /servicos/bots-whatsapp-automacao/ | passa | 21 ok |
+| /servicos/criacao-de-sites-institucionais/ | passa | 25 ok |
+| /servicos/desenvolvimento-mvp-startups/ | passa | 28 ok |
+| /servicos/landing-page-conversao/ | passa | 24 ok |
 
 ## reducedMotion: nenhum transform após 1 s
 
 | Página | Resultado | Detalhe |
 |---|---|---|
 | / | passa | nenhum |
-| /historia.html | passa | nenhum |
 | /projetos/ | passa | nenhum |
 | /projetos/amott/ | passa | nenhum |
 | /projetos/cgflix-lite/ | passa | nenhum |
@@ -142,44 +136,42 @@ Código de saída: **0**
 
 | Página | Resultado | Detalhe |
 |---|---|---|
-| / | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 764 ms (<= 1000), 2ª visita sem overlay |
-| /historia.html | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 753 ms (<= 1000), 2ª visita sem overlay |
-| /projetos/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 989 ms (<= 1000), 2ª visita sem overlay |
-| /projetos/amott/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 700 ms (<= 1000), 2ª visita sem overlay |
-| /projetos/cgflix-lite/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 948 ms (<= 1000), 2ª visita sem overlay |
-| /projetos/fakly/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 691 ms (<= 1000), 2ª visita sem overlay |
-| /projetos/heisuca/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 743 ms (<= 1000), 2ª visita sem overlay |
-| /projetos/prosup/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 712 ms (<= 1000), 2ª visita sem overlay |
-| /projetos/sendany/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 719 ms (<= 1000), 2ª visita sem overlay |
-| /servicos/aplicativo-mobile-react-native/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 714 ms (<= 1000), 2ª visita sem overlay |
-| /servicos/automacoes-integracoes-api/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 735 ms (<= 1000), 2ª visita sem overlay |
-| /servicos/bots-whatsapp-automacao/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 724 ms (<= 1000), 2ª visita sem overlay |
-| /servicos/criacao-de-sites-institucionais/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 716 ms (<= 1000), 2ª visita sem overlay |
-| /servicos/desenvolvimento-mvp-startups/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 725 ms (<= 1000), 2ª visita sem overlay |
-| /servicos/landing-page-conversao/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 715 ms (<= 1000), 2ª visita sem overlay |
+| / | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 725 ms (<= 1000), 2ª visita sem overlay |
+| /projetos/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 714 ms (<= 1000), 2ª visita sem overlay |
+| /projetos/amott/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 727 ms (<= 1000), 2ª visita sem overlay |
+| /projetos/cgflix-lite/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 955 ms (<= 1000), 2ª visita sem overlay |
+| /projetos/fakly/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 722 ms (<= 1000), 2ª visita sem overlay |
+| /projetos/heisuca/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 702 ms (<= 1000), 2ª visita sem overlay |
+| /projetos/prosup/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 704 ms (<= 1000), 2ª visita sem overlay |
+| /projetos/sendany/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 716 ms (<= 1000), 2ª visita sem overlay |
+| /servicos/aplicativo-mobile-react-native/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 981 ms (<= 1000), 2ª visita sem overlay |
+| /servicos/automacoes-integracoes-api/ | FALHA | 1ª visita: o preloader saiu em 1020 ms (> 1000 ms) |
+| /servicos/bots-whatsapp-automacao/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 706 ms (<= 1000), 2ª visita sem overlay |
+| /servicos/criacao-de-sites-institucionais/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 985 ms (<= 1000), 2ª visita sem overlay |
+| /servicos/desenvolvimento-mvp-startups/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 739 ms (<= 1000), 2ª visita sem overlay |
+| /servicos/landing-page-conversao/ | passa | 1440 px: Ctrl K, seta, Enter -> /projetos/cgflix-lite/, Esc devolve o foco, 16 opções, 1 pedido, axe 0 violações, 0 serious/critical; 412 px: pílula 44 px, toque abre, Esc devolve o foco, toque na opção -> /projetos/cgflix-lite/, sem barra fixa, axe 0 violações, 0 serious/critical; reducedMotion: aberta, sem transform, opaca; sem o paleta.json: a pílula leva a /projetos/; clique sem foco no link: Esc devolve o foco à pílula (a.paleta-gatilho); preloader: 1ª visita some em 971 ms (<= 1000), 2ª visita sem overlay |
 
 ## FPS ≥ 50 com CPU 4× mais lenta (só na /; 1440 px)
 
 | Página | Resultado | Detalhe |
 |---|---|---|
-| / | passa | 60.1 fps com CPU 4x |
+| / | passa | 54.3 fps com CPU 4x |
 
 ## Lighthouse móvel: LCP < 2500 ms e CLS < 0,05
 
 | Página | Resultado | Detalhe |
 |---|---|---|
-| / | passa | LCP 1423 ms, CLS 0.000 |
-| /historia.html | passa | LCP 1438 ms, CLS 0.000 |
-| /projetos/ | passa | LCP 2420 ms, CLS 0.000 |
-| /projetos/amott/ | passa | LCP 1403 ms, CLS 0.000 |
+| / | passa | LCP 1320 ms, CLS 0.000 |
+| /projetos/ | passa | LCP 2421 ms, CLS 0.000 |
+| /projetos/amott/ | passa | LCP 904 ms, CLS 0.000 |
 | /projetos/cgflix-lite/ | passa | LCP 906 ms, CLS 0.000 |
-| /projetos/fakly/ | passa | LCP 904 ms, CLS 0.000 |
-| /projetos/heisuca/ | passa | LCP 1401 ms, CLS 0.000 |
-| /projetos/prosup/ | passa | LCP 1403 ms, CLS 0.000 |
-| /projetos/sendany/ | passa | LCP 907 ms, CLS 0.000 |
-| /servicos/aplicativo-mobile-react-native/ | passa | LCP 1442 ms, CLS 0.000 |
-| /servicos/automacoes-integracoes-api/ | passa | LCP 1444 ms, CLS 0.000 |
-| /servicos/bots-whatsapp-automacao/ | passa | LCP 907 ms, CLS 0.012 |
-| /servicos/criacao-de-sites-institucionais/ | passa | LCP 907 ms, CLS 0.000 |
-| /servicos/desenvolvimento-mvp-startups/ | passa | LCP 906 ms, CLS 0.000 |
-| /servicos/landing-page-conversao/ | passa | LCP 904 ms, CLS 0.000 |
+| /projetos/fakly/ | passa | LCP 1412 ms, CLS 0.000 |
+| /projetos/heisuca/ | passa | LCP 907 ms, CLS 0.000 |
+| /projetos/prosup/ | passa | LCP 1399 ms, CLS 0.000 |
+| /projetos/sendany/ | passa | LCP 1395 ms, CLS 0.000 |
+| /servicos/aplicativo-mobile-react-native/ | passa | LCP 905 ms, CLS 0.000 |
+| /servicos/automacoes-integracoes-api/ | passa | LCP 906 ms, CLS 0.000 |
+| /servicos/bots-whatsapp-automacao/ | passa | LCP 1307 ms, CLS 0.012 |
+| /servicos/criacao-de-sites-institucionais/ | passa | LCP 1452 ms, CLS 0.000 |
+| /servicos/desenvolvimento-mvp-startups/ | passa | LCP 908 ms, CLS 0.000 |
+| /servicos/landing-page-conversao/ | passa | LCP 906 ms, CLS 0.000 |

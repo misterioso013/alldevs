@@ -5,7 +5,7 @@ from .dados import Estudio
 
 TELEGRAM = "https://t.me/m/PYdcFSXtNjZh"
 
-_EXIGE_SLUG = ("servico", "case", "perfil")
+_EXIGE_SLUG = ("servico", "case")
 
 
 def codigo_origem(tipo: str, slug: str | None = None) -> str:

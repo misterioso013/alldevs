@@ -47,11 +47,11 @@ class TestDados(Base):
         self.assertEqual(self.validar(d), ([], ["destaques: 1 projetos visíveis em destaque (ideal 4 a 6)"]))
 
     def test_campo_obrigatorio_faltando_cita_arquivo_e_campo(self):
-        self.editar("pessoas.json", lambda o: o[0].pop("papel"))
+        self.editar("pessoas.json", lambda o: o[0].pop("foto"))
         with self.assertRaises(D.ErroDeDados) as c:
             D.carregar(self.raiz)
         self.assertIn("pessoas.json", str(c.exception))
-        self.assertIn("papel", str(c.exception))
+        self.assertIn("foto", str(c.exception))
 
     def test_slug_duplicado_e_erro(self):
         self.editar("projetos.json", lambda o: o[0].__setitem__("slug", "alfa"))

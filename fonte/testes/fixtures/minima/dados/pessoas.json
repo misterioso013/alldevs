@@ -2,23 +2,14 @@
   {
     "slug": "bia",
     "nome": "Bia",
-    "papel": "Design",
     "foto": "assets/pessoas/bia.webp",
-    "links": [],
     "cor": "laranja",
     "atualizado": "2026-11-21"
   },
   {
     "slug": "ana",
     "nome": "Ana",
-    "papel": "Código",
     "foto": "assets/pessoas/ana.webp",
-    "links": [
-      {
-        "rotulo": "GitHub",
-        "url": "https://github.com/ana"
-      }
-    ],
     "cor": "roxo",
     "atualizado": "2026-11-21"
   }

@@ -118,7 +118,7 @@ class TestPaletaVetado(unittest.TestCase):
 
 class TestGatilhoEScript(Base):
     def test_gatilho_sem_js_e_link_para_projetos(self):
-        paginas = sorted(self.saida.rglob("*.html"))
+        paginas = sorted(a for a in self.saida.rglob("*.html") if a.name != "historia.html")
         self.assertGreaterEqual(len(paginas), 14)
         for arq in paginas:
             txt = ler(arq)
@@ -127,7 +127,7 @@ class TestGatilhoEScript(Base):
             self.assertNotIn("paleta-pilula", txt, arq)
 
     def test_script_defer_depois_do_site_js(self):
-        for arq in self.saida.rglob("*.html"):
+        for arq in (a for a in self.saida.rglob("*.html") if a.name != "historia.html"):
             head = ler(arq).partition("</head>")[0]
             self.assertIn('<script src="/js/paleta.js" defer></script>', head, arq)
             self.assertLess(head.index('src="/js/site.js"'), head.index('src="/js/paleta.js"'), arq)

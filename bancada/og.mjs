@@ -23,7 +23,6 @@ const ACENTO = { dupla: 'linear-gradient(90deg, var(--caio), var(--rosiel))' };
 // Tipo e acento pelo caminho. O degradê violeta↔laranja fica só para o que é dos dois sócios.
 function classificar(caminho) {
   if (caminho === '/') return { tipo: 'estúdio de software', acento: ACENTO.dupla };
-  if (caminho === '/historia.html') return { tipo: 'história', acento: ACENTO.dupla };
   if (caminho === '/projetos/') return { tipo: 'projetos', acento: ACENTO.dupla };
   let m = caminho.match(/^\/projetos\/([a-z0-9-]+)\/$/);
   if (m) { const p = porSlug[m[1]]; return { tipo: p ? p.tipo : 'projeto', acento: ACENTO.dupla }; }

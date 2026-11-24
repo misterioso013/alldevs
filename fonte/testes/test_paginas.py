@@ -56,9 +56,6 @@ class TestGerar(Base):
         for slug, esperado in TITULOS.items():
             self.assertEqual(titulo(self.saida / "servicos" / slug / "index.html"), esperado, slug)
 
-    def test_historia_titulo(self):
-        self.assertEqual(titulo(self.saida / "historia.html"), "A história — AllDevs")
-
     def test_home_titulo_do_estudio(self):
         self.assertEqual(titulo(self.saida / "index.html"),
                          "AllDevs — Estúdio de software: sites, apps e automações")
@@ -87,14 +84,11 @@ class TestGerar(Base):
             cta = txt[txt.index('class="servico-cta"'):txt.index('servicos-relacionados')]
             self.assertIn("https://wa.me/", cta, slug)
             self.assertNotIn("<!--contato-->", txt)
-        hist = (self.saida / "historia.html").read_text(encoding="utf-8")
-        fecho = hist[hist.index('class="closing-inner'):hist.index("</section>", hist.index('class="closing-inner'))]
-        self.assertIn("https://wa.me/", fecho)
 
     def test_head_com_tokens_site_e_preload_so_do_titulo(self):
         scripts = ["/js/vendor/gsap.min.js", "/js/vendor/ScrollTrigger.min.js", "/js/vendor/SplitText.min.js",
                    "/js/vendor/lenis.min.js", "/js/site.js", "/js/paleta.js"]
-        for arq in self.saida.rglob("*.html"):
+        for arq in (a for a in self.saida.rglob("*.html") if a.name != "historia.html"):   # historia.html é só o redirecionamento
             head = arq.read_text(encoding="utf-8").partition("</head>")[0]
             self.assertLess(head.index('href="/css/tokens.css"'), head.index('href="/css/site.css"'), arq)
             self.assertEqual(re.findall(r'<link rel="preload" href="([^"]+)"', head),
@@ -106,7 +100,7 @@ class TestGerar(Base):
 
     def test_og_e_twitter_card_com_imagem_existente(self):
         vistos = {}
-        for arq in sorted(self.saida.rglob("*.html")):
+        for arq in sorted(a for a in self.saida.rglob("*.html") if a.name != "historia.html"):
             txt = arq.read_text(encoding="utf-8")
             img = re.search(r'<meta property="og:image" content="https://all\.dev\.br/assets/og/([a-z0-9-]+)\.png">', txt)
             self.assertIsNotNone(img, arq)
@@ -117,7 +111,6 @@ class TestGerar(Base):
             vistos[slug] = arq
             self.assertTrue((REPO / "assets" / "og" / f"{slug}.png").is_file(), f"falta assets/og/{slug}.png")
         self.assertEqual(vistos["site"].name, "index.html")
-        self.assertEqual(vistos["historia"].name, "historia.html")
 
     def test_home_com_origem_e_sem_numero_solto(self):
         txt = (self.saida / "index.html").read_text(encoding="utf-8")
@@ -139,10 +132,10 @@ class TestGerar(Base):
         self.assertIn("aspect-ratio: 4 / 5;", regra[:regra.index("}")])
 
     def test_barra_wa_em_toda_pagina_com_origem(self):
-        # Home, serviço, case e perfil levam a origem da própria página; /projetos/ e /historia.html seguem
-        # o v1 (site·home). Uma barra por página, com wa.me.
-        esperada = {"index.html": "site·home", "projetos/index.html": "site·home", "historia.html": "site·home"}
-        for arq in sorted(self.saida.rglob("*.html")):
+        # Home, serviço e case levam a origem da própria página; /projetos/ segue o v1 (site·home).
+        # Uma barra por página, com wa.me (o redirecionamento historia.html não é página de conteúdo).
+        esperada = {"index.html": "site·home", "projetos/index.html": "site·home"}
+        for arq in sorted(a for a in self.saida.rglob("*.html") if a.name != "historia.html"):
             rel = arq.relative_to(self.saida).as_posix()
             txt = arq.read_text(encoding="utf-8")
             barras = re.findall(r'<div class="barra-wa"[^>]*>.*?</div>', txt, re.S)
@@ -155,7 +148,7 @@ class TestGerar(Base):
             elif rel.startswith("projetos/"):
                 origem = "site·case·" + rel.split("/")[1]
             else:
-                origem = "site·perfil·" + rel.split("/")[0]
+                self.fail(f"página inesperada: {rel}")
             self.assertIn(f"[{origem}]", href, rel)
 
     def test_faq_desativado_sem_js(self):

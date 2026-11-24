@@ -17,16 +17,11 @@ ESTATICOS = ("css", "js", "assets", "icon.svg")
 
 HOME_TITULO = "AllDevs — Estúdio de software: sites, apps e automações"
 HOME_DESCRICAO = (
-    "Estúdio de software com dois sócios, Caio Guerras e Rosiel Victor. "
+    "Estúdio de software com dois sócios. "
     "Sites, apps, bots e produtos próprios no ar."
 )
 PROJETOS_TITULO = "Projetos — AllDevs"
 PROJETOS_DESCRICAO = "Os projetos da AllDevs: sites, apps, automações e produtos próprios, feitos pelo estúdio."
-HISTORIA_TITULO = "A história — AllDevs"
-HISTORIA_DESCRICAO = (
-    "Como um adolescente que programava no celular virou mentor de desenvolvedores "
-    "e fundador do ForjaDev."
-)
 MARCADOR_CONTATO = "<!--contato-->"
 
 
@@ -75,8 +70,8 @@ def _bloco_contato(estudio, tipo, alvo=None, slug=None, com_id=True) -> Seguro:
 
 
 def _barra_wa(estudio, tipo, alvo=None, slug=None) -> Seguro:
-    """Barra fixa do WhatsApp (só no celular, via CSS) com a origem da página. /projetos/ e /historia.html
-    usam `home`, como o bloco de contato do v1."""
+    """Barra fixa do WhatsApp (só no celular, via CSS) com a origem da página. /projetos/
+    usa `home`, como o bloco de contato do v1."""
     msg = contato.mensagem(estudio, tipo, alvo, slug)
     return render("barra_wa", whatsapp=contato.link_whatsapp(estudio.whatsapp, msg))
 
@@ -629,14 +624,23 @@ def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     return Pagina(caminho, titulo, proj.resumo, doc, proj.atualizado, ld, indexar=not proj.rascunho)
 
 
+REDIRECIONA_TITULO = "Quem somos — AllDevs"
+
+
 def _historia(dados: Dados, raiz: Path, previa: bool) -> Pagina:
-    corpo = render(
-        "historia", **_cabecalho_e_rodape(dados),
-        conteudo=_ler_conteudo(raiz, ("historia.html",), _bloco_contato(dados.estudio, "home")),
+    """/historia.html saiu do site (24/11), mas existe no site de hoje: fica só um redirecionamento para /#quem-somos
+    (meta refresh, canonical na seção, noindex, um link visível). Fora do sitemap."""
+    destino = f"{seo.SITE}/#quem-somos"
+    doc = (
+        '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n<meta charset="UTF-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+        f'<title>{REDIRECIONA_TITULO}</title>\n'
+        '<meta http-equiv="refresh" content="0; url=/#quem-somos">\n'
+        f'<link rel="canonical" href="{destino}">\n'
+        '<meta name="robots" content="noindex">\n</head>\n<body>\n'
+        '<p><a href="/#quem-somos">Quem somos</a></p>\n</body>\n</html>\n'
     )
-    caminho = "historia.html"
-    doc = _documento(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, corpo, (), previa, _barra_wa(dados.estudio, "home"))
-    return Pagina(caminho, HISTORIA_TITULO, HISTORIA_DESCRICAO, doc, dados.estudio.atualizado, ())
+    return Pagina("historia.html", REDIRECIONA_TITULO, "", doc, dados.estudio.atualizado, (), indexar=False)
 
 
 CHEVRON_DO_FAQ = '<svg class="faq-chevron" '   # o conteúdo traz a seta sem aria-hidden; o gerador a marca como decorativa

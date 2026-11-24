@@ -6,8 +6,7 @@
   "mensagens": {
     "home": "Olá, AllDevs! Vim pelo site e quero conversar sobre um projeto. [{codigo}]",
     "servico": "Olá, AllDevs! Tenho interesse em *{alvo}*. [{codigo}]",
-    "case": "Olá, AllDevs! Vi o case do *{alvo}* e quero algo parecido. [{codigo}]",
-    "perfil": "Olá, AllDevs! Vim pela página do {alvo}. [{codigo}]"
+    "case": "Olá, AllDevs! Vi o case do *{alvo}* e quero algo parecido. [{codigo}]"
   },
   "redes": [],
   "atualizado": "2026-11-23",

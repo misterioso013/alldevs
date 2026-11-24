@@ -32,7 +32,6 @@ class TestContato(unittest.TestCase):
     def test_codigos(self):
         self.assertEqual(codigo_origem("home"), "site·home")
         self.assertEqual(codigo_origem("case", "alfa"), "site·case·alfa")
-        self.assertEqual(codigo_origem("perfil", "ana"), "site·perfil·ana")
 
     def test_tipo_desconhecido(self):
         self.assertRaises(ValueError, codigo_origem, "xyz")
@@ -43,11 +42,10 @@ class TestContato(unittest.TestCase):
                          "Olá, AllDevs! Vim pelo site e quero conversar sobre um projeto. [site·home]")
         self.assertEqual(mensagem(est, "case", "Alfa", "alfa"),
                          "Olá, AllDevs! Vi o case do *Alfa* e quero algo parecido. [site·case·alfa]")
-        self.assertEqual(mensagem(est, "perfil", "Ana", "ana"),
-                         "Olá, AllDevs! Vim pela página do Ana. [site·perfil·ana]")
+        self.assertRaises(ValueError, codigo_origem, "perfil", "ana")   # o tipo perfil saiu em 24/11
 
     def test_sem_alvo_e_erro(self):
-        for tipo in ("servico", "case", "perfil"):
+        for tipo in ("servico", "case"):
             self.assertRaises(ValueError, mensagem, est, tipo, None, "x")
 
     def test_telegram(self):

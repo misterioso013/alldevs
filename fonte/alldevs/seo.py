@@ -33,12 +33,8 @@ def json_ld_pessoa(p) -> dict:
         "@type": "Person",
         "@id": _id_pessoa(p),
         "name": p.nome,
-        "jobTitle": p.papel,
         "worksFor": {"@id": ID_ORGANIZACAO},
     }
-    urls = [l["url"] for l in p.links if l.get("url")]
-    if urls:
-        ld["sameAs"] = urls
     return ld
 
 

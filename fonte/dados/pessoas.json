@@ -2,47 +2,14 @@
   {
     "slug": "caio",
     "nome": "Caio Guerras",
-    "papel": "Infraestrutura, mídia e apps",
     "foto": "assets/images/caio-640.webp",
-    "links": [],
     "cor": "roxo",
     "atualizado": "2026-11-22"
   },
   {
     "slug": "rosiel",
     "nome": "Rosiel Victor",
-    "papel": "Produto, web e automação",
     "foto": "assets/images/rosiel-640.webp",
-    "links": [
-      {
-        "rotulo": "GitHub",
-        "url": "https://github.com/misterioso013"
-      },
-      {
-        "rotulo": "LinkedIn",
-        "url": "https://www.linkedin.com/in/rosielvictor"
-      },
-      {
-        "rotulo": "X",
-        "url": "https://twitter.com/RVictor013"
-      },
-      {
-        "rotulo": "Instagram",
-        "url": "https://www.instagram.com/rosielvictor"
-      },
-      {
-        "rotulo": "YouTube",
-        "url": "https://www.youtube.com/channel/UCbkvqP3kbIVbFcaKk9fTpFQ"
-      },
-      {
-        "rotulo": "Telegram",
-        "url": "https://t.me/misterioso013"
-      },
-      {
-        "rotulo": "CV",
-        "url": "https://misterioso013.github.io/my-cv/"
-      }
-    ],
     "cor": "laranja",
     "atualizado": "2026-11-23"
   }

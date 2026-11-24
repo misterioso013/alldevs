@@ -250,7 +250,7 @@ async function preloader(nav, url) {
     if (a.h1 === 'hidden') falhas.push('1ª visita: o h1 está com visibility: hidden');
     const h1pintado = await p.evaluate(() => { const h = document.querySelector('h1'); return !!h && h.getBoundingClientRect().height > 0 && getComputedStyle(h).opacity === '1'; });
     if (!h1pintado) falhas.push('1ª visita: o h1 não está no DOM com altura e opacidade 1');
-    await p.goto(new URL('/historia.html', url).href, { waitUntil: 'domcontentloaded' });
+    await p.goto(new URL('/projetos/', url).href, { waitUntil: 'domcontentloaded' });
     const b = await p.evaluate(() => {
       const el = document.querySelector('.preloader');
       return { classe: document.documentElement.classList.contains('pre-1a'), display: el ? getComputedStyle(el).display : 'ausente' };

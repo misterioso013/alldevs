@@ -49,9 +49,7 @@ class Estudio:
 class Pessoa:
     slug: str
     nome: str
-    papel: str
     foto: str
-    links: tuple
     cor: str
     atualizado: str
 
@@ -361,8 +359,6 @@ def validar(dados: Dados, raiz: Path):
         data(rot, p.atualizado)
         if not (raiz / p.foto).is_file():
             e(f"{rot}: foto inexistente: {p.foto}")
-        for l in p.links:
-            https(f"{rot} link", l.get("url"))
 
 
     for p in dados.projetos:

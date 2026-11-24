@@ -104,7 +104,7 @@ class TestSitemap(unittest.TestCase):
         rc, _, err = rodar("--raiz", str(raiz), "--saida", str(saida))
         self.assertEqual(rc, 0, err)
         mapa = (saida / "sitemap.xml").read_text(encoding="utf-8")
-        self.assertIn("https://all.dev.br/historia.html", mapa)
+        self.assertNotIn("historia", mapa)
         for f in saida.rglob("*"):
             if f.is_file() and f.suffix in {".html", ".xml", ".txt"}:
                 self.assertNotIn("segredo-vetado", f.read_text(encoding="utf-8"), f.name)

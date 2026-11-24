@@ -38,19 +38,14 @@ class TestModelos(unittest.TestCase):
             p = RAIZ_FONTE / "conteudo" / "servicos" / f"{slug}.html"
             self.assertTrue(p.is_file(), slug)
             self.assertTrue(p.read_text(encoding="utf-8").strip(), slug)
-        h = RAIZ_FONTE / "conteudo" / "historia.html"
-        self.assertTrue(h.read_text(encoding="utf-8").strip())
 
-    def test_render_moldes_servico_e_historia(self):
+    def test_render_molde_servico(self):
         c = RAIZ_FONTE / "conteudo"
         s = render("servico", cabecalho=Seguro(""), rodape=Seguro(""), nome="Landing page", rotulo_tipo="site", projetos=Seguro(""), revelar=Seguro(""),
                    conteudo=Seguro((c / "servicos" / "landing-page-conversao.html").read_text(encoding="utf-8")),
                    contato=Seguro("<!--contato-->"))
         self.assertIn("<!--contato-->", s)
         self.assertNotIn("$", s.replace("R$", ""))
-        h = render("historia", cabecalho=Seguro(""), rodape=Seguro(""), conteudo=Seguro((c / "historia.html").read_text(encoding="utf-8")),
-                   contato=Seguro("<!--contato-->"))
-        self.assertIn("<!--contato-->", h)
 
 
 if __name__ == "__main__":
