@@ -7,3 +7,4 @@ class TemaHisui {
     static const temaCorAcentoSuave = Color(0xFFD3EEDF);
     static const temaCorAviso = Color(0xFF9A600B);
     static const temaCorBorda = Color(0xFFD1CDC5);
+}

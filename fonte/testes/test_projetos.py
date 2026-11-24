@@ -45,7 +45,7 @@ class TestListaDeProjetos(Base):
 
     def test_cartao_da_home_com_nivel_2(self):
         for p in self.visiveis:
-            self.assertRegex(self.txt, rf'<h2><a href="/projetos/{p.slug}/">')
+            self.assertRegex(self.txt, rf'<h2 class="projeto-titulo"><a href="/projetos/{p.slug}/">')
         self.assertEqual(len(re.findall(r"<h1\b", self.txt)), 1)
 
     def test_revelar_so_com_cartao_de_revelacao(self):
@@ -88,18 +88,17 @@ class TestCase(Base):
             txt = self.case(p.slug)
             palco = re.search(r'<section[^>]*data-secao="por-tras".*?</section>', txt, re.S).group(0)
             self.assertIn("data-revela-cartao", palco)
-            self.assertRegex(palco, r'<figure class="projeto-tela case-palco"')
+            self.assertRegex(palco, r'<figure class="projeto-tela case-palco[ "]')
             self.assertRegex(palco, r'<div class="cartao-por-tras" aria-hidden="true">')
             self.assertIn("<h2>Por trás</h2>", palco)
             self.assertEqual(txt.count('<script src="/js/revelar.js" defer></script>'), 1, p.slug)
             self.assertIn(p.por_tras["origem"], palco)
 
-    def test_palco_mais_linhas_que_o_cartao(self):
+    def test_palco_mostra_o_trecho_real_uma_vez_so(self):
         txt = self.case("heisuca")
         palco = re.search(r'<section[^>]*data-secao="por-tras".*?</section>', txt, re.S).group(0)
-        home = ler(self.saida / "index.html")
-        cart = re.search(r'<article class="projeto-cartao"[^>]*data-slug="heisuca".*?</article>', home, re.S).group(0)
-        self.assertGreater(palco.count("\n"), cart.count("\n"))
+        self.assertEqual(palco.count("temaCorAcento ="), 1)
+        self.assertEqual(palco.count("class TemaHisui"), 1)
 
     def test_case_loja_com_legenda_e_link_play(self):
         for slug in ("heisuca", "cgflix-lite"):
@@ -155,7 +154,7 @@ class TestCss(unittest.TestCase):
         m = re.search(r"@media \(min-width: 1024px\) and \(min-height: 760px\)\s*\{[^@]*?\.case-telas-fixa\s*\{([^}]*)\}", css, re.S)
         self.assertTrue(m, "sticky da coluna de capturas só com min-width 1024 e min-height 760")
         self.assertIn("position: sticky", m.group(1)); self.assertIn("align-self: start", m.group(1)); self.assertIn("top:", m.group(1))
-        self.assertEqual(css.count("position: sticky"), 1, "só a coluna de capturas fica sticky; o texto nunca")
+        self.assertEqual(css.count("position: sticky"), 2, "só a coluna de capturas e (r3) o título do FAQ ficam sticky; o texto do case nunca")
         self.assertRegex(css, r"\.projeto-cartao\[hidden\]\s*\{\s*display: none")
         self.assertRegex(css, r"\.filtro-tipos button\s*\{[^}]*min-height: 44px")
         # oculto, o filtro guarda o lugar (sem salto de layout quando o JS o abre) e some da leitura
@@ -179,7 +178,8 @@ class TestRodada2(Base):
         from alldevs import paginas
         fixa = {p.slug: 'case-telas-fixa' in self.case(p.slug) for p in self.visiveis}
         self.assertTrue(fixa["fakly"] and fixa["sendany"], fixa)          # 1 captura paisagem: cabe
-        self.assertFalse(fixa["prosup"] or fixa["heisuca"] or fixa["cgflix-lite"], fixa)   # não cabem
+        self.assertTrue(fixa["heisuca"], fixa)   # r3: o ícone virou ícone (120 px) e a coluna cabe
+        self.assertFalse(fixa["prosup"] or fixa["cgflix-lite"], fixa)   # não cabem
         self.assertFalse(fixa["amott"], "coluna única: sem sticky")
         self.assertNotIn("case-telas-fixa", self.case("amott"))
 
@@ -250,7 +250,7 @@ class TestRodada1(Base):
         txt = ler(self.saida / "projetos/index.html")
         cartoes = re.findall(r'<article class="projeto-cartao".*?</article>', txt, re.S)
         for i, c in enumerate(cartoes):
-            img = re.search(r'<figure class="projeto-tela"[^>]*><img [^>]+>', c).group(0)
+            img = re.search(r'<figure class="projeto-tela[^"]*"[^>]*><img [^>]+>', c).group(0)
             if i < 3:
                 self.assertNotIn('loading="lazy"', img, i)
             else:
@@ -259,7 +259,7 @@ class TestRodada1(Base):
 
     def test_home_mantem_lazy_nos_cartoes(self):
         home = ler(self.saida / "index.html")
-        for img in re.findall(r'<figure class="projeto-tela"[^>]*><img [^>]+>', home):
+        for img in re.findall(r'<figure class="projeto-tela[^"]*"[^>]*><img [^>]+>', home):
             self.assertIn('loading="lazy"', img)
 
     def test_ano_e_nivel_passam_por_escape(self):

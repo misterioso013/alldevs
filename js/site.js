@@ -159,6 +159,7 @@
     var ehMouse = function (e) { return !e.pointerType || e.pointerType === "mouse"; };
     doc.addEventListener("pointermove", function (e) {
       if (!ehMouse(e)) return;
+      if (!e.clientX && !e.clientY) return;   // (0,0) é evento sintético sem posição: o anel não nasce no canto
       alvoX = e.clientX;
       alvoY = e.clientY;
       cursor.classList.add("cursor-ativo");
@@ -228,6 +229,22 @@
       });
     });
   }
+
+  /* ---------- Barra do WhatsApp (celular): some enquanto um botão de WhatsApp da página ou o rodapé está na tela ---------- */
+  function ligarBarraWa() {
+    var barra = doc.querySelector(".barra-wa");
+    if (!barra || !temIO) return;   // sem JS (ou sem IntersectionObserver) a barra fica como sempre
+    var alvos = [].slice.call(doc.querySelectorAll('main a[href*="wa.me"], footer'));
+    var vistos = new Set();
+    var io = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) { if (e.isIntersecting) vistos.add(e.target); else vistos.delete(e.target); });
+      var oculta = vistos.size > 0;
+      barra.classList.toggle("barra-wa--oculta", oculta);
+      if (oculta) barra.setAttribute("inert", ""); else barra.removeAttribute("inert");
+    });
+    alvos.forEach(function (a) { io.observe(a); });
+  }
+  ligarBarraWa();
 
   /* ---------- Lenis: só com mouse, tela larga e sem reduced-motion ---------- */
   function ligarLenis() {

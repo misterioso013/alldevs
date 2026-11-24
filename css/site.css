@@ -106,7 +106,8 @@ main > section:first-child,
 main > .breadcrumb + section { border-top: 0; }
 /* Desktop: o respiro varia com o papel da seção (destaques com mais ar, as densas com menos). */
 @media (min-width: 1024px) {
-  main > #projetos, main > #quem-somos, main > #contato { padding-block: 128px; }
+  main > #projetos, main > .contato { padding-block: 128px; }
+  main > #quem-somos { padding-block: 96px; }
   main > #como-trabalhamos, main > #tecnologias, main > #faq { padding-block: 80px; }
 }
 
@@ -137,43 +138,34 @@ main > .breadcrumb + section { border-top: 0; }
   .grade-projetos > *,
   .grade-servicos > *,
   .relacionados-grid > * { grid-column: span 4; }
-  /* Projetos: hierarquia assimétrica. De seis em seis cartões: 7+5, 5+7, 6+6 (cada fileira fecha 12 colunas, sem buraco).
-     O 1º de cada bloco é o destaque: título maior. A figura cresce para o cartão estreito igualar a altura do largo. */
-  .grade-projetos > .projeto-cartao:nth-child(6n + 1) { grid-column: span 7; }
-  .grade-projetos > .projeto-cartao:nth-child(6n + 2) { grid-column: span 5; }
-  .grade-projetos > .projeto-cartao:nth-child(6n + 3) { grid-column: span 5; }
-  .grade-projetos > .projeto-cartao:nth-child(6n + 4) { grid-column: span 7; }
-  .grade-projetos > .projeto-cartao:nth-child(6n + 5),
-  .grade-projetos > .projeto-cartao:nth-child(6n + 6) { grid-column: span 6; }
-  .grade-projetos > .projeto-cartao:nth-child(6n + 1) h2,
-  .grade-projetos > .projeto-cartao:nth-child(6n + 1) h3 a,
-  .grade-projetos > .projeto-cartao:nth-child(6n + 1) h2 a { font-size: 2rem; }
-  .grade-projetos > .projeto-cartao .projeto-tela { flex: 1 0 auto; }
+  /* Projetos: duas colunas iguais (regra única, sem buraco com 6 projetos); a moldura da capa tem a mesma proporção em toda fileira. */
+  .grade-projetos > .projeto-cartao { grid-column: span 6; }
   /* filtro de /projetos/: com cartões ocultos, os seguintes sobem e fecham a fileira */
   .grade-projetos[data-lista-projetos] { grid-auto-flow: dense; }
-  /* Quem somos: o retrato de 340 px com o texto ao lado, um sócio por fileira */
-  .cartoes-pessoas > * { grid-column: span 12; }
+  /* Quem somos: os dois sócios lado a lado (duas colunas), cartão compacto: retrato de 200 px com o texto ao lado */
+  .cartoes-pessoas > * { grid-column: span 6; }
   .cartoes-pessoas > .cartao-pessoa {
     display: grid;
-    grid-template-columns: 340px minmax(0, 1fr);
+    grid-template-columns: 200px minmax(0, 1fr);
     grid-template-rows: 1fr auto auto 1fr;
-    column-gap: 48px;
-    padding: 32px;
+    column-gap: 32px;
+    padding: 24px;
   }
   .cartoes-pessoas > .cartao-pessoa > img { grid-column: 1; grid-row: 1 / -1; margin: 0; }
   .cartoes-pessoas > .cartao-pessoa > :nth-child(2) { grid-column: 2; grid-row: 2; }
   .cartoes-pessoas > .cartao-pessoa > :nth-child(3) { grid-column: 2; grid-row: 3; }
   /* Tecnologias: os cinco grupos em colunas */
-  .tec-grupos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 40px; }
+  .tec-grupos { display: block; column-count: 3; column-gap: 40px; }   /* os grupos fluem em 3 colunas pelo número de itens: nenhuma coluna quase vazia */
+  .tec-grupo { break-inside: avoid; margin-bottom: 32px; }
   /* FAQ: o título à esquerda, as perguntas à direita */
   .faq-home { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); column-gap: 56px; align-items: start; }
   .faq-home > .rotulo-mono, .faq-home > h2 { grid-column: 1; }
-  .faq-home > h2 { overflow-wrap: normal; font-size: clamp(2rem, 3.4vw, 3rem); }
+  .faq-home > h2 { overflow-wrap: normal; font-size: clamp(2rem, 3.4vw, 3rem); grid-row: 2 / span 2; align-self: start; position: sticky; top: 112px; }   /* o título acompanha as perguntas */
   .faq-home > .faq-section { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; max-width: none; }
   /* Contato: faixa de largura total, o título à esquerda e os botões à direita */
-  main > #contato {
+  main > .contato {   /* .contato (não #contato): a home, /projetos/, os cases e os serviços têm o mesmo bloco, com um id só por página */
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     column-gap: 56px;
     align-items: center;
     background: var(--fundo-2);
@@ -181,8 +173,8 @@ main > .breadcrumb + section { border-top: 0; }
     clip-path: inset(0 -100vmax);
     border-top: 0;
   }
-  main > #contato > .rotulo-mono, main > #contato > h2 { grid-column: 1; }
-  main > #contato > .cta-buttons { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; justify-content: flex-start; }
+  main > .contato > .rotulo-mono, main > .contato > h2 { grid-column: 1; }
+  main > .contato > .cta-buttons { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; justify-content: flex-start; flex-wrap: nowrap; }   /* os 3 botões na mesma linha */
   /* História: o manifesto usa a largura da página */
   .horizontal-story__text { max-width: 72rem; }
   .footer-brand { grid-column: span 6; }
@@ -323,7 +315,12 @@ main > .breadcrumb + section { border-top: 0; }
     border-top: 1px solid var(--linha);
   }
   .barra-wa .btn { display: flex; width: 100%; }
+  .barra-wa--oculta { transform: translateY(100%); opacity: 0; pointer-events: none; }   /* some por transform/opacity quando há um botão de WhatsApp ou o rodapé na tela */
+  @media (prefers-reduced-motion: no-preference) {
+    .barra-wa { transition: transform var(--dur-media) var(--curva-saida), opacity var(--dur-media) var(--curva-saida); }
+  }
   body { padding-bottom: 72px; }
+  main { padding-bottom: 72px; }   /* o fim do conteúdo (ex.: "Ver Heisuca na loja") ganha o respiro da altura da barra */
 }
 
 /* ---------- Cursor próprio (só mouse; o cursor nativo continua, o anel só acompanha) ----------
@@ -504,6 +501,24 @@ html.pre-1a .preloader span {
   color: var(--texto-2);
   transition: opacity calc(var(--dur-curta) * 0.75) var(--curva-saida);
 }
+/* Mobile (r3): o botão sai de cima do código do palco e a frase tem lugar reservado no fluxo (nada pendurado sobre o respiro do hero). */
+@media (max-width: 959px) {
+  .hero-palco { margin-bottom: 128px; }
+  .hero-ver-por-tras { bottom: -52px; right: auto; left: 0; }
+  .hero-frase { top: calc(100% + 60px); margin-top: 0; }
+}
+/* Toque (sem ponteiro fino): a dica "ver por trás" (o mesmo texto do data-cursor) fica visível no cartão. */
+@media (hover: none), (pointer: coarse) {
+  [data-cursor="ver por trás"]::after {
+    content: attr(data-cursor);
+    position: absolute; left: 8px; bottom: 8px; z-index: 5;
+    padding: 4px 10px;
+    font-family: var(--fonte-mono); font-size: 0.75rem;
+    color: var(--texto); background: var(--fundo-2);
+    border: 1px solid var(--roxo-claro); border-radius: 999px;
+    pointer-events: none;
+  }
+}
 .hero-frase-nome { font-family: var(--fonte-mono); color: var(--cor-item); margin-right: 8px; }
 @media (min-width: 960px) {
   .hero { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; }
@@ -586,12 +601,9 @@ main > .faixa { padding-block: 32px; }
   pointer-events: none;
 }
 .projeto-cartao:hover::after { opacity: 1; }
-.projeto-cartao h3,
-.projeto-cartao h2 { margin-bottom: 8px; font-family: var(--fonte-titulo); }
-.projeto-cartao h3 a,
-.projeto-cartao h2 { font-size: 1.5rem; }
-.projeto-cartao h2 a { text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
-.projeto-cartao h3 a,
+/* Um só estilo de título de projeto, na home e em /projetos/ */
+.projeto-titulo { margin-bottom: 8px; font-family: var(--fonte-titulo); font-size: 1.5rem; }
+.projeto-titulo a { text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
 .projeto-cartao .link-seta { display: inline-flex; align-items: center; min-height: 44px; }
 .projeto-cartao p { color: var(--texto-2); }
 .projeto-cartao .rotulo-mono { margin-bottom: 8px; }
@@ -604,10 +616,12 @@ main > .faixa { padding-block: 32px; }
   border: 1px solid var(--linha);
   border-radius: 2px;
   background: var(--fundo-2);
-  padding: 12px;   /* a mesma margem interna para toda capa: paisagem, retrato, claro, escuro e ícone */
   box-sizing: border-box;
 }
-.projeto-tela img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 2px; }
+/* Paisagem: a captura preenche a moldura. Retrato (Heisuca, ProsUp): a altura inteira da moldura, em quadro de aparelho, todos iguais e centrados. */
+.projeto-tela img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.projeto-tela--retrato { padding: 16px 0; display: flex; justify-content: center; }
+.projeto-tela--retrato img { width: auto; height: 100%; max-width: 100%; object-fit: contain; object-position: center; border: 1px solid var(--linha); border-radius: 12px; }
 /* A camada tem o tamanho da figura: o texto e os links do cartão ficam sempre visíveis. Só o JS a abre (--r), com opacity. */
 .cartao-por-tras {
   position: absolute;
@@ -708,7 +722,7 @@ main > .faixa { padding-block: 32px; }
   color: var(--texto);
   background: transparent;
   border: 1px solid var(--linha);
-  border-radius: 2px;
+  border-radius: 999px;   /* o mesmo raio das pílulas */
   cursor: pointer;
 }
 .filtro-tipos button:hover { border-color: var(--laranja-claro); color: var(--laranja-claro); }
@@ -730,6 +744,7 @@ main > .faixa { padding-block: 32px; }
   border-radius: 2px;
 }
 .case-palco { margin-bottom: 0; }
+.case-palco--retrato { aspect-ratio: 4 / 3; }   /* a largura da coluna; um print em retrato mostra o topo */
 .case-palco .cartao-por-tras pre { font-size: 0.8rem; }
 .case-unica .case-palco { max-width: 960px; }
 .case-link { padding-block: 24px; }
@@ -737,7 +752,8 @@ main > .faixa { padding-block: 32px; }
 .case-telas .img-captura { flex-basis: 100%; }
 .case-telas .img-retrato { width: calc(50% - 8px); max-width: 240px; }
 .case-loja { margin: 0; flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
-.case-loja img { width: min(100%, 540px); max-width: 100%; height: auto; }   /* imagens da coluna direita: todas da mesma largura */
+.case-loja img { width: 100%; max-width: 100%; height: auto; }   /* imagens da coluna direita: a largura da coluna */
+.case-loja img.img-icone { width: 120px; }   /* o ícone quadrado é ícone, não print */
 .case-loja figcaption { flex-basis: 100%; font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
 @media (min-width: 1024px) {
   .case:not(.case-unica) { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; }
@@ -752,6 +768,8 @@ main > .faixa { padding-block: 32px; }
 .cta-buttons#contato { scroll-margin-top: 11rem; }   /* nas páginas que não são a home o id está nos botões: o título acima continua à vista */
 .contato h2 { max-width: 20ch; }
 .cta-buttons { margin-top: 24px; }
+.cta-buttons .btn { white-space: nowrap; }
+@media (max-width: 539px) { .cta-buttons .btn-cheio { width: 100%; font-size: clamp(0.8rem, 3.9vw, 1rem); padding-inline: 14px; } }
 
 /* ---------- Serviço ----------
    O HTML de conteúdo (fonte/conteudo/servicos/) usa estas classes; o molde acrescenta "Projetos de <tipo>" e o contato no fim. */
@@ -798,6 +816,10 @@ main > .faixa { padding-block: 32px; }
   max-width: 28ch;
 }
 .servico-body > p { max-width: 68ch; }
+@media (max-width: 767px) {
+  .servico-hero { padding-bottom: 8px; }
+  .servico-body > h2:first-child { margin-top: 24px; padding-top: 24px; }   /* sem vão de ~90 px entre o selo de preço e o divisor */
+}
 .processo-steps { display: grid; gap: 16px; }
 @media (min-width: 768px) {
   .processo-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -850,7 +872,7 @@ main > .faixa { padding-block: 32px; }
   border: 0;
   cursor: pointer;
 }
-.faq-chevron { flex: none; color: var(--texto-2); }
+.faq-chevron { flex: none; width: 40px; height: 40px; margin: -8px; color: var(--texto-2); stroke-width: 2.4; }   /* o traço do V mede 20 px dentro do alvo de 44 */
 /* Sem JS o botão vem desativado e a resposta aberta: sem seta, sem cursor de clique. */
 .faq-question:disabled { cursor: default; }
 .faq-question:disabled .faq-chevron { display: none; }
@@ -872,7 +894,6 @@ main > .faixa { padding-block: 32px; }
 .servicos-relacionados h2 { font-size: clamp(1.4rem, 3vw, 2rem); }
 .projetos-do-tipo .link-seta { display: inline-flex; align-items: center; min-height: 44px; }
 .relacionado-card { text-decoration: none; gap: 8px; min-height: 44px; }
-.relacionado-icon { font-size: 1.4rem; }
 .relacionado-nome { font-family: var(--fonte-titulo); font-weight: 600; font-size: 1.2rem; }
 .relacionado-preco { font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
 
@@ -1050,6 +1071,13 @@ html.lenis body { height: auto; }
 .ideia-estagio:focus-visible { outline: 2px solid var(--roxo-claro); outline-offset: 6px; border-radius: 4px; }
 .ideia-codigo:focus-visible { outline: 2px solid var(--roxo-claro); outline-offset: 2px; }
 @media (max-width: 539px) { .ideia-codigo { padding: 16px; font-size: 0.72rem; } }
+/* Celular: a linha quebra (nenhuma passa da borda nem é cortada); sem rolagem horizontal interna. */
+@media (max-width: 767px) {
+  .ideia-codigo { overflow-x: visible; background-image: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+  pre.ideia-codigo code { width: auto; min-width: 0; white-space: pre-wrap; }
+  .ideia-visual:has(.ideia-frente) .ideia-frente { width: 100%; }
+  .ideia-visual:has(.ideia-frente) .ideia-frente img { width: 100%; }
+}
 .ideia-codigo code { display: block; font-family: inherit; width: max-content; min-width: 100%; }
 
 .ideia-visual:has(.ideia-frente) { display: grid; gap: 24px; align-items: center; justify-items: start; }
@@ -1078,7 +1106,25 @@ html.lenis body { height: auto; }
 .ideia-pin .ideia-trilho-barra { display: block; height: 100%; background: var(--laranja-claro); transform: scaleX(0); transform-origin: 0 50%; }
 .ideia-pin .ideia-estagios { flex: none; gap: 0; margin-top: 16px; }
 .ideia-pin .ideia-estagio { grid-area: 1 / 1; opacity: 0; }
+.ideia-pin .ideia-estagio.ativo { opacity: 1; }   /* o ativo sempre com opacity 1 e contraste cheio; a troca é rápida */
+@media (prefers-reduced-motion: no-preference) {
+  .ideia-pin .ideia-estagio { transition: opacity var(--dur-curta) var(--curva-saida); }
+}
 .ideia-pin .ideia-estagio:not(.ativo) { pointer-events: none; visibility: hidden; }
 /* Cabe em 1280×600: a figura (captura da loja) é limitada pela altura da janela; width/height do <img> seguram o CLS. */
 .ideia-pin .ideia-frente { width: fit-content; max-width: 100%; }
 .ideia-pin .ideia-frente img { width: auto; max-width: 100%; max-height: min(52vh, 440px); }
+
+/* Desktop largo: cada estágio preenche a tela presa (texto e peça maiores, sem vazio de ~60%). */
+@media (min-width: 1024px) {
+  .ideia-pin .ideia-estagio { min-height: min(64vh, 560px); grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; }
+  .ideia-pin .ideia-texto h3 { font-size: 2rem; margin-bottom: 12px; }
+  .ideia-pin .ideia-texto p { font-size: 1.15rem; max-width: 38ch; }
+  .ideia-pin .ideia-wire { max-width: none; width: 100%; max-height: min(58vh, 520px); padding: 20px; gap: 16px; }
+  .ideia-pin .wire-play { width: 64px; height: 64px; }
+  .ideia-pin .wire-fileira span { height: 44px; }
+  .ideia-pin .ideia-codigo { font-size: 0.95rem; padding: 28px; }
+  .ideia-pin .ideia-visual:has(.ideia-frente) { grid-template-columns: auto minmax(0, 1fr); gap: 48px; align-items: center; }
+  .ideia-pin .ideia-frente img { max-height: min(62vh, 560px); }
+  .ideia-pin .ideia-resultado { font-size: 2rem; margin-bottom: 20px; }
+}

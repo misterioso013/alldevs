@@ -377,8 +377,8 @@ class TestCartaoProjeto(unittest.TestCase):
         self.assertIsInstance(html, paginas.Seguro)
         self.assertNotIn("<b>", html)
         self.assertIn("A&lt;b&gt;&amp;", html)
-        self.assertIn('<h3><a href="/projetos/prosup/">', html)
-        self.assertIn("<h2>", str(paginas._cartao_projeto(proj, REPO, nivel=2)))
+        self.assertIn('<h3 class="projeto-titulo"><a href="/projetos/prosup/">', html)
+        self.assertIn("<h2 ", str(paginas._cartao_projeto(proj, REPO, nivel=2)))
 
 
 if __name__ == "__main__":

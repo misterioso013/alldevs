@@ -62,14 +62,13 @@ class CssCritica(unittest.TestCase):
 
     def test_capa_uniforme(self):
         r = regra(".projeto-tela img")
-        self.assertIn("object-fit: contain", r)
-        self.assertNotIn("object-position: top", r)
+        self.assertIn("object-fit: cover", r)   # r3: a paisagem preenche a moldura; o retrato tem regra própria
 
 
 
 class CssAlvos(unittest.TestCase):
     def test_alvos_de_44px(self):
-        for sel in (".link-seta", ".projeto-cartao h2 a", ".footer-col a"):
+        for sel in (".link-seta", ".projeto-titulo a", ".footer-col a"):
             self.assertIn("min-height: 44px", regra(sel), sel)
 
     def test_ancora_contato_cobre_o_titulo(self):

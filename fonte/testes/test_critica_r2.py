@@ -21,20 +21,6 @@ def regras(seletor_re, texto=None):
 
 
 class ProjetosAssimetricos(unittest.TestCase):
-    def test_primeiro_cartao_destaca_e_a_trinca_fecha(self):
-        d = desktop()
-        spans = {}
-        for k in range(1, 7):
-            corpo = " ".join(regras(r"[^{}]*\.grade-projetos\s*>\s*\.projeto-cartao:nth-child\(6n\s*\+\s*%d\)[^{}]*" % k, d))
-            m = re.search(r"grid-column:\s*span\s*(\d+)", corpo)
-            self.assertIsNotNone(m, f"cartão 6n+{k} sem span a 1024")
-            spans[k] = int(m.group(1))
-        # cada fileira soma 12 colunas: sem buraco com 6 projetos
-        self.assertEqual(spans[1] + spans[2], 12)
-        self.assertEqual(spans[3] + spans[4], 12)
-        self.assertEqual(spans[5] + spans[6], 12)
-        self.assertNotEqual(spans[1], spans[2])   # assimétrico
-
     def test_filtro_nao_deixa_buraco(self):
         self.assertRegex(d_ou(r"\.grade-projetos\[data-lista-projetos\]"), r"grid-auto-flow:\s*dense")
 
@@ -52,19 +38,19 @@ class QuemSomos(unittest.TestCase):
         corpo = " ".join(regras(r"[^{}]*\.cartao-pessoa[^{}]*", d))
         m = re.search(r"grid-template-columns:\s*(\d+)px\s+minmax\(0,\s*1fr\)", corpo)
         self.assertIsNotNone(m)
-        self.assertTrue(320 <= int(m.group(1)) <= 360)
+        self.assertTrue(160 <= int(m.group(1)) <= 240)   # r3: cartão compacto, dois sócios lado a lado
 
 
 class SecoesDensas(unittest.TestCase):
     def test_tecnologias_em_colunas(self):
-        self.assertRegex(" ".join(regras(r"[^{}]*\.tec-grupos[^{}]*", desktop())), r"grid-template-columns:\s*repeat\((3|auto-fit)")
+        self.assertRegex(" ".join(regras(r"[^{}]*\.tec-grupos[^{}]*", desktop())), r"(grid-template-columns:\s*repeat\((3|auto-fit)|column-count:\s*3)")
 
     def test_faq_titulo_a_esquerda_perguntas_a_direita(self):
         corpo = " ".join(regras(r"[^{}]*\.faq-home[^{}]*", desktop()))
         self.assertRegex(corpo, r"grid-template-columns")
 
     def test_contato_em_faixa_de_largura_total(self):
-        corpo = " ".join(regras(r"[^{}]*main\s*>\s*#contato[^{}]*", desktop()))
+        corpo = " ".join(regras(r"[^{}]*main\s*>\s*\.contato[^{}]*", desktop()))
         self.assertIn("100vmax", corpo)
         self.assertIn("var(--fundo-2)", corpo)
 
@@ -84,7 +70,7 @@ class Heisuca(unittest.TestCase):
 
     def test_imagens_da_coluna_direita_mesma_largura(self):
         corpo = " ".join(regras(r"[^{}]*\.case-loja\s+img[^{}]*"))
-        self.assertRegex(corpo, r"width:\s*min\(100%,\s*540px\)")
+        self.assertRegex(corpo, r"width:\s*100%")
 
 
 if __name__ == "__main__":

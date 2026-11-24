@@ -46,10 +46,9 @@
    st = tl.scrollTrigger;
    if (barra) tl.to(barra, { scaleX: 1, duration: n }, 0);
    est.forEach(function (e, i) {
-    if (i) tl.fromTo(e, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.3 }, i); else g.set(e, { opacity: 1 });
-    if (i < n - 1) tl.to(e, { opacity: 0, y: -28, duration: 0.25 }, i + 0.72);
+    // a troca de estagio e do CSS (.ativo: opacity 1 / 0 em --dur-curta): o ativo nunca fica meio transparente
     var c = linhas(e);
-    // revela em saltos de uma linha (steps) e termina em i+0.45: do fim da revelacao ao fade-out sobram 0,27 de timeline
+    // revela em saltos de uma linha (steps) e termina em i+0.45; depois o codigo fica inteiro ate o proximo estagio
     if (c) tl.fromTo(c.el, { clipPath: fecha }, { clipPath: abre, ease: "steps(" + c.n + ")", duration: 0.3 }, i + 0.15);
    });
    marca(doProgresso(st.progress));

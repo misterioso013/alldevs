@@ -399,12 +399,12 @@ class TestIdeiaJs(unittest.TestCase):
 
     def test_so_anima_transform_opacity_e_clip_path(self):
         chaves = _chaves_animadas(self.js)
-        self.assertTrue({"opacity", "clipPath", "scaleX", "y"} <= chaves, chaves)
+        self.assertTrue({"clipPath", "scaleX"} <= chaves, chaves)
         self.assertEqual(chaves - ANIMAVEIS, set())
 
     def test_so_anima_pega_propriedade_fora_da_lista(self):
         for extra in ("rotation: 3", "left: 4", "width: 10", "backgroundColor: 1"):
-            ruim = self.js.replace("{ opacity: 0, y: 28 }", "{ opacity: 0, y: 28, " + extra + " }", 1)
+            ruim = self.js.replace("{ scaleX: 1, duration: n }", "{ scaleX: 1, duration: n, " + extra + " }", 1)
             self.assertNotEqual(ruim, self.js)
             self.assertNotEqual(_chaves_animadas(ruim) - ANIMAVEIS, set(), extra)
 

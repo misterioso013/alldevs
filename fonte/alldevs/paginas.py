@@ -56,15 +56,19 @@ def _documento(caminho, titulo, descricao, corpo, json_ld=(), previa=False, barr
                   head_extra=Seguro(head_extra))
 
 
-def _bloco_contato(estudio, tipo, alvo=None, slug=None, com_id=True) -> Seguro:
-    """com_id=False na home: o id "contato" é da seção, não do bloco."""
+def _bloco_contato(estudio, tipo, alvo=None, slug=None, com_id=True, so_principal=False) -> Seguro:
+    """com_id=False na home: o id "contato" é da seção, não do bloco. so_principal: só o botão do WhatsApp (o cartão do fim do
+    texto de serviço); o trio WhatsApp / e-mail / Telegram aparece uma vez só por página, no bloco de contato."""
     codigo = contato.codigo_origem(tipo, slug)
     msg = contato.mensagem(estudio, tipo, alvo, slug)
+    email = contato.link_email(estudio.email, codigo)
+    secundarios = "" if so_principal else (
+        f'\n  <a href="{esc(email)}" class="btn btn-linha">Enviar e-mail</a>'
+        f'\n  <a href="{esc(estudio.telegram)}" target="_blank" rel="noopener" class="btn btn-linha">Telegram</a>\n')
     return render(
         "contato",
         whatsapp=contato.link_whatsapp(estudio.whatsapp, msg),
-        email=contato.link_email(estudio.email, codigo),
-        telegram=estudio.telegram,
+        secundarios=Seguro(secundarios),
         id_attr=Seguro(' id="contato"' if com_id else ""),
     )
 
@@ -106,7 +110,7 @@ def _cartao_pessoa(p) -> str:
     )
 
 
-CARTAO_PREENCHE = 18   # linhas na camada: o trecho se repete até aqui, para um círculo em qualquer ponto cruzar texto
+CARTAO_PREENCHE = 18   # (sem uso desde a r3: o trecho não se repete mais; mantido só pela assinatura)
 CARTAO_LINHAS = 9   # linhas do trecho de código na camada "por trás" do cartão
 
 
@@ -141,10 +145,8 @@ def _camada_por_tras(proj, raiz: Path, preenche: int = CARTAO_PREENCHE, linhas_m
     texto = ler_por_tras(raiz, proj)
     if texto is not None:
         linhas = _fechado(texto).splitlines() or [""]
-        # o trecho inteiro e fechado se repete (cópias completas, separadas por linha em branco) até quase preencher a figura;
-        # o CSS esmaece o corte vertical (o código nunca é editado; a camada é aria-hidden)
-        copias = max(1, preenche // (len(linhas) + 1))
-        trecho = "\n\n".join(["\n".join(linhas)] * copias)
+        # o trecho real aparece UMA vez, fechado; o que não cabe na figura esmaece no corte vertical (css) e a camada é aria-hidden
+        trecho = "\n".join(linhas)
         miolo = f'<pre><code>{re.sub(r"(?<!&)#", "&#35;", esc(trecho))}</code></pre>'
     else:
         w, h = _tamanho_webp(Path(raiz) / pt["arquivo"])
@@ -165,7 +167,8 @@ def _cartao_projeto(proj, raiz: Path, nivel: int = 3, acima_da_dobra: bool = Fal
     marca = ' data-revela-cartao data-cursor="ver por trás"' if camada else ""
     figura = ""
     if img:   # a revelação mora na figura: a camada tem o tamanho dela e nunca cobre o texto nem os links
-        figura = (f'\n      <figure class="projeto-tela"{marca}><img src="{esc(img[0])}" width="{img[1]}" height="{img[2]}" '
+        retrato = " projeto-tela--retrato" if img[2] > img[1] else ""
+        figura = (f'\n      <figure class="projeto-tela{retrato}"{marca}><img src="{esc(img[0])}" width="{img[1]}" height="{img[2]}" '
                   f'alt="Captura de tela de {esc(proj.nome)}" {carga}>{camada}\n      </figure>')
     ano = None if proj.ano is None else esc(str(proj.ano))
     rotulo = " · ".join([*_com_ano(esc(TIPO_ROTULO.get(proj.tipo, proj.tipo)), ano), esc(proj.situacao)])
@@ -177,7 +180,7 @@ def _cartao_projeto(proj, raiz: Path, nivel: int = 3, acima_da_dobra: bool = Fal
     return Seguro(
         f'    <article class="projeto-cartao" data-slug="{esc(proj.slug)}" data-tipo="{esc(proj.tipo)}" data-revela>{figura}\n'
         f'      <p class="rotulo-mono">{rotulo}</p>\n'
-        f'      <h{nivel}><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h{nivel}>\n'
+        f'      <h{nivel} class="projeto-titulo"><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h{nivel}>\n'
         f'      <p>{esc(proj.resumo)}</p>{no_ar}\n'
         f'    </article>')
 
@@ -524,7 +527,7 @@ def _img_case(proj, rel: str, numero: int, raiz: Path, primeira: bool = False) -
     """`<img>` de uma captura do case com width/height reais (evita salto de layout) e classe pela orientação:
     retrato (celular) fica estreito, paisagem ocupa a coluna. Sem recorte forçado: a imagem aparece inteira."""
     w, h = _tamanho_imagem(Path(raiz) / rel)
-    classe = "img-retrato" if h > w else "img-captura"
+    classe = "img-icone" if h == w else ("img-retrato" if h > w else "img-captura")
     legenda = f"Captura {numero} de {proj.nome}" if len(proj.imagens) > 1 else f"Captura de {proj.nome}"
     carga = 'fetchpriority="high" decoding="async"' if primeira else 'loading="lazy" decoding="async"'
     return (f'    <img class="{classe}" src="/{esc(rel)}" alt="{esc(legenda)}" width="{w}" height="{h}" {carga}>')
@@ -532,12 +535,13 @@ def _img_case(proj, rel: str, numero: int, raiz: Path, primeira: bool = False) -
 
 CASE_COLUNA_CAPTURAS = 714   # px: coluna 7fr do case a 1440 (contêiner 1280, gap 56)
 CASE_TELAS_TOP = 24          # px: o `top` do sticky (o cabeçalho não é fixo)
+CASE_ICONE = 120             # px: lado do ícone quadrado (.img-icone)
 CASE_JANELA_MIN = 760        # px: altura de janela a partir da qual o CSS liga o sticky
 
 
 def _altura_telas(tamanhos, loja: bool = False, largura: int = CASE_COLUNA_CAPTURAS) -> int:
     """Estimativa (px) da altura da coluna de capturas a 1440 px: mesmas regras do CSS (`.img-captura` ocupa a
-    linha; `.img-retrato` tem calc(50% - 8px) até 240 px; `.case-loja img` até min(100%, 540 px); gap 16;
+    linha; `.img-retrato` tem calc(50% - 8px) até 240 px; `.case-loja img` na largura da coluna; `.img-icone` 120 px; gap 16;
     padding 24 em cima e embaixo; legenda da loja 24 px). Usada só para decidir a classe `case-telas-fixa`."""
     gap = 16
     linhas, atual, usado = [], 0, 0   # linha = altura do maior item; `usado` = largura ocupada
@@ -547,8 +551,10 @@ def _altura_telas(tamanhos, loja: bool = False, largura: int = CASE_COLUNA_CAPTU
             linhas.append(atual); atual, usado = 0, 0
         usado += w + (gap if usado else 0); atual = max(atual, h)
     for w, h in tamanhos:
-        if loja:
-            lw = min(largura, 540, w); novo_item(lw, lw * h / w)
+        if h == w:   # ícone quadrado: `.img-icone`, 120 px
+            novo_item(CASE_ICONE, CASE_ICONE)
+        elif loja:
+            lw = largura; novo_item(lw, lw * h / w)
         elif h > w:
             lw = min(240, (largura - gap) / 2); novo_item(lw, lw * h / w)
         else:
@@ -570,8 +576,9 @@ def _palco_do_case(proj, raiz: Path, imagem=None, primeira: bool = False) -> str
         return ""
     carga = 'fetchpriority="high" decoding="async"' if primeira else 'loading="lazy" decoding="async"'
     camada = _camada_por_tras(proj, raiz, PALCO_PREENCHE, PALCO_LINHAS)
+    retrato = " case-palco--retrato" if img[2] > img[1] else ""
     return (f'\n  <section data-secao="por-tras">\n    <h2>Por trás</h2>\n'
-            f'    <figure class="projeto-tela case-palco" data-revela-cartao data-cursor="ver por trás">'
+            f'    <figure class="projeto-tela case-palco{retrato}" data-revela-cartao data-cursor="ver por trás">'
             f'<img src="{esc(img[0])}" width="{img[1]}" height="{img[2]}" '
             f'alt="Captura de tela de {esc(proj.nome)}" {carga}>{camada}\n    </figure>\n  </section>\n')
 
@@ -660,13 +667,13 @@ def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     projetos, revela = _projetos_do_tipo(s, dados, raiz)
     conteudo = _ler_conteudo(
         raiz, ("servicos", f"{s.slug}.html"),
-        _bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug))
+        _bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug, com_id=False, so_principal=True))
     conteudo = Seguro(conteudo.replace(CHEVRON_DO_FAQ, CHEVRON_DO_FAQ + 'aria-hidden="true" focusable="false" '))
     corpo = render(
         "servico", **_cabecalho_e_rodape(dados),
         nome=s.nome, conteudo=conteudo,
         rotulo_tipo=TIPO_ROTULO[s.tipo].lower(), projetos=projetos,
-        contato=_bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug, com_id=False),
+        contato=_bloco_contato(dados.estudio, "servico", alvo=s.nome, slug=s.slug),
         revelar=Seguro('\n<script src="/js/revelar.js" defer></script>' if revela else ""),
     )
     caminho = f"servicos/{s.slug}/index.html"

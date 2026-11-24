@@ -8,7 +8,7 @@ Formato: repositório · caminho@commit. Tudo foi lido sem alterar os repositór
 | fakly | fakly.txt (19 linhas) | misterioso013/fakly · main.js, linhas 12-30 @4c3ea1a |
 | sendany | sendany.txt (15 linhas) | misterioso013/sendany · src/lib/database.ts, linhas 29-43 @1117310 |
 | amott | amott.txt (4 linhas) | CaioGuerras/amott-perfumes · index.html, linhas 30-33 @00aa67a |
-| heisuca | heisuca.txt (9 linhas) | heisuca · apps/app/lib/heisuca/theme/temas/tema_hisui.dart, linhas 10-18 @9755d4a (ramo claude/heisuca-v2) |
+| heisuca | heisuca.txt (10 linhas) | heisuca · apps/app/lib/heisuca/theme/temas/tema_hisui.dart, linhas 10-18 e 32 (a chave que fecha a classe; corte sem edição) @9755d4a (ramo claude/heisuca-v2) |
 | cgflix-lite | cgflix-lite.txt (12 linhas) | cgflix-lite · core/src/main/java/dev/jdtech/jellyfin/core/presentation/theme/CgflixPalette.kt, linhas 24-35 @8aa925d (campos da paleta; sem os nomes dos temas) |
 | prosup | sem trecho (`por_tras: null`) | sem repositório disponível |
 
