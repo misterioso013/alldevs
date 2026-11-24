@@ -970,7 +970,7 @@ main > .faixa { padding-block: 32px; }
   font-size: clamp(1.7rem, 4vw, 2.6rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  max-width: 20rem;
+  max-width: 49.5rem;
   margin-bottom: 16px;
 }
 .closing-sub { color: var(--texto-2); max-width: 56ch; }
