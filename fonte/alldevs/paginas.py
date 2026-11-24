@@ -225,6 +225,112 @@ def _hero(dados: Dados, raiz: Path) -> Seguro:
 </section>''')
 
 
+# Rabisco do estágio "encontro": dois vultos à mesa, um caderno no meio e a ideia sobre eles. Traço simples, cores só por classe (css/site.css).
+RABISCO_ENCONTRO = (
+    '<svg class="ideia-rabisco" viewBox="0 0 320 200" aria-hidden="true" focusable="false">'
+    '<path class="rb-mesa" d="M24 150H296M56 150V188M264 150V188"/>'
+    '<circle class="rb-gente" cx="98" cy="88" r="16"/><path class="rb-gente" d="M98 104V150M98 120L136 142"/>'
+    '<circle class="rb-gente" cx="222" cy="88" r="16"/><path class="rb-gente" d="M222 104V150M222 120L184 142"/>'
+    '<path class="rb-mesa" d="M146 150L151 128H169L174 150"/>'
+    '<circle class="rb-ideia" cx="160" cy="76" r="3"/><circle class="rb-ideia" cx="160" cy="62" r="5"/>'
+    '<ellipse class="rb-ideia" cx="160" cy="30" rx="44" ry="20"/>'
+    '<path class="rb-ideia" d="M134 30q8-12 16 0t16 0t16 0"/>'
+    '</svg>')
+
+# Wireframe do estágio "protótipo": blocos que lembram a tela de um player, sem título, pôster ou marca.
+WIREFRAME = (
+    '<div class="ideia-wire" aria-hidden="true">'
+    '<span class="wire-barra"></span>'
+    '<span class="wire-tela"><span class="wire-play"></span></span>'
+    '<span class="wire-prog"><span></span></span>'
+    '<span class="wire-fileira"><span></span><span></span><span></span></span>'
+    '</div>')
+
+
+def _primeiro_nome(dados: Dados, slug: str) -> str:
+    p = next((x for x in dados.pessoas if x.slug == slug), None)
+    return p.nome.split()[0] if p else slug
+
+
+def _est_conversa(dados: Dados, e: dict) -> str:
+    # O lado do balão (a ou b) é a ordem em que cada voz aparece; a cor vem do lado e nenhuma classe cita a pessoa.
+    lados = {}
+    baloes = []
+    for m in e["mensagens"]:
+        if m["de"] not in lados:
+            lados[m["de"]] = "ab"[len(lados)]
+        lado = lados[m["de"]]
+        baloes.append(
+            f'<li class="balao balao-{lado}"><span class="so-leitor">{esc(_primeiro_nome(dados, m["de"]))}: </span>'
+            f'{esc(m["texto"])}</li>')
+    return ('<p class="rotulo-mono ideia-reconstrucao">reconstrução</p>\n'
+            '   <ul class="ideia-baloes">\n    ' + "\n    ".join(baloes) + '\n   </ul>')
+
+
+def _est_codigo(raiz: Path, e: dict) -> str:
+    texto = (Path(raiz) / e["arquivo"]).read_text(encoding="utf-8")
+    # "#" vira entidade: o checar.py varre o HTML atrás de cor solta (#fff) e um comentário de código não é cor.
+    return (f'<pre class="ideia-codigo" role="region" aria-label="Trecho do código" tabindex="0">'
+            f'<code>{esc(texto.replace("#", chr(0xE000))).replace(chr(0xE000), "&#35;")}</code></pre>')
+
+
+def _est_no_ar(proj, e: dict, raiz: Path) -> str:
+    frente = (proj.por_tras or {}).get("frente")   # sem "por trás" o projeto não tem captura: fica só o resultado e o link
+    fig = ""
+    if frente:
+        w, h = _tamanho_webp(Path(raiz) / frente)
+        fig = (f'<figure class="ideia-frente"><img src="/{esc(frente)}" width="{w}" height="{h}" '
+               f'alt="Captura de tela de {esc(proj.nome)}" loading="lazy" decoding="async"></figure>\n   ')
+    return (f'{fig}<div class="ideia-fecho">\n'
+            f'    <p class="ideia-resultado">{esc(e["resultado"])}</p>\n'
+            f'    <a class="btn btn-cheio" href="{esc(e["link"])}" target="_blank" rel="noopener" data-cursor="Abrir">'
+            f'Ver {esc(proj.nome)} na loja<span class="so-leitor"> (abre em nova aba)</span></a>\n'
+            f'   </div>')
+
+
+def _ideia(dados: Dados, raiz: Path) -> Seguro:
+    """Seção #ideia, "Da ideia ao ar": a história de um projeto em 5 estágios (ideia.json). Legível sem JS; js/ideia.js só anima."""
+    ideia = dados.ideia
+    if not ideia:
+        return Seguro("")
+    proj = next(p for p in dados.projetos if p.slug == ideia["projeto"])
+    itens = []
+    for e in ideia["estagios"]:
+        chave = e["chave"]
+        if chave == "conversa":
+            visual = _est_conversa(dados, e)
+        elif chave == "encontro":
+            visual = RABISCO_ENCONTRO
+        elif chave == "prototipo":
+            visual = f'{WIREFRAME}\n   <p class="ideia-fonte">{esc(e["fonte"])}</p>'
+        elif chave == "codigo":
+            visual = _est_codigo(raiz, e)
+        elif chave == "no-ar":
+            visual = _est_no_ar(proj, e, raiz)
+        else:
+            raise ValueError(f"ideia.json: estágio desconhecido: {chave}")
+        itens.append(
+            f'  <li class="ideia-estagio" data-chave="{esc(chave)}">\n'
+            f'   <div class="ideia-texto">\n'
+            f'    <h3>{esc(e["titulo"])}</h3>\n'
+            f'    <p>{esc(e["texto"])}</p>\n'
+            f'   </div>\n'
+            f'   <div class="ideia-visual">\n   {visual}\n   </div>\n'
+            f'  </li>')
+    return Seguro(
+        '<section id="ideia" class="ideia" data-secao="ideia">\n'
+        ' <header class="ideia-cab">\n'
+        '  <p class="rotulo-mono">// um projeto de ponta a ponta</p>\n'
+        '  <h2 class="titulo-revela">Da ideia ao ar</h2>\n'
+        f'  <p class="ideia-intro" data-revela>A história de um projeto real do estúdio, do primeiro papo ao app na loja: '
+        f'{esc(proj.nome)}.</p>\n'
+        '  <div class="ideia-trilho" aria-hidden="true"><span class="ideia-trilho-barra"></span></div>\n'
+        ' </header>\n'
+        ' <ol class="ideia-estagios">\n' + "\n".join(itens) + '\n </ol>\n'
+        ' <script src="/js/ideia.js" defer></script>\n'
+        '</section>')
+
+
 def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     est = dados.estudio
     cartoes = "\n".join(_cartao_pessoa(p)
@@ -238,7 +344,7 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
         '    </article>'
         for s in dados.servicos)
     corpo = render(
-        "home", **_cabecalho_e_rodape(dados), hero=_hero(dados, raiz),
+        "home", **_cabecalho_e_rodape(dados), hero=_hero(dados, raiz), ideia=_ideia(dados, raiz),
         cartoes=Seguro(cartoes), destaques=Seguro(destaques), servicos=Seguro(servicos),
         contato=_bloco_contato(est, "home"),
     )

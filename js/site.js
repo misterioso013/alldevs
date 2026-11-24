@@ -184,7 +184,7 @@
         // Título com link ou botão fica inteiro: dividido, o link perderia o nome acessível.
         if (titulo.querySelector("a, button")) return;
         var coberto = aindaCoberto();
-        var esconder = coberto >= 0 ? naTela(titulo) && coberto > 0 : !naTela(titulo);
+        var esconder = !naTela(titulo) || coberto > 0; // sob o preloader (coberto >= 0) um título fora da tela também esconde: coberto vale -1 sem overlay
         var revelado = !esconder;
         var linhas = [];
         var anim = null;

@@ -1,7 +1,7 @@
 """Carrega e valida os dados do site (fonte/dados/*.json)."""
 import json
 import re
-from dataclasses import MISSING, dataclass, fields
+from dataclasses import MISSING, dataclass, field, fields
 from pathlib import Path
 
 TIPOS = {"site", "app", "automacao", "produto"}
@@ -115,6 +115,7 @@ class Dados:
     servicos: tuple
     tecnologias: tuple
     depoimentos: tuple
+    ideia: dict = field(default_factory=dict)  # fonte/conteudo/ideia.json (Task 5); vazio se o arquivo não existe
 
 
 def _ler(caminho: Path):
@@ -156,6 +157,16 @@ def _simples(cls, raiz_dados, arquivo):
     return tuple(_montar(cls, o, arquivo) for o in obj)  # ordem editorial: a do JSON
 
 
+def _ideia(raiz: Path) -> dict:
+    arq = raiz / "fonte" / "conteudo" / "ideia.json"
+    if not arq.is_file():
+        return {}
+    obj = _ler(arq)
+    if not isinstance(obj, dict):
+        raise ErroDeDados("ideia.json: esperado um objeto")
+    return obj
+
+
 def carregar(raiz: Path) -> Dados:
     d = Path(raiz) / "fonte" / "dados"
     estudio = _montar(Estudio, _ler(d / "estudio.json"), "estudio.json")
@@ -166,6 +177,7 @@ def carregar(raiz: Path) -> Dados:
         servicos=_lista(Servico, d, "servicos.json"),
         tecnologias=_simples(Tecnologia, d, "tecnologias.json"),
         depoimentos=_simples(Depoimento, d, "depoimentos.json"),
+        ideia=_ideia(Path(raiz)),
     )
 
 
