@@ -91,6 +91,8 @@ try {
           const e = status(await p.goto(url, { waitUntil: 'networkidle' }));
           if (e) throw new Error(e);
           await esperaPreloader(p); // o overlay da 1ª visita cobre a página por ~0,8 s
+          // rola em passos: o IntersectionObserver só revela blocos que entram na tela; sem isso a captura sai com blocos invisíveis
+          await p.evaluate(async () => { const e = (ms) => new Promise((r) => setTimeout(r, ms)); for (let y = 0; y < document.documentElement.scrollHeight; y += 300) { scrollTo({ top: y, behavior: 'instant' }); await e(120); } await e(500); scrollTo({ top: 0, behavior: 'instant' }); await e(700); });
           await p.screenshot({ path: path.join(saida, `${n}-${w}.png`), fullPage: true });
           if (w === 430) {
             const [sw, cw] = await p.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);

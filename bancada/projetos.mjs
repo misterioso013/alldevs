@@ -28,7 +28,7 @@ const rolaTudo = async (p) => {
     const espera = (ms) => new Promise((r) => setTimeout(r, ms));
     const h = document.documentElement.scrollHeight;
     for (let y = 0; y < h; y += 300) { scrollTo({ top: y, behavior: 'instant' }); await espera(120); }
-    for (const el of document.querySelectorAll('[data-revela]')) { if (el.hidden) continue; el.scrollIntoView({ block: 'center', behavior: 'instant' }); await espera(350); }
+    for (const el of document.querySelectorAll('[data-revela], .projeto-cartao')) { if (el.hidden) continue; el.scrollIntoView({ block: 'center', behavior: 'instant' }); await espera(350); }
     scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); await espera(300);
   });
   await p.waitForLoadState('networkidle').catch(() => {});
@@ -36,6 +36,9 @@ const rolaTudo = async (p) => {
   await p.waitForTimeout(700);
   const ocultos = await p.evaluate(() => [...document.querySelectorAll('[data-revela]')].filter((e) => !e.hidden && getComputedStyle(e).opacity < 0.99).length);
   rel('captura-sem-bloco-oculto', ocultos === 0, `${ocultos} ocultos`);
+  // cartões de /projetos/: todos os .projeto-cartao não ocultos pelo filtro precisam estar visíveis (opacity > 0.9) e dentro do documento
+  const c = await p.evaluate(() => { const l = [...document.querySelectorAll('.projeto-cartao')]; const H = document.documentElement.scrollHeight; const v = l.filter((e) => { const r = e.getBoundingClientRect(); return !e.closest('[hidden]') && getComputedStyle(e).opacity > 0.9 && r.height > 0 && r.top + scrollY < H; }); return [v.length, l.filter((e) => !e.closest('[hidden]')).length]; });
+  if (c[1] > 0) rel('captura-cartoes-visiveis', c[0] === c[1], `${c[0]}/${c[1]} cartões visíveis`);
 };
 const cap = async (p, nome) => { if (!pasta) return; await rolaTudo(p); await p.screenshot({ path: path.join(pasta, nome), fullPage: true }); };
 const vis = (p) => p.evaluate(() => [...document.querySelectorAll('[data-lista-projetos] > article')].filter((a) => !a.hidden && a.offsetParent).map((a) => a.dataset.tipo));
