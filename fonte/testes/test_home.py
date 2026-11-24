@@ -71,7 +71,7 @@ class TestHome(Base):
         no_ar = [p for p in self.visiveis
                  if not p.rascunho and p.situacao == "no ar" and (p.link or p.loja)]
         self.assertEqual(nums, [anos, len(no_ar), len(self.dados.tecnologias)])
-        self.assertEqual(nums, [8, 6, 23])
+        self.assertEqual(nums, [8, 8, 23])
 
     def test_faixa_prova_falha_alto_sem_o_texto_de_origem(self):
         def editar(raiz):
@@ -90,7 +90,7 @@ class TestHome(Base):
         raiz, rc, err = copia(self, editar)
         self.assertEqual(rc, 0, err)
         nums = re.findall(r'<strong class="faixa-num">(\d+)', ler(raiz / "index.html"))
-        self.assertEqual(nums[1], "5")
+        self.assertEqual(nums[1], "7")
 
     def test_destaques_sao_os_visiveis_com_destaque(self):
         # migrado de test_conteudo: o cartão de destaque agora é o .projeto-cartao

@@ -15,9 +15,19 @@
     "url": "/projetos/fakly/"
   },
   {
+    "rotulo": "ForjaDev",
+    "tipo": "projeto",
+    "url": "/projetos/forjadev/"
+  },
+  {
     "rotulo": "Heisuca",
     "tipo": "projeto",
     "url": "/projetos/heisuca/"
+  },
+  {
+    "rotulo": "Huntar",
+    "tipo": "projeto",
+    "url": "/projetos/huntar/"
   },
   {
     "rotulo": "ProsUp",

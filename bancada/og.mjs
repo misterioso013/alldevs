@@ -18,7 +18,7 @@ const projetos = JSON.parse(fs.readFileSync(path.join(raiz, 'fonte', 'dados', 'p
 const porSlug = Object.fromEntries(projetos.map((p) => [p.slug, p]));
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const ACENTO = { dupla: 'linear-gradient(90deg, var(--caio), var(--rosiel))' };
+const ACENTO = { dupla: 'linear-gradient(90deg, var(--roxo), var(--laranja))' };
 
 // Tipo e acento pelo caminho. O degradê violeta↔laranja fica só para o que é dos dois sócios.
 function classificar(caminho) {

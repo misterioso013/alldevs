@@ -237,5 +237,71 @@
       "three.js"
     ],
     "link": "https://amott.docaio.com.br"
+  },
+  {
+    "resultado": null,
+    "destaque": false,
+    "visivel": true,
+    "rascunho": false,
+    "atualizado": "2026-11-24",
+    "loja": "",
+    "por_tras": null,
+    "situacao": "no ar",
+    "ano": 2026,
+    "slug": "forjadev",
+    "nome": "ForjaDev",
+    "tipo": "site",
+    "resumo": "Site da ForjaDev, academia de engenharia de software com trilha aumentada por IA para adultos e um laboratório de Roblox, Lua e Python para crianças e adolescentes.",
+    "problema": "Cursos de “aprenda a codar do zero” ensinam a decorar sintaxe com exercícios isolados e deixam o aluno estudar sozinho, longe de sistemas reais.",
+    "fizemos": [
+      "Página inicial com as duas trilhas, Engenharia de Software com IA para adultos e Kids & Teens, cada uma com sua página.",
+      "Seções para as quatro frentes da academia: produto e didática, comunidade (a Guilda), empregabilidade e Kids & Teens.",
+      "Páginas de mentoria 1:1, da Guilda gratuita e área de login do aluno.",
+      "Preferências de cookies com consentimento antes da análise de uso, e páginas de termos e privacidade."
+    ],
+    "stack": [
+      "Next.js",
+      "React",
+      "Tailwind CSS"
+    ],
+    "link": "https://www.forjadev.com.br",
+    "imagens": [
+      "assets/frente/forjadev.webp",
+      "assets/images/forjadev-2.webp",
+      "assets/images/forjadev-3.webp"
+    ]
+  },
+  {
+    "resultado": null,
+    "destaque": false,
+    "visivel": true,
+    "rascunho": false,
+    "atualizado": "2026-11-24",
+    "loja": "",
+    "por_tras": null,
+    "situacao": "no ar",
+    "ano": 2026,
+    "slug": "huntar",
+    "nome": "Huntar",
+    "tipo": "produto",
+    "resumo": "CRM com propostas e portal do cliente: da oportunidade à entrega, toda a relação com o cliente num só lugar.",
+    "problema": "Quem atende clientes perde o contexto entre planilha, mensagem, proposta e contrato, cada um numa ferramenta.",
+    "fizemos": [
+      "Pipeline de oportunidades, tarefas e valores num funil configurável para qualquer tipo de negócio.",
+      "Propostas versionadas e portal do cliente com formulários, prazos, contratos e entregas em links seguros, com aceite registrado.",
+      "Mensagens e follow-ups ligados ao histórico do cliente, com assistência de IA.",
+      "Prospecção local opcional, que leva empresas do mapa direto para o CRM, e entrada com Google.",
+      "Demonstração aberta com dados de exemplo, sem cadastro."
+    ],
+    "stack": [
+      "Next.js",
+      "React"
+    ],
+    "link": "https://www.huntar.com.br",
+    "imagens": [
+      "assets/frente/huntar.webp",
+      "assets/images/huntar-2.webp",
+      "assets/images/huntar-3.webp"
+    ]
   }
 ]

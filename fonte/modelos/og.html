@@ -10,9 +10,9 @@
   body {
     position: relative;
     background: var(--fundo);
-    color: var(--claro);
+    color: var(--texto);
     font-family: var(--fonte-texto);
-    background-image: linear-gradient(90deg, var(--grade) 1px, transparent 1px);
+    background-image: linear-gradient(90deg, var(--linha) 1px, transparent 1px);
     background-size: 100px 100%;
     background-position: 0 0;
   }
@@ -26,8 +26,8 @@
   .topo, .base { display: flex; justify-content: space-between; align-items: baseline; }
   .logo, .dominio, .tipo { font-family: var(--fonte-mono); font-weight: 400; }
   .logo { font-size: 34px; }
-  .logo span { color: var(--suave); }
-  .tipo { font-size: 26px; color: var(--suave); }
+  .logo span { color: var(--texto-2); }
+  .tipo { font-size: 26px; color: var(--texto-2); }
   h1 {
     font-family: var(--fonte-titulo);
     font-weight: 600;
@@ -37,7 +37,7 @@
     max-width: 1000px;
     background: var(--fundo);
   }
-  .dominio { font-size: 24px; color: var(--suave); }
+  .dominio { font-size: 24px; color: var(--texto-2); }
   .acento { position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: $acento; }
 </style>
 </head>
