@@ -23,10 +23,19 @@ async function abre(url, opts, fn, js = true) {
   finally { await ctx.close().catch(() => {}); }
 }
 const rolaTudo = async (p) => {
-  await p.evaluate(async () => { const h = document.documentElement.scrollHeight; for (let y = 0; y < h; y += 300) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); } scrollTo(0, h); await new Promise((r) => setTimeout(r, 300)); });
+  // rola até o fim em passos e para em cada [data-revela] (o IntersectionObserver só revela o que entra na tela); depois volta ao topo
+  await p.evaluate(async () => {
+    const espera = (ms) => new Promise((r) => setTimeout(r, ms));
+    const h = document.documentElement.scrollHeight;
+    for (let y = 0; y < h; y += 300) { scrollTo({ top: y, behavior: 'instant' }); await espera(120); }
+    for (const el of document.querySelectorAll('[data-revela]')) { if (el.hidden) continue; el.scrollIntoView({ block: 'center', behavior: 'instant' }); await espera(350); }
+    scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }); await espera(300);
+  });
   await p.waitForLoadState('networkidle').catch(() => {});
-  await p.evaluate(async () => { await Promise.all([...document.images].map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; }))); scrollTo(0, 0); });
-  await p.waitForTimeout(500);
+  await p.evaluate(async () => { await Promise.all([...document.images].map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; }))); scrollTo({ top: 0, behavior: 'instant' }); });
+  await p.waitForTimeout(700);
+  const ocultos = await p.evaluate(() => [...document.querySelectorAll('[data-revela]')].filter((e) => !e.hidden && getComputedStyle(e).opacity < 0.99).length);
+  rel('captura-sem-bloco-oculto', ocultos === 0, `${ocultos} ocultos`);
 };
 const cap = async (p, nome) => { if (!pasta) return; await rolaTudo(p); await p.screenshot({ path: path.join(pasta, nome), fullPage: true }); };
 const vis = (p) => p.evaluate(() => [...document.querySelectorAll('[data-lista-projetos] > article')].filter((a) => !a.hidden && a.offsetParent).map((a) => a.dataset.tipo));
@@ -59,7 +68,7 @@ const info = (p) => p.evaluate(() => {
   const c = document.querySelector('.case'), t = document.querySelector('.case-texto');
   const cs = getComputedStyle(c), ts = getComputedStyle(t);
   const fim = [...t.querySelectorAll('a, button')].pop();
-  return { unica: c.classList.contains('case-unica'), grade: cs.display === 'grid', pos: ts.position, th: t.offsetHeight, topo: t.getBoundingClientRect().top, temFim: !!fim, ih: innerHeight, palcoW: (document.querySelector('.case-palco') || { offsetWidth: 0 }).offsetWidth };
+  return { unica: c.classList.contains('case-unica'), grade: cs.display === 'grid', pos: ts.position, fixa: !!document.querySelector('.case-telas-fixa'), telasPos: document.querySelector('.case-telas') ? getComputedStyle(document.querySelector('.case-telas')).position : null, th: t.offsetHeight, topo: t.getBoundingClientRect().top, temFim: !!fim, ih: innerHeight, palcoW: (document.querySelector('.case-palco') || { offsetWidth: 0 }).offsetWidth };
 });
 const fimAlcancavel = (p) => p.evaluate(async () => {
   const t = document.querySelector('.case-texto'); const fim = [...t.querySelectorAll('a, button')].pop();
@@ -68,6 +77,14 @@ const fimAlcancavel = (p) => p.evaluate(async () => {
   const r = fim.getBoundingClientRect();
   return { ok: r.top >= 0 && r.bottom <= innerHeight, r: Math.round(r.top) + '..' + Math.round(r.bottom) + ' de ' + innerHeight };
 });
+// sticky da coluna de capturas: onde há a classe, rolar 600 px e o topo fica em 24 +-2 e o fundo cabe na janela; onde não há, position != sticky
+async function provaTelas(p, slug, i) {
+  if (!i.fixa) { rel(`case-${slug}-telas-sem-sticky-1440x900`, i.telasPos !== 'sticky', `telas=${i.telasPos}`); return; }
+  await p.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await p.waitForTimeout(200);
+  await p.evaluate(() => scrollTo({ top: 600, behavior: 'instant' })); await p.waitForTimeout(500);
+  const r = await p.evaluate(() => { const b = document.querySelector('.case-telas-fixa').getBoundingClientRect(); return { top: b.top, bottom: b.bottom, pos: getComputedStyle(document.querySelector('.case-telas-fixa')).position, ih: innerHeight }; });
+  rel(`case-${slug}-telas-sticky-1440x900`, r.pos === 'sticky' && Math.abs(r.top - 24) <= 2 && r.bottom <= r.ih, JSON.stringify(r));
+}
 for (const slug of ['amott', 'prosup', 'heisuca', 'cgflix-lite', 'fakly', 'sendany']) {
   for (const w of [1440, 430, 360]) {
     await abre(`/projetos/${slug}/`, { viewport: { width: w, height: 900 } }, async (p) => {
@@ -82,16 +99,17 @@ for (const slug of ['amott', 'prosup', 'heisuca', 'cgflix-lite', 'fakly', 'senda
           rel(`case-${slug}-coluna-unica-sem-grade-nem-sticky`, !i.grade && i.pos !== 'sticky' && i.palcoW > 800 && i.palcoW <= 960, `grade=${i.grade} pos=${i.pos} palco=${i.palcoW}`);
         } else {
           rel(`case-${slug}-duas-colunas-com-grade`, i.grade);
-          rel(`case-${slug}-sem-sticky-1440x900`, i.pos !== 'sticky', `pos=${i.pos} texto=${i.th} janela=${i.ih}`);
+          rel(`case-${slug}-texto-nunca-sticky-1440x900`, i.pos !== 'sticky', `pos=${i.pos}`);
+          await provaTelas(p, slug, i);
         }
       }
-      if (w === 430) rel(`case-${slug}-sem-sticky-430`, i.pos !== 'sticky' && !i.grade);
+      if (w === 430) rel(`case-${slug}-sem-sticky-430`, i.pos !== 'sticky' && i.telasPos !== 'sticky' && !i.grade);
     });
   }
-  // janela alta (1440x1200): ainda sem sticky e o fim do texto alcançável; coluna única segue sem grade
+  // janela alta (1440x1200): texto nunca sticky e o fim do texto alcançável; coluna única segue sem grade
   await abre(`/projetos/${slug}/`, { viewport: { width: 1440, height: 1200 } }, async (p) => {
     const i = await info(p);
-    rel(`case-${slug}-sem-sticky-1440x1200`, i.pos !== 'sticky' && (i.unica ? !i.grade : i.grade), `pos=${i.pos} grade=${i.grade}`);
+    rel(`case-${slug}-texto-nunca-sticky-1440x1200`, i.pos !== 'sticky' && (i.unica ? !i.grade : i.grade), `pos=${i.pos} grade=${i.grade}`);
     const f = await fimAlcancavel(p);
     rel(`case-${slug}-fim-do-texto-alcancavel-1440x1200`, f.ok, f.r);
   });
