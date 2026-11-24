@@ -668,7 +668,7 @@ main > .faixa { padding-block: 32px; }
 .filtro-tipos button[aria-pressed="true"] { background: var(--roxo); border-color: var(--roxo); color: var(--texto); }
 
 /* Case: uma coluna no celular. A partir de 1024 px, texto e capturas lado a lado; sem capturas próprias (.case-unica) fica uma
-   coluna só e o palco "Por trás" alarga. Sem sticky: a coluna de texto (1200 a 1800 px) é sempre a mais alta e nunca cabe na janela. */
+   coluna só e o palco "Por trás" alarga. A coluna de texto (1200 a 1800 px) nunca cabe na janela: o sticky vai na coluna de capturas (abaixo). */
 .case-texto > section { padding-block: 24px; }
 .case-texto > .case-topo { padding-top: 0; }
 .case p,
@@ -692,6 +692,11 @@ main > .faixa { padding-block: 32px; }
 .case-loja figcaption { flex-basis: 100%; font-family: var(--fonte-mono); font-size: 0.8rem; color: var(--texto-2); }
 @media (min-width: 1024px) {
   .case:not(.case-unica) { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; }
+}
+/* Sticky só na coluna de capturas (a mais curta) e só quando o gerador estimou que ela cabe na janela (classe case-telas-fixa).
+   O texto nunca fica preso. O cabeçalho não é fixo: top de 24 px basta. */
+@media (min-width: 1024px) and (min-height: 760px) {
+  .case:not(.case-unica) .case-telas-fixa { position: sticky; top: 24px; align-self: start; }
 }
 
 /* ---------- Contato ---------- */

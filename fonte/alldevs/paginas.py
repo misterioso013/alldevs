@@ -599,6 +599,34 @@ def _img_case(proj, rel: str, numero: int, raiz: Path, primeira: bool = False) -
     return (f'    <img class="{classe}" src="/{esc(rel)}" alt="{esc(legenda)}" width="{w}" height="{h}" {carga}>')
 
 
+CASE_COLUNA_CAPTURAS = 714   # px: coluna 7fr do case a 1440 (contêiner 1280, gap 56)
+CASE_TELAS_TOP = 24          # px: o `top` do sticky (o cabeçalho não é fixo)
+CASE_JANELA_MIN = 760        # px: altura de janela a partir da qual o CSS liga o sticky
+
+
+def _altura_telas(tamanhos, loja: bool = False, largura: int = CASE_COLUNA_CAPTURAS) -> int:
+    """Estimativa (px) da altura da coluna de capturas a 1440 px: mesmas regras do CSS (`.img-captura` ocupa a
+    linha; `.img-retrato` tem calc(50% - 8px) até 240 px; `.case-loja img` até min(100%, 540 px); gap 16;
+    padding 24 em cima e embaixo; legenda da loja 24 px). Usada só para decidir a classe `case-telas-fixa`."""
+    gap = 16
+    linhas, atual, usado = [], 0, 0   # linha = altura do maior item; `usado` = largura ocupada
+    def novo_item(w, h):
+        nonlocal atual, usado
+        if usado and usado + gap + w > largura + 0.5:
+            linhas.append(atual); atual, usado = 0, 0
+        usado += w + (gap if usado else 0); atual = max(atual, h)
+    for w, h in tamanhos:
+        if loja:
+            lw = min(largura, 540, w); novo_item(lw, lw * h / w)
+        elif h > w:
+            lw = min(240, (largura - gap) / 2); novo_item(lw, lw * h / w)
+        else:
+            novo_item(largura, largura * h / w); linhas.append(atual); atual, usado = 0, 0
+    if atual:
+        linhas.append(atual)
+    return round(sum(linhas) + gap * max(len(linhas) - 1, 0) + 48 + (24 + gap if loja else 0))
+
+
 PALCO_PREENCHE = 28   # linhas da camada no palco do case (o cartão usa CARTAO_PREENCHE)
 PALCO_LINHAS = 14
 
@@ -633,11 +661,15 @@ def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
         etiquetas = "".join(f'<li class="etiqueta-mono">{esc(s)}</li>' for s in proj.stack)
         stack = f'\n  <section data-secao="stack">\n    <h2>Stack</h2>\n    <ul class="etiquetas">{etiquetas}</ul>\n  </section>\n'
     imagens = ""
+    fixa = ""
     if capturas:
+        alt = _altura_telas([_tamanho_imagem(raiz / i) for i in capturas], bool(proj.loja))
+        if alt <= CASE_JANELA_MIN - CASE_TELAS_TOP:
+            fixa = " case-telas-fixa"
         figuras = "\n".join(_img_case(proj, i, n, raiz, n == 1) for n, i in enumerate(capturas, 1))
         if proj.loja:   # capturas da loja: uma legenda só para o conjunto
             figuras = f'  <figure class="case-loja">\n{figuras}\n    <figcaption>Na Google Play</figcaption>\n  </figure>'
-        imagens = f'\n<section class="case-telas" data-secao="imagens">\n{figuras}\n</section>\n'
+        imagens = f'\n<section class="case-telas{fixa}" data-secao="imagens">\n{figuras}\n</section>\n'
     link = ""
     # no case a loja vem primeiro (a legenda "Na Google Play" está na coluna ao lado); no cartão, o link do site vem antes.
     # Com os dois iguais (Heisuca) sai um botão só.

@@ -71,7 +71,7 @@ class TestCase(Base):
     def test_case_coluna_de_texto_e_a_das_telas(self):
         txt = self.case("heisuca")
         self.assertIn('class="case-texto"', txt)
-        self.assertRegex(txt, r'<section class="case-telas" data-secao="imagens"')
+        self.assertRegex(txt, r'<section class="case-telas[^"]*" data-secao="imagens"')
 
     def test_case_sem_por_tras_sem_palco(self):
         sem = [p for p in self.visiveis if not p.por_tras]
@@ -149,14 +149,38 @@ class TestCase(Base):
 
 
 class TestCss(unittest.TestCase):
-    def test_sem_sticky_e_filtro_hidden(self):
+    def test_sticky_so_na_coluna_de_capturas_e_filtro_hidden(self):
         from testes.test_paginas import REPO
         css = ler(REPO / "css/site.css")
-        self.assertNotIn("position: sticky", css.split("/* Case:")[1].split("/* ---------- Contato")[0], "o texto do case (1200 a 1800 px) nunca cabe na janela: sem sticky")
+        m = re.search(r"@media \(min-width: 1024px\) and \(min-height: 760px\)\s*\{[^@]*?\.case-telas-fixa\s*\{([^}]*)\}", css, re.S)
+        self.assertTrue(m, "sticky da coluna de capturas só com min-width 1024 e min-height 760")
+        self.assertIn("position: sticky", m.group(1)); self.assertIn("align-self: start", m.group(1)); self.assertIn("top:", m.group(1))
+        self.assertEqual(css.count("position: sticky"), 1, "só a coluna de capturas fica sticky; o texto nunca")
         self.assertRegex(css, r"\.projeto-cartao\[hidden\]\s*\{\s*display: none")
         self.assertRegex(css, r"\.filtro-tipos button\s*\{[^}]*min-height: 44px")
         # oculto, o filtro guarda o lugar (sem salto de layout quando o JS o abre) e some da leitura
         self.assertRegex(css, r"\.filtro-tipos\[hidden\]\s*\{[^}]*visibility: hidden")
+
+
+class TestRodada2(Base):
+    def case(self, slug):
+        return ler(self.saida / "projetos" / slug / "index.html")
+
+    def test_classe_fixa_so_onde_a_coluna_de_capturas_cabe(self):
+        from alldevs import paginas
+        fixa = {p.slug: 'case-telas-fixa' in self.case(p.slug) for p in self.visiveis}
+        self.assertTrue(fixa["fakly"] and fixa["sendany"], fixa)          # 1 captura paisagem: cabe
+        self.assertFalse(fixa["prosup"] or fixa["heisuca"] or fixa["cgflix-lite"], fixa)   # não cabem
+        self.assertFalse(fixa["amott"], "coluna única: sem sticky")
+        self.assertNotIn("case-telas-fixa", self.case("amott"))
+
+    def test_estimativa_de_altura(self):
+        from alldevs import paginas
+        # 1 paisagem 1000x500 na coluna de 714: 357 + 48 de padding
+        self.assertEqual(paginas._altura_telas([(1000, 500)]), 405)
+        # 4 retratos 240 de largura: 2 por linha, 2 linhas, gap 16
+        self.assertEqual(paginas._altura_telas([(480, 960)] * 4), 2 * 480 + 16 + 48)
+        self.assertGreater(paginas._altura_telas([(480, 960)] * 4), 736)
 
 
 class TestRodada1(Base):

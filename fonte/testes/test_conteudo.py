@@ -548,7 +548,7 @@ class TestImagensDosCases(Base):
 
     def imgs(self, slug):
         txt = ler(self.saida / "projetos" / slug / "index.html")
-        secao = re.search(r'<section class="case-telas" data-secao="imagens">(.*?)</section>', txt, re.S).group(1)
+        secao = re.search(r'<section class="case-telas[^"]*" data-secao="imagens">(.*?)</section>', txt, re.S).group(1)
         return re.findall(r"<img [^>]+>", secao)
 
     def test_leitor_de_png_e_de_webp(self):
