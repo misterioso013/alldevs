@@ -1,6 +1,6 @@
 # Bancada
 
-Mede o site ALL.dev contra a prévia local: capturas, axe, sem JS, rolagem, links, movimento reduzido, paleta de comandos e Lighthouse.
+Mede o site ALL.dev contra a prévia local: capturas, axe, sem JS, rolagem, links, movimento reduzido, paleta de comandos, FPS da home e Lighthouse.
 
 ## Instalar
 ```
@@ -28,11 +28,12 @@ node bancada/paleta.mjs --url http://127.0.0.1:8765/       # uma linha por cená
 ```
 
 ## Metas
-- **Capturas**: página em 430 e 1440 px.
-- **axe**: zero problemas `serious` ou `critical`, em 430 e em 1440 px.
+- **Capturas**: página em 360, 430 e 1440 px (`<nome>-<largura>.png`).
+- **axe**: zero problemas `serious` ou `critical`, em 360, 430 e em 1440 px.
 - **Sem JS**: título (`title` e `h1`) e ao menos um contato (mailto, wa.me ou `#contato`) VISÍVEIS; `/projetos/` lista todos os cards visíveis.
 Toda página precisa responder 200; página sem medição numa meta conta como FALHA.
-- **Rolagem**: `scrollWidth <= clientWidth` em 430 px.
+- **Rolagem**: `scrollWidth <= clientWidth` em 360 e em 430 px.
+- **FPS** (só na `/`): ≥ 50 fps com CPU 4× mais lenta (`Emulation.setCPUThrottlingRate`, 1440 px, ponteiro varrendo o palco do hero; 4 s de aquecimento e 3 s medidos), a mesma técnica do `hero.mjs`.
 - **Links**: links internos respondem 200 sem redirecionamento (diretório sem barra final dá 301 e conta como falha).
 - **Movimento**: com `reducedMotion: reduce`, nenhum elemento com `transform` diferente de `none` após 1 s.
 - **Lighthouse**: predefinição móvel (4G simulado), LCP < 2500 ms e CLS < 0,05.
@@ -54,3 +55,7 @@ export BANCADA_LIBS=$HOME/.local/lib/chromium-deps
 ```
 Quando `BANCADA_LIBS` está definida, o `rodar.mjs` a junta ao `LD_LIBRARY_PATH` só do navegador (Playwright e Lighthouse).
 Lighthouse e Playwright usam o `chrome-headless-shell` do Playwright (ou o binário de `CHROME_PATH`, se definido). Sem a variável, roda normal.
+
+## Prévia na VPS
+`bin/publicar-previa` gera com `--previa` e envia por rsync para `/var/www/alldevs-previa/` (https://alldevs.docaio.com.br/, noindex).
+`bin/publicar-previa --ensaio` (ou `DRY=1`) gera, valida e só imprime o rsync, sem rede. Recusa qualquer destino fora de `/var/www/alldevs-previa/`.

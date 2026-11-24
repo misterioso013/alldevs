@@ -46,14 +46,15 @@ python3 fonte/gerar.py                  # reescreve a saída na raiz do repo
 python3 -m unittest discover -s fonte/testes -t fonte
 python3 fonte/checar.py                 # regras do projeto sobre a saída (rc 0 = limpo)
 python3 fonte/gerar.py --previa --saida <pasta-fora-do-repo>   # prévia com noindex
+bin/publicar-previa [--ensaio]         # envia a prévia à VPS (alldevs.docaio.com.br); --ensaio não toca na rede
 ```
 
 Depois de gerar, `git diff` precisa ficar limpo (a saída é determinística).
 
 ## Bancada
 
-Mede a prévia local: capturas em 430 e 1440 px, axe, funcionamento sem JS, rolagem horizontal, links, movimento reduzido e
-Lighthouse (LCP e CLS). Como instalar e rodar: `bancada/LEIA.md`.
+Mede a prévia local: capturas em 360, 430 e 1440 px, axe, funcionamento sem JS, rolagem horizontal, links, movimento reduzido, FPS da home
+(≥ 50 com CPU 4×) e Lighthouse (LCP e CLS). Como instalar e rodar: `bancada/LEIA.md`.
 
 ## Páginas principais
 

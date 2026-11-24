@@ -18,13 +18,14 @@ const origem = new URL(base).origin;
 const esperados = JSON.parse(fs.readFileSync(path.join(raiz, 'fonte/dados/projetos.json'), 'utf8')).filter((p) => p.visivel !== false).length;
 
 const metas = {
-  capturas: 'Capturas em 430 e 1440 px',
-  axe: 'axe: zero problemas serious/critical',
+  capturas: 'Capturas em 360, 430 e 1440 px',
+  axe: 'axe: zero problemas serious/critical (360, 430 e 1440 px)',
   semjs: 'Sem JS: título, contato e (em /projetos/) todos os cards',
-  rolagem: 'Sem rolagem horizontal em 430 px',
+  rolagem: 'Sem rolagem horizontal em 360 e 430 px',
   links: 'Links internos respondem 200, sem redirecionamento',
   movimento: 'reducedMotion: nenhum transform após 1 s',
   paleta: 'Paleta: Ctrl K, seta, Enter navega e Esc devolve o foco (1440 px); toque na pílula (412 px); axe aberta; reduced-motion; sem rede',
+  fps: 'FPS ≥ 50 com CPU 4× mais lenta (só na /; 1440 px)',
   lighthouse: 'Lighthouse móvel: LCP < 2500 ms e CLS < 0,05',
 };
 const res = {}; for (const k in metas) res[k] = {};
@@ -84,10 +85,10 @@ try {
   for (const url of lista) {
     const pg = rot(url), n = nome(url);
     console.log('>', pg);
-    // capturas, rolagem e axe (axe em 430 e 1440 px)
+    // capturas, rolagem e axe (axe em 360, 430 e 1440 px)
     try {
-      const axeRes = [];
-      for (const [w, h] of [[430, 900], [1440, 900]]) {
+      const axeRes = [], rolagemRes = [];
+      for (const [w, h] of [[360, 800], [430, 900], [1440, 900]]) {
         await comCtx({ viewport: { width: w, height: h } }, async (p) => {
           const e = status(await p.goto(url, { waitUntil: 'networkidle' }));
           if (e) throw new Error(e);
@@ -95,18 +96,19 @@ try {
           // rola em passos: o IntersectionObserver só revela blocos que entram na tela; sem isso a captura sai com blocos invisíveis
           await p.evaluate(async () => { const e = (ms) => new Promise((r) => setTimeout(r, ms)); for (let y = 0; y < document.documentElement.scrollHeight; y += 300) { scrollTo({ top: y, behavior: 'instant' }); await e(120); } await e(500); scrollTo({ top: 0, behavior: 'instant' }); await e(700); });
           await p.screenshot({ path: path.join(saida, `${n}-${w}.png`), fullPage: true });
-          if (w === 430) {
+          if (w === 360 || w === 430) {
             const [sw, cw] = await p.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
-            ok('rolagem', pg, sw <= cw, `scrollWidth ${sw} / clientWidth ${cw}`);
+            rolagemRes.push([w, sw, cw]);
           }
           const r = await new AxeBuilder({ page: p }).analyze();
           const gr = r.violations.filter((v) => ['serious', 'critical'].includes(v.impact));
           axeRes.push([w, gr, r.violations.length]);
         });
       }
+      ok('rolagem', pg, rolagemRes.every(([, sw, cw]) => sw <= cw), rolagemRes.map(([w, sw, cw]) => `${w} px: scrollWidth ${sw} / clientWidth ${cw}`).join('; '));
       const graves = axeRes.flatMap(([w, gr]) => gr.map((v) => `${v.id} (${v.impact}, ${v.nodes.length}, ${w} px)`));
-      ok('axe', pg, graves.length === 0, graves.length ? graves.join('; ') : `0 graves em 430 e 1440 px (${axeRes[0][2]}/${axeRes[1][2]} leves)`);
-      ok('capturas', pg, true, `${n}-430.png, ${n}-1440.png`);
+      ok('axe', pg, graves.length === 0, graves.length ? graves.join('; ') : `0 graves em 360, 430 e 1440 px (${axeRes.map((a) => a[2]).join('/')} leves)`);
+      ok('capturas', pg, true, `${n}-360.png, ${n}-430.png, ${n}-1440.png`);
     } catch (e) { marca(pg, ['capturas', 'rolagem', 'axe'], e); }
 
     // sem JS
@@ -170,6 +172,31 @@ try {
       ok('links', pg, ruins.length === 0, ruins.length ? ruins.join('; ') : `${alvos.size} ok`);
     } catch (e) { marca(pg, ['links'], e); }
 
+    // FPS com CPU 4x mais lenta, só na home (mesma técnica do hero.mjs: Emulation.setCPUThrottlingRate + varredura do ponteiro no palco)
+    if (pg === '/') {
+      try {
+        const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
+        try {
+          const p = await ctx.newPage();
+          const e = status(await p.goto(url, { waitUntil: 'networkidle' }));
+          if (e) throw new Error(e);
+          await esperaPreloader(p);
+          await p.waitForSelector('.hero-palco.vivo', { timeout: 5000 });
+          await p.locator('.hero-palco').scrollIntoViewIfNeeded();
+          const b = await p.locator('.hero-palco').boundingBox();
+          const cdp = await ctx.newCDPSession(p);
+          await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+          const varre = async (ms) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { const s = (Date.now() - t0) / 1000; await p.mouse.move(b.x + b.width * (0.5 + 0.38 * Math.sin(s * 2.1)), b.y + b.height * (0.5 + 0.34 * Math.sin(s * 3.3 + 1)), { steps: 2 }); await p.waitForTimeout(16); } };
+          const quadros = () => p.evaluate(() => window.__revelarQuadros || 0);
+          await varre(4000); // aquecimento: a qualidade adaptativa assenta
+          const q0 = await quadros(), t0 = Date.now();
+          await varre(3000);
+          const fps = ((await quadros()) - q0) / ((Date.now() - t0) / 1000);
+          ok('fps', pg, fps >= 50, `${fps.toFixed(1)} fps com CPU 4x`);
+        } finally { await ctx.close(); }
+      } catch (e) { marca(pg, ['fps'], e); }
+    }
+
     // Lighthouse (predefinição móvel padrão: 4G simulado)
     let chrome;
     try {
@@ -190,10 +217,10 @@ const esc = (s) => String(s).replace(/\|/g, '\\|');
 let falhou = false;
 const resumo = [], tabelas = [];
 for (const [k, titulo] of Object.entries(metas)) {
-  const linhas = lista.map((u) => [rot(u), res[k][rot(u)] || { passou: false, det: 'sem medição' }]);
+  const linhas = lista.filter((u) => k !== 'fps' || rot(u) === '/').map((u) => [rot(u), res[k][rot(u)] || { passou: false, det: 'sem medição' }]);
   const f = linhas.filter(([, v]) => !v.passou);
   if (f.length) falhou = true;
-  resumo.push(`| ${titulo} | ${f.length ? 'FALHA' : 'PASSA'} | ${f.length}/${lista.length} páginas |`);
+  resumo.push(`| ${titulo} | ${f.length ? 'FALHA' : 'PASSA'} | ${f.length}/${linhas.length} páginas |`);
   tabelas.push(`## ${titulo}\n\n| Página | Resultado | Detalhe |\n|---|---|---|\n` +
     linhas.map(([p, v]) => `| ${p} | ${v.passou ? 'passa' : 'FALHA'} | ${esc(v.det)} |`).join('\n'));
 }

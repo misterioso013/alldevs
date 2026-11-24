@@ -1,0 +1,31 @@
+#!/bin/bash
+# Publica a PRÉVIA deste ramo em https://alldevs.docaio.com.br/ (noindex). Nunca toca em outro destino além de /var/www/alldevs-previa/.
+# Gera com "gerar.py --previa" (já põe noindex, robots e _headers) numa pasta temporária fora do repo e envia com rsync.
+# Uso: bin/publicar-previa            publica
+#      bin/publicar-previa --ensaio   (ou DRY=1) gera, valida e imprime o rsync com --dry-run, sem tocar na rede
+# Desfazer: ssh -p 22022 root@143.95.215.156 'mv /var/www/alldevs-previa /root/alldevs-previa.fora-$(date +%F)'
+#           e tirar o server_name alldevs.docaio.com.br do nginx (backup em /root/backup_nginx/).
+set -euo pipefail; cd "$(dirname "$0")/.."
+V="root@143.95.215.156"; P=22022
+SITE="https://alldevs.docaio.com.br/"; DEST="${DEST:-/var/www/alldevs-previa/}"
+ENSAIO="${DRY:-}"; [ "${1:-}" = "--ensaio" ] && ENSAIO=1
+case "$DEST" in
+  *..*) echo "destino inesperado: $DEST" >&2; exit 1;;
+  /var/www/alldevs-previa/*) ;;
+  *) echo "destino inesperado: $DEST" >&2; exit 1;;
+esac
+T="$(mktemp -d "${TMPDIR:-/tmp}/alldevs-previa.XXXXXX")"
+trap 'rm -rf "$T"' EXIT
+python3 fonte/gerar.py --previa --saida "$T"
+for f in index.html robots.txt _headers; do [ -f "$T/$f" ] || { echo "faltou $f na prévia gerada" >&2; exit 1; }; done
+grep -q 'noindex' "$T/index.html" || { echo "a prévia gerada não tem noindex" >&2; exit 1; }
+if [ -n "$ENSAIO" ]; then
+  echo "ENSAIO (sem rede). Prévia em $T"
+  echo "rsync -a --delete --dry-run -e 'ssh -p $P' $T/ $V:$DEST"
+  exit 0
+fi
+ssh -p $P $V "mkdir -p $DEST"
+rsync -a --delete -e "ssh -p $P" "$T/" "$V:$DEST"
+ssh -p $P $V 'chmod -R a+rX /var/www/alldevs-previa'
+curl -s -o /dev/null -w "alldevs.docaio.com.br → HTTP %{http_code}\n" "$SITE"
+curl -sI "$SITE" | grep -i '^x-robots-tag' || echo "AVISO: sem X-Robots-Tag (falta o server_name no nginx?)"
