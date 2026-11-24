@@ -89,8 +89,7 @@ class TestPaginas(Base):
         for arq in self.saida.rglob("*.html"):
             self.assertIsNone(re.search(r"Ol(?:á|%C3%A1)(?:,|%2C)?(?:[\s+]|%20)+Rosiel", ler(arq), re.I), arq)
 
-    def test_wa_do_case_e_do_perfil(self):
-        self.assertIn("%5Bsite%C2%B7case%C2%B7prosup%5D", ler(self.saida / "projetos/prosup/index.html"))
+    def test_wa_do_perfil(self):   # a do case migrou para test_projetos.py (test_wa_do_case_com_origem)
         self.assertIn("%5Bsite%C2%B7perfil%C2%B7caio%5D", ler(self.saida / "caio/index.html"))
         self.assertIn("%5Bsite%C2%B7perfil%C2%B7rosiel%5D", ler(self.saida / "rosiel/index.html"))
 
@@ -145,18 +144,6 @@ class TestHome(Base):
 
 
 class TestPortfolio(Base):
-    def test_projetos_sem_filtro_por_pessoa(self):
-        txt = ler(self.saida / "projetos/index.html")
-        self.assertNotIn('data-filtro="caio"', txt)
-        self.assertNotIn('data-filtro="rosiel"', txt)
-        achados = re.findall(r'class="cartao-projeto"[^>]*data-slug="([^"]+)"', txt)
-        self.assertEqual(achados, [p.slug for p in self.visiveis])
-
-    def test_resultado_omitido_quando_none(self):
-        for p in self.visiveis:
-            txt = ler(self.saida / "projetos" / p.slug / "index.html")
-            self.assertEqual(p.resultado is None, "Resultado" not in txt, p.slug)
-
     def test_linha_mono_do_case(self):
         txt = ler(self.saida / "projetos/heisuca/index.html")
         self.assertIn("app · 2026 · no ar", txt)
@@ -274,7 +261,7 @@ class TestAno(unittest.TestCase):
         ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', txt, re.S).group(1)
         self.assertNotRegex(ld, r"\b(19|20)\d\d\b")
         self.assertNotIn("None", ler(raiz / "projetos/index.html"))
-        self.assertIn("app · 2031<", ler(raiz / "projetos/index.html"))
+        self.assertIn("App · 2031 · no ar<", ler(raiz / "projetos/index.html"))
 
     def test_anos_reais_dos_projetos(self):
         dados = D.carregar(REPO)
@@ -532,7 +519,8 @@ class TestCasesReais(Base):
         for slug, (linha, botao, url) in esperado.items():
             txt = ler(self.saida / "projetos" / slug / "index.html")
             self.assertIn(linha, txt, slug)
-            self.assertIn(f'<a href="{url}" rel="noopener" class="btn btn-linha">{botao}</a>', txt, slug)
+            self.assertIn(f'<a href="{url}" target="_blank" rel="noopener" class="btn btn-cheio">{botao}'
+                          '<span class="so-leitor"> (abre em nova aba)</span></a>', txt, slug)
 
     def test_cases_reais_indexaveis(self):
         mapa = ler(self.saida / "sitemap.xml")
@@ -560,7 +548,7 @@ class TestImagensDosCases(Base):
 
     def imgs(self, slug):
         txt = ler(self.saida / "projetos" / slug / "index.html")
-        secao = re.search(r'<section data-secao="imagens">(.*?)</section>', txt, re.S).group(1)
+        secao = re.search(r'<section class="case-telas" data-secao="imagens">(.*?)</section>', txt, re.S).group(1)
         return re.findall(r"<img [^>]+>", secao)
 
     def test_leitor_de_png_e_de_webp(self):

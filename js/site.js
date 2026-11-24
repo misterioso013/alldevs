@@ -67,6 +67,20 @@
     itens.forEach(function (el) { lista.appendChild(el); });
   });
 
+  /* ---------- Filtro de /projetos/ por tipo: o gerador o entrega hidden; sem JS a lista fica inteira ---------- */
+  doc.querySelectorAll(".filtro-tipos").forEach(function (filtro) {
+    var cartoes = doc.querySelectorAll("[data-lista-projetos] > article[data-tipo]");
+    var botoes = filtro.querySelectorAll("button[data-tipo]");
+    botoes.forEach(function (botao) {
+      botao.addEventListener("click", function () {
+        var tipo = botao.getAttribute("data-tipo");
+        botoes.forEach(function (b) { b.setAttribute("aria-pressed", String(b === botao)); });
+        cartoes.forEach(function (c) { c.hidden = tipo !== "todos" && c.getAttribute("data-tipo") !== tipo; });
+      });
+    });
+    filtro.hidden = false;
+  });
+
   /* ---------- FAQ dos serviços: aberto sem JS, sanfona com JS ---------- */
   doc.querySelectorAll(".faq-question").forEach(function (botao, n) {
     var resposta = botao.nextElementSibling;

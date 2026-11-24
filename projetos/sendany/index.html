@@ -50,6 +50,7 @@
 
 <main data-molde="case">
 <article class="case">
+<div class="case-texto">
   <section class="case-topo" data-secao="topo">
     <p class="rotulo-mono case-linha">produto · 2025 · no ar</p>
     <h1>SendAny</h1>
@@ -71,17 +72,51 @@
     </ul>
   </section>
 
+  <section data-secao="por-tras">
+    <h2>Por trás</h2>
+    <figure class="projeto-tela case-palco" data-revela-cartao data-cursor="ver por trás"><img src="/assets/frente/sendany.webp" width="960" height="600" alt="Captura de tela de SendAny" loading="lazy" decoding="async">
+      <div class="cartao-por-tras" aria-hidden="true"><pre><code>export interface WorkspaceFile {
+  id: string;
+  workspace_id: string;
+  filename: string;
+  content?: string;
+  file_type: &quot;text&quot; | &quot;code&quot; | &quot;markdown&quot; | &quot;file&quot;;
+  language?: string;
+  file_size?: number;
+  file_url?: string;
+  mime_type?: string;
+  drive_file_id?: string;
+  order_index: number;
+  created_at: Date;
+  updated_at: Date;
+export interface WorkspaceFile {
+  id: string;
+  workspace_id: string;
+  filename: string;
+  content?: string;
+  file_type: &quot;text&quot; | &quot;code&quot; | &quot;markdown&quot; | &quot;file&quot;;
+  language?: string;
+  file_size?: number;
+  file_url?: string;
+  mime_type?: string;
+  drive_file_id?: string;
+  order_index: number;
+  created_at: Date;
+  updated_at: Date;</code></pre><span class="cartao-origem">sendany · src/lib/database.ts@1117310</span></div>
+    </figure>
+  </section>
+
   <section data-secao="stack">
     <h2>Stack</h2>
     <ul class="etiquetas"><li class="etiqueta-mono">Next.js</li><li class="etiqueta-mono">React</li><li class="etiqueta-mono">TypeScript</li><li class="etiqueta-mono">PostgreSQL</li><li class="etiqueta-mono">Tailwind CSS</li></ul>
   </section>
 
-  <section data-secao="imagens">
+  <p class="case-link" data-secao="link"><a href="https://sendany.all.dev.br" target="_blank" rel="noopener" class="btn btn-cheio">Ver SendAny no ar<span class="so-leitor"> (abre em nova aba)</span></a></p>
+
+</div>
+<section class="case-telas" data-secao="imagens">
     <img class="img-captura" src="/assets/images/sendany.webp" alt="Captura de SendAny" width="960" height="461" loading="lazy" decoding="async">
-  </section>
-
-  <p class="case-link"><a href="https://sendany.all.dev.br" rel="noopener" class="btn btn-linha">Ver SendAny no ar</a></p>
-
+</section>
 </article>
 
 <section class="contato" data-secao="contato">
@@ -98,6 +133,7 @@
 
 </section>
 </main>
+<script src="/js/revelar.js" defer></script>
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">

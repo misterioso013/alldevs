@@ -113,7 +113,7 @@ def _cartao_pessoa(p) -> str:
 
 
 def _cartao_lista(proj, classe: str, nivel: int = 3) -> str:
-    """Cartão de texto do v1, ainda usado em /projetos/ e nos perfis (a Task 7 troca por _cartao_projeto)."""
+    """Cartão de texto do v1, ainda usado nos perfis (a Task 8 troca por _cartao_projeto)."""
     return (
         f'    <article class="{classe}" data-slug="{esc(proj.slug)}">\n'
         f'      <p class="rotulo-mono">{esc(" · ".join(_com_ano(proj.tipo, proj.ano)))}</p>\n'
@@ -140,14 +140,15 @@ def _imagem_do_cartao(proj, raiz: Path):
     return "/" + rel, w, h
 
 
-def _camada_por_tras(proj, raiz: Path) -> str:
-    """A camada que a máscara do ponteiro revela no cartão (js/revelar.js monta o cartão; css/site.css desenha a máscara)."""
+def _camada_por_tras(proj, raiz: Path, preenche: int = CARTAO_PREENCHE, linhas_max: int = CARTAO_LINHAS) -> str:
+    """A camada que a máscara do ponteiro revela no cartão e no palco do case (js/revelar.js monta; css/site.css desenha a máscara).
+    O palco do case é maior: mostra mais linhas do mesmo trecho."""
     pt = proj.por_tras
     texto = ler_por_tras(raiz, proj)
     if texto is not None:
-        linhas = texto.splitlines()[:CARTAO_LINHAS] or [""]
+        linhas = texto.splitlines()[:linhas_max] or [""]
         # o trecho se repete até preencher a figura inteira (o código nunca é editado; a camada é aria-hidden)
-        trecho = "\n".join((linhas * -(-CARTAO_PREENCHE // len(linhas)))[:CARTAO_PREENCHE])
+        trecho = "\n".join((linhas * -(-preenche // len(linhas)))[:preenche])
         miolo = f'<pre><code>{re.sub(r"(?<!&)#", "&#35;", esc(trecho))}</code></pre>'
     else:
         w, h = _tamanho_webp(Path(raiz) / pt["arquivo"])
@@ -157,7 +158,7 @@ def _camada_por_tras(proj, raiz: Path) -> str:
 
 
 def _cartao_projeto(proj, raiz: Path, nivel: int = 3) -> Seguro:
-    """Cartão de projeto da home: a tela real, o rótulo (tipo · ano · situação), o link do case e o link para o ar.
+    """Cartão de projeto da home e de /projetos/: a tela real, o rótulo (tipo · ano · situação), o link do case e o link para o ar.
     Com `por_tras`, a figura leva data-revela-cartao e uma camada aria-hidden com o trecho real."""
     raiz = Path(raiz)
     img = _imagem_do_cartao(proj, raiz)
@@ -174,7 +175,7 @@ def _cartao_projeto(proj, raiz: Path, nivel: int = 3) -> Seguro:
         no_ar = (f'\n      <a class="link-seta" href="{esc(destino)}" target="_blank" rel="noopener">'
                  f'Ver {esc(proj.nome)} no ar<span class="so-leitor"> (abre em nova aba)</span></a>')
     return Seguro(
-        f'    <article class="projeto-cartao" data-slug="{esc(proj.slug)}" data-revela>{figura}\n'
+        f'    <article class="projeto-cartao" data-slug="{esc(proj.slug)}" data-tipo="{esc(proj.tipo)}" data-revela>{figura}\n'
         f'      <p class="rotulo-mono">{rotulo}</p>\n'
         f'      <h{nivel}><a href="/projetos/{esc(proj.slug)}/">{esc(proj.nome)}</a></h{nivel}>\n'
         f'      <p>{esc(proj.resumo)}</p>{no_ar}\n'
@@ -554,12 +555,24 @@ def _perfil(p, dados: Dados, previa: bool) -> Pagina:
     return Pagina(caminho, titulo, descricao, doc, p.atualizado, ld)
 
 
-def _projetos(dados: Dados, previa: bool) -> Pagina:
+def _filtro_tipos(vis) -> Seguro:
+    """Filtro de /projetos/ por tipo: Todos e um botão por tipo (ordem de TIPO_ROTULO) que tenha projeto visível.
+    Sai `hidden`: sem JS a lista fica inteira e o filtro não aparece; js/site.js o abre e o liga."""
+    tipos = [t for t in TIPO_ROTULO if any(p.tipo == t for p in vis)]
+    botoes = [("todos", "Todos"), *((t, TIPO_ROTULO[t]) for t in tipos)]
+    itens = "\n".join(
+        f'    <button type="button" data-tipo="{esc(t)}" aria-pressed="{"true" if t == "todos" else "false"}">{esc(r)}</button>'
+        for t, r in botoes)
+    return Seguro(f'  <div class="filtro-tipos" role="group" aria-label="Filtrar por tipo" hidden>\n{itens}\n  </div>')
+
+
+def _projetos(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     vis = visiveis(dados.projetos)
-    cartoes = "\n".join(_cartao_lista(x, "cartao-projeto", 2) for x in vis)
+    cartoes = "\n".join(str(_cartao_projeto(x, raiz, 2)) for x in vis)
+    revelar = '\n<script src="/js/revelar.js" defer></script>' if any(x.por_tras for x in vis) else ""
     corpo = render(
-        "projetos", **_cabecalho_e_rodape(dados), cartoes=Seguro(cartoes),
-        contato=_bloco_contato(dados.estudio, "home"),
+        "projetos", **_cabecalho_e_rodape(dados), filtro=_filtro_tipos(vis), cartoes=Seguro(cartoes),
+        revelar=Seguro(revelar), contato=_bloco_contato(dados.estudio, "home"),
     )
     caminho = "projetos/index.html"
     atualizado = max([x.atualizado for x in vis] + [dados.estudio.atualizado])
@@ -582,8 +595,26 @@ def _img_case(proj, rel: str, numero: int, raiz: Path) -> str:
             f'loading="lazy" decoding="async">')
 
 
+PALCO_PREENCHE = 28   # linhas da camada no palco do case (o cartão usa CARTAO_PREENCHE)
+PALCO_LINHAS = 14
+
+
+def _palco_do_case(proj, raiz: Path) -> str:
+    """Bloco "Por trás" do case: a mesma revelação do cartão (data-revela-cartao), maior. Só com `por_tras`."""
+    img = _imagem_do_cartao(proj, raiz)
+    if not proj.por_tras or not img:
+        return ""
+    camada = _camada_por_tras(proj, raiz, PALCO_PREENCHE, PALCO_LINHAS)
+    return (f'\n  <section data-secao="por-tras">\n    <h2>Por trás</h2>\n'
+            f'    <figure class="projeto-tela case-palco" data-revela-cartao data-cursor="ver por trás">'
+            f'<img src="{esc(img[0])}" width="{img[1]}" height="{img[2]}" '
+            f'alt="Captura de tela de {esc(proj.nome)}" loading="lazy" decoding="async">{camada}\n    </figure>\n  </section>\n')
+
+
 def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
+    raiz = Path(raiz)
     linha = " · ".join([*_com_ano(proj.tipo, proj.ano), proj.situacao])
+    palco = _palco_do_case(proj, raiz)
     resultado = ""
     if proj.resultado is not None:
         resultado = (f'\n  <section data-secao="resultado">\n    <h2>Resultado</h2>\n'
@@ -595,16 +626,20 @@ def _case(proj, dados: Dados, raiz: Path, previa: bool) -> Pagina:
     imagens = ""
     if proj.imagens:
         figuras = "\n".join(_img_case(proj, i, n, raiz) for n, i in enumerate(proj.imagens, 1))
-        imagens = f'\n  <section data-secao="imagens">\n{figuras}\n  </section>\n'
+        if proj.loja:   # capturas da loja: uma legenda só para o conjunto
+            figuras = f'  <figure class="case-loja">\n{figuras}\n    <figcaption>Na Google Play</figcaption>\n  </figure>'
+        imagens = f'\n<section class="case-telas" data-secao="imagens">\n{figuras}\n</section>\n'
     link = ""
-    if proj.link:
-        link = (f'\n  <p class="case-link"><a href="{esc(proj.link)}" rel="noopener" class="btn btn-linha">'
-                f'Ver {esc(proj.nome)} no ar</a></p>\n')
+    destino = proj.loja or proj.link   # a loja vale mais; com os dois iguais (Heisuca) sai um botão só
+    if destino:
+        link = (f'\n  <p class="case-link" data-secao="link"><a href="{esc(destino)}" target="_blank" rel="noopener" '
+                f'class="btn btn-cheio">Ver {esc(proj.nome)} no ar<span class="so-leitor"> (abre em nova aba)</span></a></p>\n')
+    revelar = '\n<script src="/js/revelar.js" defer></script>' if palco else ""
     corpo = render(
         "case", **_cabecalho_e_rodape(dados),
         linha=linha, nome=proj.nome, resumo=proj.resumo, problema=proj.problema,
-        fizemos=Seguro(_lista(proj.fizemos)), resultado=Seguro(resultado), stack=Seguro(stack),
-        imagens=Seguro(imagens), link=Seguro(link),
+        fizemos=Seguro(_lista(proj.fizemos)), palco=Seguro(palco), resultado=Seguro(resultado), stack=Seguro(stack),
+        imagens=Seguro(imagens), link=Seguro(link), revelar=Seguro(revelar),
         contato=_bloco_contato(dados.estudio, "case", alvo=proj.nome, slug=proj.slug),
     )
     caminho = f"projetos/{proj.slug}/index.html"
@@ -642,7 +677,7 @@ def _servico(s, dados: Dados, raiz: Path, previa: bool) -> Pagina:
 
 def montar_todas(dados: Dados, raiz: Path, previa: bool) -> list:
     """Todas as páginas, ordenadas por caminho. Na `previa` cada uma leva a meta noindex."""
-    paginas = [_home(dados, raiz, previa), _historia(dados, raiz, previa), _projetos(dados, previa)]
+    paginas = [_home(dados, raiz, previa), _historia(dados, raiz, previa), _projetos(dados, raiz, previa)]
     paginas += [_perfil(p, dados, previa) for p in dados.pessoas]
     paginas += [_case(x, dados, raiz, previa) for x in visiveis(dados.projetos)]
     paginas += [_servico(s, dados, raiz, previa) for s in dados.servicos]
