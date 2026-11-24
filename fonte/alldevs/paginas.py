@@ -47,14 +47,15 @@ def og_slug(caminho: str) -> str:
     return caminho.rsplit("/", 1)[-1].removesuffix(".html")
 
 
-def _documento(caminho, titulo, descricao, corpo, json_ld=(), previa=False, barra="") -> Seguro:
+def _documento(caminho, titulo, descricao, corpo, json_ld=(), previa=False, barra="", head_extra="") -> Seguro:
     if json_ld:
         bloco = f'\n<script type="application/ld+json">{seo.serializar(json_ld)}</script>'
     else:
         bloco = ""
     return render("base", titulo=titulo, descricao=descricao, canonical=seo.url_publica(caminho),
                   og_imagem=f"{seo.SITE}/assets/og/{og_slug(caminho)}.png", corpo=corpo, json_ld=Seguro(bloco),
-                  robots_meta=Seguro(seo.META_NOINDEX if previa else ""), barra_wa=barra)
+                  robots_meta=Seguro(seo.META_NOINDEX if previa else ""), barra_wa=barra,
+                  head_extra=Seguro(head_extra))
 
 
 def _bloco_contato(estudio, tipo, alvo=None, slug=None) -> Seguro:
@@ -93,12 +94,11 @@ def _com_ano(tipo, ano) -> list:
     return [str(tipo)] if ano is None else [str(tipo), str(ano)]
 
 
-def _cartao_pessoa(p, prioridade: bool = False) -> str:
-    # Foto em 4/5 (retrato inteiro); só a primeira do HTML ganha prioridade de LCP, nenhuma é lazy.
-    prio = ' fetchpriority="high"' if prioridade else ""
+def _cartao_pessoa(p) -> str:
+    # Foto em 4/5 (retrato inteiro), abaixo do hero: lazy, para não disputar banda com a frente (LCP). A única prioridade alta da home é a da frente do hero.
     return (
         f'    <article class="cartao-pessoa" data-slug="{esc(p.slug)}">\n'
-        f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="512" height="640"{prio}>\n'
+        f'      <img src="/{esc(p.foto)}" alt="Foto de {esc(p.nome)}" width="512" height="640" loading="lazy" decoding="async">\n'
         f'      <h3>{esc(p.nome)}</h3>\n'
         f'      <p class="rotulo-mono">{esc(p.papel_mono)}</p>\n'
         f'      <p>{esc(p.frase)}</p>\n'
@@ -178,12 +178,21 @@ def _json_script(valor) -> str:
     return json.dumps(valor, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c").replace("#", "\\u0023")
 
 
+def _preload_frente(dados: Dados, raiz: Path) -> str:
+    """<link rel=preload> da 1ª frente do ciclo, para o <head> da home (vazio sem ciclo)."""
+    por_slug = {p.slug: p for p in dados.projetos}
+    if not dados.estudio.ciclo:
+        return ""
+    frente = _item_ciclo(por_slug[dados.estudio.ciclo[0]], Path(raiz))["frente"]
+    return f'\n<link rel="preload" as="image" href="{esc(frente["src"])}" type="image/webp" fetchpriority="high">'
+
+
 def _hero(dados: Dados, raiz: Path) -> Seguro:
     """Hero: h1 fixo, palco com a captura real (frente) e, por trás, o trecho real do projeto (revelado por js/revelar.js)."""
     raiz = Path(raiz)
     por_slug = {p.slug: p for p in dados.projetos}
     itens = [_item_ciclo(por_slug[s], raiz) for s in dados.estudio.ciclo]
-    palco = pre = ""
+    palco = ""
     if itens:   # sem ciclo (nenhum projeto com por_tras) o hero fica só com o texto
         pri = itens[0]
         atras = pri["por_tras"]
@@ -192,7 +201,6 @@ def _hero(dados: Dados, raiz: Path) -> Seguro:
         else:
             camada = f'<img src="{esc(atras["src"])}" alt="" decoding="async" hidden>'
         frente = pri["frente"]
-        pre = f'\n <link rel="preload" as="image" href="{esc(frente["src"])}" type="image/webp" fetchpriority="high">'
         palco = f'''
  <div class="hero-palco" data-ciclo data-cor="{esc(pri["cor"])}">
   <figure class="hero-frente"><img src="{esc(frente["src"])}" width="{frente["w"]}" height="{frente["h"]}" alt="Captura de tela de {esc(pri["nome"])}" fetchpriority="high" decoding="async"></figure>
@@ -204,10 +212,10 @@ def _hero(dados: Dados, raiz: Path) -> Seguro:
   <script src="/js/revelar.js" defer></script>
  </div>'''
     return Seguro(
-        f'''<section id="hero" class="hero" data-secao="hero">{pre}
+        f'''<section id="hero" class="hero" data-secao="hero">
  <div class="hero-texto">
   <p class="rotulo-mono">// estúdio de software</p>
-  <h1 class="hero-headline">Fazemos <span class="titulo-mono">software</span> que vive.</h1>
+  <h1 class="hero-headline">Fazemos <span class="titulo-mono">software</span> <span class="hero-fecho">que vive.</span></h1>
   <p class="hero-sub">Um estúdio de software. Sites, apps, bots e produtos próprios no ar.</p>
   <div class="hero-ctas">
     <a href="/projetos/" class="btn btn-cheio">Ver projetos</a>
@@ -219,8 +227,8 @@ def _hero(dados: Dados, raiz: Path) -> Seguro:
 
 def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     est = dados.estudio
-    cartoes = "\n".join(_cartao_pessoa(p, prioridade=(i == 0))
-                         for i, p in enumerate(sorted(dados.pessoas, key=lambda p: p.slug)))
+    cartoes = "\n".join(_cartao_pessoa(p)
+                         for p in sorted(dados.pessoas, key=lambda p: p.slug))
     destaques = "\n".join(
         _cartao_projeto(p, "cartao-destaque") for p in visiveis(dados.projetos) if p.destaque)
     servicos = "\n".join(
@@ -236,7 +244,8 @@ def _home(dados: Dados, raiz: Path, previa: bool) -> Pagina:
     )
     caminho = "index.html"
     ld = (seo.json_ld_home(dados), *(seo.json_ld_pessoa(p) for p in sorted(dados.pessoas, key=lambda p: p.slug)))
-    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, corpo, ld, previa, _barra_wa(est, "home"))
+    doc = _documento(caminho, HOME_TITULO, HOME_DESCRICAO, corpo, ld, previa, _barra_wa(est, "home"),
+                     head_extra=_preload_frente(dados, raiz))
     return Pagina(caminho, HOME_TITULO, HOME_DESCRICAO, doc, est.atualizado, ld)
 
 

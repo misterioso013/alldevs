@@ -125,15 +125,15 @@ class TestGerar(Base):
         self.assertNotIn("contato@all.dev.br", txt)
         self.assertNotIn("Amott", txt)
 
-    def test_fotos_da_home_4x5_e_so_a_primeira_com_prioridade(self):
+    def test_fotos_da_home_4x5_lazy_e_sem_prioridade_alta(self):
         txt = (self.saida / "index.html").read_text(encoding="utf-8")
         fotos = re.findall(r'<article class="cartao-pessoa"[^>]*>\s*(<img [^>]+>)', txt)
         self.assertEqual(len(fotos), 2)
         for img in fotos:
             self.assertIn('width="512" height="640"', img)  # 4/5, igual ao aspect-ratio do CSS
-            self.assertNotIn("loading=", img)
-        self.assertIn('fetchpriority="high"', fotos[0])
-        self.assertNotIn("fetchpriority", fotos[1])
+            self.assertIn('loading="lazy"', img)  # abaixo do hero: nao disputam banda com a frente (LCP)
+        for img in fotos:  # a unica prioridade alta da pagina e a da frente do hero (test_hero)
+            self.assertNotIn("fetchpriority", img)
         css = (REPO / "css" / "site.css").read_text(encoding="utf-8")
         regra = css[css.index(".cartao-pessoa img {"):]
         self.assertIn("aspect-ratio: 4 / 5;", regra[:regra.index("}")])

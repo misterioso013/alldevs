@@ -29,6 +29,7 @@
 <script src="/js/vendor/lenis.min.js" defer></script>
 <script src="/js/site.js" defer></script>
 <script src="/js/paleta.js" defer></script>
+<link rel="preload" as="image" href="/assets/frente/amott.webp" type="image/webp" fetchpriority="high">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@id": "https://all.dev.br/#organizacao", "@type": "Organization", "member": [{"@id": "https://all.dev.br/#caio-guerras"}, {"@id": "https://all.dev.br/#rosiel-victor"}], "name": "AllDevs", "url": "https://all.dev.br/"}, {"@context": "https://schema.org", "@id": "https://all.dev.br/#caio-guerras", "@type": "Person", "jobTitle": "Infraestrutura, mídia e apps", "name": "Caio Guerras", "worksFor": {"@id": "https://all.dev.br/#organizacao"}}, {"@context": "https://schema.org", "@id": "https://all.dev.br/#rosiel-victor", "@type": "Person", "jobTitle": "Produto, web e automação", "name": "Rosiel Victor", "sameAs": ["https://github.com/misterioso013", "https://www.linkedin.com/in/rosielvictor", "https://twitter.com/RVictor013", "https://www.instagram.com/rosielvictor", "https://www.youtube.com/channel/UCbkvqP3kbIVbFcaKk9fTpFQ", "https://t.me/misterioso013", "https://misterioso013.github.io/my-cv/"], "worksFor": {"@id": "https://all.dev.br/#organizacao"}}]</script>
 </head>
 <body>
@@ -50,10 +51,9 @@
 
 <main>
 <section id="hero" class="hero" data-secao="hero">
- <link rel="preload" as="image" href="/assets/frente/amott.webp" type="image/webp" fetchpriority="high">
  <div class="hero-texto">
   <p class="rotulo-mono">// estúdio de software</p>
-  <h1 class="hero-headline">Fazemos <span class="titulo-mono">software</span> que vive.</h1>
+  <h1 class="hero-headline">Fazemos <span class="titulo-mono">software</span> <span class="hero-fecho">que vive.</span></h1>
   <p class="hero-sub">Um estúdio de software. Sites, apps, bots e produtos próprios no ar.</p>
   <div class="hero-ctas">
     <a href="/projetos/" class="btn btn-cheio">Ver projetos</a>
@@ -80,14 +80,14 @@
   <h2>Os dois sócios</h2>
   <div class="cartoes-pessoas" data-sortear>
     <article class="cartao-pessoa" data-slug="caio">
-      <img src="/assets/images/caio-640.webp" alt="Foto de Caio Guerras" width="512" height="640" fetchpriority="high">
+      <img src="/assets/images/caio-640.webp" alt="Foto de Caio Guerras" width="512" height="640" loading="lazy" decoding="async">
       <h3>Caio Guerras</h3>
       <p class="rotulo-mono">caio · infraestrutura, mídia, apps</p>
       <p>Sócio do estúdio. Cuida da infraestrutura, da mídia e dos apps.</p>
       <a href="/caio/" class="link-seta">Ver perfil de Caio Guerras</a>
     </article>
     <article class="cartao-pessoa" data-slug="rosiel">
-      <img src="/assets/images/rosiel-640.webp" alt="Foto de Rosiel Victor" width="512" height="640">
+      <img src="/assets/images/rosiel-640.webp" alt="Foto de Rosiel Victor" width="512" height="640" loading="lazy" decoding="async">
       <h3>Rosiel Victor</h3>
       <p class="rotulo-mono">rosiel · produto, web, automação</p>
       <p>Transformo ideia em produto no ar, do protótipo à automação.</p>

@@ -50,7 +50,7 @@ class TestPaginas(Base):
 
     def test_hero_literal_e_botoes(self):
         txt = ler(self.saida / "index.html")
-        self.assertIn('Fazemos <span class="titulo-mono">software</span> que vive.', txt)
+        self.assertIn('Fazemos <span class="titulo-mono">software</span> <span class="hero-fecho">que vive.</span>', txt)
         self.assertIn(SUBTITULO, txt)
         self.assertRegex(txt, r'<a href="/projetos/"[^>]*>Ver projetos</a>')
         self.assertRegex(txt, r'<a href="#contato"[^>]*>Pedir orçamento</a>')

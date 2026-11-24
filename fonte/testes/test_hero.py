@@ -77,9 +77,10 @@ class TestHero(unittest.TestCase):
         self.assertNotIn("lazy", img)
         w, h = (int(x) for x in re.search(r'width="(\d+)" height="(\d+)"', img).groups())
         self.assertEqual((w, h), paginas._tamanho_webp(REPO / "assets/frente/amott.webp"))
-        pre = re.findall(r'<link rel="preload" as="image"[^>]*>', self.html)
-        self.assertEqual(len(pre), 1)
-        self.assertIn("/assets/frente/amott.webp", pre[0])
+
+    def test_img_da_frente_so_com_prioridade_alta_e_preload_fora_do_hero(self):
+        # o preload mora no <head> da pagina (_documento), nao dentro da secao do hero
+        self.assertNotIn("<link", self.html)
 
     def test_camadas_decorativas_aria_hidden(self):
         self.assertEqual(len(self.achar("div", **{"class": "hero-por-tras", "aria-hidden": "true"})), 1)
@@ -127,12 +128,36 @@ class TestHero(unittest.TestCase):
         self.assertNotRegex(self.html.lower(), r"caio|rosiel")
 
 
+class TestPaginaHome(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        dados = dados_mod.carregar(REPO)
+        cls.doc = str(paginas._home(dados, REPO, False).corpo)
+        cls.head = cls.doc[:cls.doc.index("</head>")]
+
+    def test_preload_da_frente_no_head(self):
+        pre = re.findall(r'<link rel="preload" as="image"[^>]*>', self.head)
+        self.assertEqual(len(pre), 1)
+        self.assertIn('href="/assets/frente/amott.webp"', pre[0])
+        self.assertEqual(self.doc.count('rel="preload" as="image"'), 1)
+
+    def test_uma_so_img_com_prioridade_alta_e_e_a_da_frente(self):
+        imgs = [t for t in re.findall(r"<img [^>]*>", self.doc) if 'fetchpriority="high"' in t]
+        self.assertEqual(len(imgs), 1, imgs)
+        self.assertIn("amott.webp", imgs[0])
+        self.assertLess(self.doc.index('<figure class="hero-frente"'), self.doc.index(imgs[0]))
+        self.assertNotIn("caio-640", imgs[0])
+        fig = self.doc[self.doc.index('<figure class="hero-frente"'):]
+        self.assertTrue(fig.startswith('<figure class="hero-frente"'))
+        self.assertIn(imgs[0], fig[:fig.index("</figure>")])
+
+
 class TestRevelarJs(unittest.TestCase):
     def setUp(self):
         self.js = REVELAR.read_text(encoding="utf-8")
 
-    def test_revelar_js_ate_12kb_e_sem_dependencia(self):
-        self.assertLessEqual(REVELAR.stat().st_size, 12 * 1024)
+    def test_revelar_js_ate_14kb_e_sem_dependencia(self):
+        self.assertLessEqual(REVELAR.stat().st_size, 14 * 1024)  # rodada 1: +2 KB pelos itens 6, 7, 9, 10 e 11
         self.assertNotRegex(self.js, r"^\s*import\s", )
         self.assertNotIn("gsap", self.js.lower())
         self.assertNotRegex(self.js, r"\bimport\s*\(")
@@ -149,42 +174,91 @@ class TestRevelarJs(unittest.TestCase):
         self.assertIn("visibilitychange", self.js)
         self.assertIn("cancelAnimationFrame", self.js)
 
-    def test_revelar_nao_ouve_scroll(self):
+    def test_revelar_rect_em_cache_sem_listener_de_scroll(self):
+        # visibilidade e por IntersectionObserver; o rect do palco e medido em resize/ResizeObserver e o scroll entra por scrollY
         self.assertNotRegex(self.js, r"addEventListener\(\s*[\"']scroll")
+        self.assertEqual(self.js.count("getBoundingClientRect"), 2)  # medida() do hero e o cartao
+        self.assertIn("window.scrollY", self.js)
+        self.assertRegex(self.js, r"ResizeObserver")
 
     def test_revelar_sem_cor_solta(self):
         self.assertNotRegex(self.js, r"#[0-9a-fA-F]{3,8}\b")
         self.assertNotRegex(self.js, r"\brgba?\(")
 
 
+def _regras(css: str):
+    """(seletores, declaracoes) de cada regra folha do CSS, sem comentarios e sem depender de ordem nem de espacos."""
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", css):
+        sels = [re.sub(r"\s+", " ", x).strip() for x in m.group(1).split(",")]
+        decl = {}
+        for d in m.group(2).split(";"):
+            if ":" in d:
+                k, v = d.split(":", 1)
+                decl[k.strip()] = re.sub(r"\s+", " ", v).strip()
+        yield sels, decl
+
+
 class TestCss(unittest.TestCase):
+    def setUp(self):
+        self.css = CSS.read_text(encoding="utf-8")
+        self.regras = list(_regras(self.css))
+
     def regra(self, seletor):
-        css = CSS.read_text(encoding="utf-8")
-        i = css.index(seletor + " {")
-        return css[i:css.index("}", i)]
+        """Declaracoes mescladas de todas as regras cujo seletor e exatamente `seletor` (a ultima vence)."""
+        out = {}
+        for sels, decl in self.regras:
+            if seletor in sels:
+                out.update(decl)
+        self.assertTrue(out, f"nenhuma regra com o seletor {seletor}")
+        return out
+
+    def test_regra_acha_pelo_seletor_exato(self):
+        # .hero-por-tras pre nao pode ser confundido com .hero-por-tras nem com .hero-por-tras img
+        self.assertIn("white-space", self.regra(".hero-por-tras pre"))
+        self.assertNotIn("white-space", self.regra(".hero-por-tras"))
+        self.assertEqual(list(_regras("a , b{ x : 1 ;y:2}"))[0], (["a", "b"], {"x": "1", "y": "2"}))
 
     def test_botao_ver_por_tras_44px(self):
-        m = re.search(r"min-height:\s*(\d+)px", self.regra(".hero-ver-por-tras"))
+        m = re.fullmatch(r"(\d+)px", self.regra(".hero-ver-por-tras")["min-height"])
         self.assertIsNotNone(m)
         self.assertGreaterEqual(int(m.group(1)), 44)
 
-    def test_img_da_frente_nao_vira_lcp_com_js(self):
-        css = CSS.read_text(encoding="utf-8")
-        i = css.index("@media (scripting: enabled)")
-        bloco = css[i:css.index("}", css.index("}", i) + 1) + 1]
-        self.assertIn("prefers-reduced-motion: no-preference", bloco)
-        self.assertIn(".hero-palco .hero-frente img", bloco)
-        self.assertIn("opacity: 0", bloco)
-        self.assertIn("hero-img-volta", bloco)
-        self.assertIn("@keyframes hero-img-volta", css)
+    def test_img_da_frente_nunca_comeca_invisivel(self):
+        # a img e o candidato a LCP: nenhuma regra a esconde, salvo as que dependem de .vivo (o canvas ja pintou)
+        for sels, decl in self.regras:
+            if decl.get("opacity") == "0":
+                for s in sels:
+                    if "hero-frente img" in s or s.endswith(".hero-frente > img"):
+                        self.assertIn(".vivo", s, f"{s} esconde a img da frente sem depender de .vivo")
+        self.assertNotIn("hero-img-volta", self.css)
+        self.assertNotIn("scripting", self.css)
+
+    def test_so_o_canvas_vivo_esconde_a_img(self):
+        self.assertEqual(self.regra(".hero-palco.vivo .hero-frente img").get("opacity"), "0")
 
     def test_palco_toque_pan_y(self):
-        self.assertIn("touch-action: pan-y", self.regra(".hero-palco"))
+        self.assertEqual(self.regra(".hero-palco")["touch-action"], "pan-y")
+
+    def test_h1_do_hero_nao_parte_palavra(self):
+        r = self.regra(".hero-headline")
+        self.assertEqual(r.get("overflow-wrap"), "normal")
+        self.assertEqual(r.get("word-break"), "normal")
+        self.assertEqual(r.get("hyphens"), "manual")
+
+    def test_trecho_com_contraste_de_texto(self):
+        self.assertEqual(self.regra(".hero-por-tras pre")["color"], "var(--texto)")
+
+    def test_trecho_oculto_vence_o_display_do_css(self):
+        self.assertEqual(self.regra(".hero-por-tras [hidden]").get("display"), "none")
+
+    def test_frase_na_mesma_transicao_da_troca(self):
+        self.assertTrue(any(".hero-palco.trocando .hero-frase" in sels and d.get("opacity") == "0" for sels, d in self.regras))
+        self.assertIn("opacity", self.regra(".hero-frase").get("transition", ""))
 
     def test_hero_antigo_saiu(self):
-        css = CSS.read_text(encoding="utf-8")
-        self.assertEqual(css.count("/* ---------- Hero"), 1)  # o bloco antigo foi trocado, não duplicado
-        self.assertNotRegex(css, r"\.hero \{[^}]*grid-template-columns: minmax\(0, 7fr\)")
+        self.assertEqual(self.css.count("/* ---------- Hero"), 1)  # o bloco antigo foi trocado, não duplicado
+        self.assertNotRegex(self.css, r"\.hero \{[^}]*grid-template-columns: minmax\(0, 7fr\)")
 
 
 if __name__ == "__main__":

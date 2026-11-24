@@ -350,7 +350,8 @@ html.pre-1a .preloader span {
   gap: 40px;
   align-items: center;
 }
-.hero-headline { max-width: 14ch; }
+.hero-fecho { white-space: nowrap; }   /* "que vive." fica junto: 3 linhas (Fazemos / software / que vive.) */
+.hero-headline { overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .hero-sub { font-size: 1.15rem; color: var(--texto-2); max-width: 52ch; }
 .hero-ctas { margin-top: 32px; }
 .hero-palco {
@@ -373,7 +374,7 @@ html.pre-1a .preloader span {
   border-radius: 6px;
   overflow: hidden;
   background: var(--fundo-2);
-  transition: opacity var(--dur-curta) var(--curva-saida);
+  transition: opacity calc(var(--dur-curta) * 0.75) var(--curva-saida);   /* entra mais rápido do que sai: troca em ~350 ms */
 }
 .hero-por-tras { z-index: 1; border: 1px solid var(--linha); }
 .hero-frente { z-index: 2; border: 1px solid var(--linha); }
@@ -381,36 +382,39 @@ html.pre-1a .preloader span {
 .hero-mascara { z-index: 3; background: transparent; pointer-events: none; display: none; }
 .hero-palco.vivo .hero-mascara { display: block; }
 .hero-palco.vivo .hero-frente { border-color: transparent; background: transparent; }
-/* Com JS e sem reduce, o canvas desenha a frente: a img nasce invisivel (nao vira LCP; o h1 vira).
-   Se o canvas nao assumir em 3 s, a img aparece sozinha. */
-@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  .hero-palco .hero-frente img { opacity: 0; animation: hero-img-volta 0s 3s forwards; }
-}
-@keyframes hero-img-volta { to { opacity: 1; } }
-.hero-palco.vivo .hero-frente img { opacity: 0; animation: none; }
+/* O canvas só esconde a img depois de pintar o primeiro quadro (classe .vivo); antes disso a img é a frente (e o LCP). */
+.hero-palco.vivo .hero-frente img { opacity: 0; }
+.hero-por-tras [hidden] { display: none; }
 .hero-por-tras pre {
   margin: 0;
-  padding: 16px 16px 40px;
+  padding: 36px 16px 60px;
   height: 100%;
   overflow: hidden;
+  display: grid;
+  align-content: center;
+  justify-content: center;
   font-family: var(--fonte-mono);
   font-size: 0.72rem;
   line-height: 1.5;
-  color: var(--texto-2);
+  color: var(--texto);
   white-space: pre;
 }
+/* Texto de fundo menor que a img da frente: o LCP fica com a img, não com o código que o JS revela. */
+.hero-por-tras code { display: block; max-height: 7.5em; overflow: hidden; }
 .hero-por-tras img { width: 100%; height: 100%; object-fit: cover; }
 .hero-origem {
   position: absolute;
   left: 16px;
-  bottom: 12px;
+  top: 10px;
+  max-width: calc(100% - 32px);
   font-family: var(--fonte-mono);
   font-size: 0.7rem;
   color: var(--cor-item);
 }
 .hero-palco.trocando .hero-frente,
 .hero-palco.trocando .hero-por-tras,
-.hero-palco.trocando .hero-mascara { opacity: 0; }
+.hero-palco.trocando .hero-mascara,
+.hero-palco.trocando .hero-frase { opacity: 0; transition-duration: var(--dur-curta); }
 .hero-palco.mostrando .hero-frente { opacity: 0; }
 .hero-ver-por-tras {
   position: absolute;
@@ -436,10 +440,12 @@ html.pre-1a .preloader span {
   margin: 16px 0 0;
   font-size: 0.95rem;
   color: var(--texto-2);
+  transition: opacity calc(var(--dur-curta) * 0.75) var(--curva-saida);
 }
 .hero-frase-nome { font-family: var(--fonte-mono); color: var(--cor-item); margin-right: 8px; }
 @media (min-width: 960px) {
   .hero { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; }
+  .hero-headline { font-size: clamp(2.4rem, 4.6vw, 4.4rem); }   /* coluna de 5fr: "Fazemos" (Syne 800, ~6,4 em) cabe de 1024 a 1920 px; 3 linhas */
   .hero-por-tras pre { font-size: 0.8rem; }
 }
 
